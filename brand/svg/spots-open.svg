@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 201" width="140" role="img" aria-label="0 of 4 spots taken">
+  <style>.fj-served{transform-box:fill-box;transform-origin:50% 100%;animation:fj-serve .7s cubic-bezier(.34,1.56,.64,1) both}
+  @keyframes fj-serve{0%{transform:translate(-40px,-60px) rotate(-14deg);opacity:0}100%{transform:none;opacity:1}}
+  @media (prefers-reduced-motion:reduce){.fj-served{animation:none}}</style>
+  <defs><filter id="fsdr18yb-glow" x="-30%" y="-30%" width="160%" height="160%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="1.6" result="b1"/>
+    <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b2"/>
+    <feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter></defs>
+  <g filter="url(#fsdr18yb-glow)"><g transform="translate(44 143) rotate(0 0 25)"><g>
+    <clipPath id="fsdr18yb-o0-clip"><path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z"/><ellipse rx="30" ry="7"/></clipPath>
+    <path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z" fill="#0E1322" fill-opacity="0.92"/>
+    <ellipse rx="30" ry="7" fill="#0E1322"/>
+    <g fill="none" stroke="#8C7442" stroke-width=".7" stroke-dasharray="1.5 3" opacity=".7">
+      <path d="M-29.14 13 A29.14 6.8 0 0 1 29.14 13"/><path d="M-26.65 26 A26.65 6.22 0 0 1 26.65 26"/><path d="M-20.6 38 A20.6 4.81 0 0 1 20.6 38"/>
+    </g>
+    <g clip-path="url(#fsdr18yb-o0-clip)" fill="none" stroke="#E3B85A" color="#E3B85A" stroke-width=".75" stroke-linecap="round" opacity=".85"><path d="M-27.12 19.53 L-26.62 22.5 L-26.12 25.46 L-25.16 28.38 L-24.09 31.3 L-22.91 34.21 L-21.1 37.07 L-19.14 39.92 L-16.29 42.7 L-13.47 45.49"/><path d="M-20.8 24.12 L-20.41 27.04 L-19.78 29.9 L-18.94 32.73 L-18.11 35.55 L-16.77 38.26 L-15.36 40.96 L-13.23 43.51 L-11.01 46.04"/><path d="M-14.83 25.61 L-14.55 28.51 L-14.06 31.32 L-13.46 34.1 L-12.86 36.87 L-11.86 39.5 L-10.85 42.12 L-9.27 44.52"/><path d="M-8.96 25.18 L-8.79 28.06 L-8.57 30.91 L-8.21 33.66 L-7.85 36.41 L-7.34 39.05 L-6.74 41.63 L-5.92 44.05"/><path d="M2.97 26.48 L2.91 29.36 L2.81 32.15 L2.7 34.89 L2.58 37.63 L2.38 40.19 L2.18 42.75"/><path d="M9.16 21.27 L9.02 24.17 L8.85 27.05 L8.68 29.94 L8.34 32.69 L7.98 35.45 L7.55 38.15 L6.95 40.73 L6.25 43.24 L5.3 45.57"/><path d="M15.06 23.22 L14.78 26.11 L14.5 29.01 L13.95 31.8 L13.36 34.58 L12.69 37.33 L11.69 39.95 L10.58 42.53 L8.99 44.94"/></g>
+    <g fill="none" stroke="#E3B85A" stroke-width=".7" opacity=".5"><path d="M-29.14 13 A29.14 6.8 0 0 0 29.14 13"/><path d="M-26.65 26 A26.65 6.22 0 0 0 26.65 26"/><path d="M-20.6 38 A20.6 4.81 0 0 0 20.6 38"/></g>
+    <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z" stroke="#E3B85A" stroke-width="1.6"/>
+      <ellipse rx="30" ry="7" stroke="#E3B85A" stroke-width="1.4"/>
+      <ellipse cy=".8" rx="27" ry="5.4" stroke="#8C7442" stroke-width=".8"/>
+      
+      <path d="M-30 0 A30 7 0 0 0 30 0" stroke="#FFE3A1" stroke-width="1.9"/>
+      <ellipse cy="50" rx="9" ry="2.4" stroke="#E3B85A" stroke-width="1.2"/>
+      <path d="M-22 6 C-21 18 -18 28 -13 36" stroke="#FFE3A1" stroke-width="1.6" opacity=".55"/>
+    </g>
+  </g></g><g transform="translate(41.6 104.08) rotate(5.2 0 25)"><g>
+    <clipPath id="fsdr18yb-o1-clip"><path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z"/><ellipse rx="30" ry="7"/></clipPath>
+    <path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z" fill="#0E1322" fill-opacity="0.92"/>
+    <ellipse rx="30" ry="7" fill="#0E1322"/>
+    <g fill="none" stroke="#8C7442" stroke-width=".7" stroke-dasharray="1.5 3" opacity=".7">
+      <path d="M-29.14 13 A29.14 6.8 0 0 1 29.14 13"/><path d="M-26.65 26 A26.65 6.22 0 0 1 26.65 26"/><path d="M-20.6 38 A20.6 4.81 0 0 1 20.6 38"/>
+    </g>
+    <g clip-path="url(#fsdr18yb-o1-clip)" fill="none" stroke="#E3B85A" color="#E3B85A" stroke-width=".75" stroke-linecap="round" opacity=".85"><path d="M-27.12 19.53 L-26.62 22.5 L-26.12 25.46 L-25.16 28.38 L-24.09 31.3 L-22.91 34.21 L-21.1 37.07 L-19.14 39.92 L-16.29 42.7 L-13.47 45.49"/><path d="M-20.8 24.12 L-20.41 27.04 L-19.78 29.9 L-18.94 32.73 L-18.11 35.55 L-16.77 38.26 L-15.36 40.96 L-13.23 43.51 L-11.01 46.04"/><path d="M-14.83 25.61 L-14.55 28.51 L-14.06 31.32 L-13.46 34.1 L-12.86 36.87 L-11.86 39.5 L-10.85 42.12 L-9.27 44.52"/><path d="M-8.96 25.18 L-8.79 28.06 L-8.57 30.91 L-8.21 33.66 L-7.85 36.41 L-7.34 39.05 L-6.74 41.63 L-5.92 44.05"/><path d="M2.97 26.48 L2.91 29.36 L2.81 32.15 L2.7 34.89 L2.58 37.63 L2.38 40.19 L2.18 42.75"/><path d="M9.16 21.27 L9.02 24.17 L8.85 27.05 L8.68 29.94 L8.34 32.69 L7.98 35.45 L7.55 38.15 L6.95 40.73 L6.25 43.24 L5.3 45.57"/><path d="M15.06 23.22 L14.78 26.11 L14.5 29.01 L13.95 31.8 L13.36 34.58 L12.69 37.33 L11.69 39.95 L10.58 42.53 L8.99 44.94"/></g>
+    <g fill="none" stroke="#E3B85A" stroke-width=".7" opacity=".5"><path d="M-29.14 13 A29.14 6.8 0 0 0 29.14 13"/><path d="M-26.65 26 A26.65 6.22 0 0 0 26.65 26"/><path d="M-20.6 38 A20.6 4.81 0 0 0 20.6 38"/></g>
+    <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z" stroke="#E3B85A" stroke-width="1.6"/>
+      <ellipse rx="30" ry="7" stroke="#E3B85A" stroke-width="1.4"/>
+      <ellipse cy=".8" rx="27" ry="5.4" stroke="#8C7442" stroke-width=".8"/>
+      
+      <path d="M-30 0 A30 7 0 0 0 30 0" stroke="#FFE3A1" stroke-width="1.9"/>
+      <ellipse cy="50" rx="9" ry="2.4" stroke="#E3B85A" stroke-width="1.2"/>
+      <path d="M-22 6 C-21 18 -18 28 -13 36" stroke="#FFE3A1" stroke-width="1.6" opacity=".55"/>
+    </g>
+  </g></g><g transform="translate(44 143) rotate(0 0 25)"><path d="M-30 0 A30 7 0 0 0 30 0" fill="none" stroke="#FFE3A1" stroke-width="1.9"/></g><g transform="translate(42.46 65.4) rotate(-8.62 0 25)"><g>
+    <clipPath id="fsdr18yb-o2-clip"><path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z"/><ellipse rx="30" ry="7"/></clipPath>
+    <path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z" fill="#0E1322" fill-opacity="0.92"/>
+    <ellipse rx="30" ry="7" fill="#0E1322"/>
+    <g fill="none" stroke="#8C7442" stroke-width=".7" stroke-dasharray="1.5 3" opacity=".7">
+      <path d="M-29.14 13 A29.14 6.8 0 0 1 29.14 13"/><path d="M-26.65 26 A26.65 6.22 0 0 1 26.65 26"/><path d="M-20.6 38 A20.6 4.81 0 0 1 20.6 38"/>
+    </g>
+    <g clip-path="url(#fsdr18yb-o2-clip)" fill="none" stroke="#E3B85A" color="#E3B85A" stroke-width=".75" stroke-linecap="round" opacity=".85"><path d="M-27.12 19.53 L-26.62 22.5 L-26.12 25.46 L-25.16 28.38 L-24.09 31.3 L-22.91 34.21 L-21.1 37.07 L-19.14 39.92 L-16.29 42.7 L-13.47 45.49"/><path d="M-20.8 24.12 L-20.41 27.04 L-19.78 29.9 L-18.94 32.73 L-18.11 35.55 L-16.77 38.26 L-15.36 40.96 L-13.23 43.51 L-11.01 46.04"/><path d="M-14.83 25.61 L-14.55 28.51 L-14.06 31.32 L-13.46 34.1 L-12.86 36.87 L-11.86 39.5 L-10.85 42.12 L-9.27 44.52"/><path d="M-8.96 25.18 L-8.79 28.06 L-8.57 30.91 L-8.21 33.66 L-7.85 36.41 L-7.34 39.05 L-6.74 41.63 L-5.92 44.05"/><path d="M2.97 26.48 L2.91 29.36 L2.81 32.15 L2.7 34.89 L2.58 37.63 L2.38 40.19 L2.18 42.75"/><path d="M9.16 21.27 L9.02 24.17 L8.85 27.05 L8.68 29.94 L8.34 32.69 L7.98 35.45 L7.55 38.15 L6.95 40.73 L6.25 43.24 L5.3 45.57"/><path d="M15.06 23.22 L14.78 26.11 L14.5 29.01 L13.95 31.8 L13.36 34.58 L12.69 37.33 L11.69 39.95 L10.58 42.53 L8.99 44.94"/></g>
+    <g fill="none" stroke="#E3B85A" stroke-width=".7" opacity=".5"><path d="M-29.14 13 A29.14 6.8 0 0 0 29.14 13"/><path d="M-26.65 26 A26.65 6.22 0 0 0 26.65 26"/><path d="M-20.6 38 A20.6 4.81 0 0 0 20.6 38"/></g>
+    <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z" stroke="#E3B85A" stroke-width="1.6"/>
+      <ellipse rx="30" ry="7" stroke="#E3B85A" stroke-width="1.4"/>
+      <ellipse cy=".8" rx="27" ry="5.4" stroke="#8C7442" stroke-width=".8"/>
+      
+      <path d="M-30 0 A30 7 0 0 0 30 0" stroke="#FFE3A1" stroke-width="1.9"/>
+      <ellipse cy="50" rx="9" ry="2.4" stroke="#E3B85A" stroke-width="1.2"/>
+      <path d="M-22 6 C-21 18 -18 28 -13 36" stroke="#FFE3A1" stroke-width="1.6" opacity=".55"/>
+    </g>
+  </g></g><g transform="translate(41.6 104.08) rotate(5.2 0 25)"><path d="M-30 0 A30 7 0 0 0 30 0" fill="none" stroke="#FFE3A1" stroke-width="1.9"/></g><g transform="translate(45.29 28.69) rotate(6.49 0 25)"><g>
+    <clipPath id="fsdr18yb-o3-clip"><path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z"/><ellipse rx="30" ry="7"/></clipPath>
+    <path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z" fill="#0E1322" fill-opacity="0.92"/>
+    <ellipse rx="30" ry="7" fill="#0E1322"/>
+    <g fill="none" stroke="#8C7442" stroke-width=".7" stroke-dasharray="1.5 3" opacity=".7">
+      <path d="M-29.14 13 A29.14 6.8 0 0 1 29.14 13"/><path d="M-26.65 26 A26.65 6.22 0 0 1 26.65 26"/><path d="M-20.6 38 A20.6 4.81 0 0 1 20.6 38"/>
+    </g>
+    <g clip-path="url(#fsdr18yb-o3-clip)" fill="none" stroke="#E3B85A" color="#E3B85A" stroke-width=".75" stroke-linecap="round" opacity=".85"><path d="M-27.12 19.53 L-26.62 22.5 L-26.12 25.46 L-25.16 28.38 L-24.09 31.3 L-22.91 34.21 L-21.1 37.07 L-19.14 39.92 L-16.29 42.7 L-13.47 45.49"/><path d="M-20.8 24.12 L-20.41 27.04 L-19.78 29.9 L-18.94 32.73 L-18.11 35.55 L-16.77 38.26 L-15.36 40.96 L-13.23 43.51 L-11.01 46.04"/><path d="M-14.83 25.61 L-14.55 28.51 L-14.06 31.32 L-13.46 34.1 L-12.86 36.87 L-11.86 39.5 L-10.85 42.12 L-9.27 44.52"/><path d="M-8.96 25.18 L-8.79 28.06 L-8.57 30.91 L-8.21 33.66 L-7.85 36.41 L-7.34 39.05 L-6.74 41.63 L-5.92 44.05"/><path d="M2.97 26.48 L2.91 29.36 L2.81 32.15 L2.7 34.89 L2.58 37.63 L2.38 40.19 L2.18 42.75"/><path d="M9.16 21.27 L9.02 24.17 L8.85 27.05 L8.68 29.94 L8.34 32.69 L7.98 35.45 L7.55 38.15 L6.95 40.73 L6.25 43.24 L5.3 45.57"/><path d="M15.06 23.22 L14.78 26.11 L14.5 29.01 L13.95 31.8 L13.36 34.58 L12.69 37.33 L11.69 39.95 L10.58 42.53 L8.99 44.94"/></g>
+    <g fill="none" stroke="#E3B85A" stroke-width=".7" opacity=".5"><path d="M-29.14 13 A29.14 6.8 0 0 0 29.14 13"/><path d="M-26.65 26 A26.65 6.22 0 0 0 26.65 26"/><path d="M-20.6 38 A20.6 4.81 0 0 0 20.6 38"/></g>
+    <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z" stroke="#E3B85A" stroke-width="1.6"/>
+      <ellipse rx="30" ry="7" stroke="#E3B85A" stroke-width="1.4"/>
+      <ellipse cy=".8" rx="27" ry="5.4" stroke="#8C7442" stroke-width=".8"/>
+      
+      <path d="M-30 0 A30 7 0 0 0 30 0" stroke="#FFE3A1" stroke-width="1.9"/>
+      <ellipse cy="50" rx="9" ry="2.4" stroke="#E3B85A" stroke-width="1.2"/>
+      <path d="M-22 6 C-21 18 -18 28 -13 36" stroke="#FFE3A1" stroke-width="1.6" opacity=".55"/>
+    </g>
+  </g></g><g transform="translate(42.46 65.4) rotate(-8.62 0 25)"><path d="M-30 0 A30 7 0 0 0 30 0" fill="none" stroke="#FFE3A1" stroke-width="1.9"/></g></g>
+</svg>

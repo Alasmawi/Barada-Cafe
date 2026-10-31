@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="210" height="170" viewBox="0 0 210 170" role="img" aria-label="Stamped — collab done">
+<title>Stamped — collab done</title>
+<style>.holo{animation:flick 5s steps(1) infinite}
+@keyframes flick{0%,100%{opacity:1}41%{opacity:.82}42%{opacity:1}43%{opacity:.9}44%{opacity:1}78%{opacity:.88}79%{opacity:1}}
+.hazz{transform-box:view-box;transform-origin:0 0;animation:hazz 3.4s ease-in-out infinite}
+@keyframes hazz{0%,6%{transform:rotate(-10deg)}10%{transform:rotate(12deg)}14%{transform:rotate(-12deg)}18%{transform:rotate(12deg)}22%{transform:rotate(-12deg)}26%{transform:rotate(10deg)}30%,100%{transform:rotate(-6deg)}}
+.ring{stroke-dasharray:260;stroke-dashoffset:260;animation:draw 3.4s ease-out infinite}
+.tick{stroke-dasharray:40;stroke-dashoffset:40;animation:tick 3.4s ease-out infinite}
+@keyframes draw{0%,32%{stroke-dashoffset:260;opacity:1}52%,88%{stroke-dashoffset:0;opacity:1}100%{opacity:0;stroke-dashoffset:0}}
+@keyframes tick{0%,48%{stroke-dashoffset:40;opacity:1}60%,88%{stroke-dashoffset:0;opacity:1}100%{opacity:0;stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}</style>
+<defs><filter id="g-glow" x="-30%" y="-30%" width="160%" height="160%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="1.6" result="b1"/>
+    <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b2"/>
+    <feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter></defs>
+<g class="holo" filter="url(#g-glow)">
+    <g transform="translate(92 107)"><g class="hazz" style=""><g transform="rotate(0) translate(0 -25)"><g>
+    <clipPath id="dn-clip"><path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z"/><ellipse rx="30" ry="7"/></clipPath>
+    <path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z" fill="#0E1322" fill-opacity="0.92"/>
+    <ellipse rx="30" ry="7" fill="#0E1322"/>
+    <g fill="none" stroke="#8C7442" stroke-width=".7" stroke-dasharray="1.5 3" opacity=".7">
+      <path d="M-29.14 13 A29.14 6.8 0 0 1 29.14 13"/><path d="M-26.65 26 A26.65 6.22 0 0 1 26.65 26"/><path d="M-20.6 38 A20.6 4.81 0 0 1 20.6 38"/>
+    </g>
+    <g clip-path="url(#dn-clip)" fill="none" stroke="#E3B85A" color="#E3B85A" stroke-width=".75" stroke-linecap="round" opacity=".85"><path d="M-25.04 28.7 L-23.97 31.62 L-22.71 34.53 L-20.9 37.39 L-18.82 40.23"/><path d="M-20.27 31.37 L-19.39 34.2 L-18.21 36.98 L-16.73 39.7 L-14.82 42.34"/><path d="M-16.6 28.79 L-15.96 31.59 L-15.28 34.38 L-14.49 37.14 L-13.34 39.79 L-12.04 42.39"/><path d="M-11.91 28.75 L-11.52 31.56 L-11.03 34.32 L-10.55 37.08 L-9.73 39.69 L-8.91 42.29 L-7.62 44.66 L-6.33 47.03"/><path d="M-7.12 29.76 L-6.85 32.53 L-6.56 35.27 L-6.23 37.98 L-5.74 40.56 L-5.19 43.08 L-4.41 45.41"/><path d="M-2.23 34.32 L-2.13 37.06 L-1.98 39.66 L-1.82 42.22 L-1.58 44.58 L-1.32 46.88"/><path d="M2.37 30.37 L2.27 33.11 L2.17 35.85 L2.05 38.53 L1.89 41.08 L1.69 43.56 L1.43 45.86"/><path d="M7.14 29.29 L6.9 32.08 L6.61 34.83 L6.31 37.57 L5.82 40.14 L5.32 42.7 L4.54 45.03"/><path d="M11.86 29.45 L11.4 32.23 L10.91 34.99 L10.35 37.72 L9.53 40.32 L8.61 42.87 L7.31 45.24 L6.03 47.61"/><path d="M16.03 31.29 L15.35 34.08 L14.61 36.86 L13.46 39.5 L12.23 42.12"/><path d="M21.36 27.55 L20.56 30.4 L19.69 33.24 L18.71 36.05 L17.23 38.77 L15.61 41.47 L13.28 44.03"/><path d="M26 26.06 L24.94 28.98 L23.87 31.9 L22.54 34.8 L20.73 37.66 L18.55 40.49"/></g>
+    <g fill="none" stroke="#E3B85A" stroke-width=".7" opacity=".5"><path d="M-29.14 13 A29.14 6.8 0 0 0 29.14 13"/><path d="M-26.65 26 A26.65 6.22 0 0 0 26.65 26"/><path d="M-20.6 38 A20.6 4.81 0 0 0 20.6 38"/></g>
+    <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z" stroke="#E3B85A" stroke-width="1.6"/>
+      <ellipse rx="30" ry="7" stroke="#E3B85A" stroke-width="1.4"/>
+      <ellipse cy=".8" rx="27" ry="5.4" stroke="#8C7442" stroke-width=".8"/>
+      
+      <path d="M-30 0 A30 7 0 0 0 30 0" stroke="#FFE3A1" stroke-width="1.9"/>
+      <ellipse cy="50" rx="9" ry="2.4" stroke="#E3B85A" stroke-width="1.2"/>
+      <path d="M-22 6 C-21 18 -18 28 -13 36" stroke="#FFE3A1" stroke-width="1.6" opacity=".55"/>
+    </g>
+  </g></g></g></g>
+    <circle class="ring" cx="160" cy="58" r="22" fill="none" stroke="#8FB573" stroke-width="2.4" transform="rotate(-90 160 58)"/>
+    <path class="tick" d="M150 58 l7 7 l13 -14" fill="none" stroke="#8FB573" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

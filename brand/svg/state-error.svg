@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="214" viewBox="0 0 220 214" role="img" aria-label="Something spilled">
+<title>Something spilled</title>
+<style>.holo{animation:flick 5s steps(1) infinite}
+@keyframes flick{0%,100%{opacity:1}41%{opacity:.82}42%{opacity:1}43%{opacity:.9}44%{opacity:1}78%{opacity:.88}79%{opacity:1}}
+.shiver{animation:shiver 3.6s ease-in-out infinite}
+@keyframes shiver{0%,10%,30%,100%{transform:translateX(0)}14%{transform:translateX(-1.5px)}18%{transform:translateX(1.5px)}22%{transform:translateX(-1px)}}
+.fall{transform-box:view-box;transform-origin:0 0;animation:fall 3.6s cubic-bezier(.5,0,.6,1) infinite}
+@keyframes fall{0%,8%{transform:translate(0,0) rotate(-3.43deg)}14%{transform:rotate(-8deg)}20%{transform:rotate(10deg)}26%{transform:translate(6px,-4px) rotate(22deg)}
+  44%{transform:translate(80.6px,73.07px) rotate(102deg)}48%{transform:translate(84.6px,70.07px) rotate(96deg)}
+  52%,82%{transform:translate(80.6px,73.07px) rotate(100deg);opacity:1}88%{opacity:0}89%{transform:translate(0,-20px) rotate(-3.43deg);opacity:0}96%,100%{transform:translate(0,0) rotate(-3.43deg);opacity:1}}
+.bang{transform-box:fill-box;transform-origin:50% 50%;animation:bang 3.6s ease-out infinite}
+@keyframes bang{0%,43%{opacity:0;transform:scale(.4)}48%{opacity:1;transform:scale(1.1)}70%{opacity:1;transform:scale(1)}82%,100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}</style>
+<defs><filter id="g-glow" x="-30%" y="-30%" width="160%" height="160%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="1.6" result="b1"/>
+    <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b2"/>
+    <feMerge><feMergeNode in="b2"/><feMergeNode in="b1"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter></defs>
+<path d="M20 198 H210" stroke="#222B48" stroke-width="1"/>
+  <g class="holo" filter="url(#g-glow)"><g class="shiver"><g transform="translate(74 169)"><g class="" style=""><g transform="rotate(0) translate(0 -25)"><g>
+    <clipPath id="er0-clip"><path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z"/><ellipse rx="30" ry="7"/></clipPath>
+    <path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z" fill="#0E1322" fill-opacity="0.92"/>
+    <ellipse rx="30" ry="7" fill="#0E1322"/>
+    <g fill="none" stroke="#8C7442" stroke-width=".7" stroke-dasharray="1.5 3" opacity=".7">
+      <path d="M-29.14 13 A29.14 6.8 0 0 1 29.14 13"/><path d="M-26.65 26 A26.65 6.22 0 0 1 26.65 26"/><path d="M-20.6 38 A20.6 4.81 0 0 1 20.6 38"/>
+    </g>
+    <g clip-path="url(#er0-clip)" fill="none" stroke="#E3B85A" color="#E3B85A" stroke-width=".75" stroke-linecap="round" opacity=".85"><path d="M-14.66 14.03 L-14.93 16.63 L-15.2 19.23 L-15.45 21.82 L-15.6 24.39 L-15.74 26.95 L-15.83 29.5 L-15.62 31.97 L-15.38 34.43 L-15.03 36.88 L-14.28 39.22 L-13.48 41.57 L-11.98 43.76"/><path d="M-14.93 16.63 q-0.86 -1 -1.44 -3 M-14.93 16.63 q0.86 -1 1.44 -3"/><path d="M-15.2 19.23 q-1.67 -1 -2.79 -3 M-15.2 19.23 q1.67 -1 2.79 -3"/><path d="M-15.45 21.82 q-2.39 -1 -3.98 -3 M-15.45 21.82 q2.39 -1 3.98 -3"/><path d="M-15.6 24.39 q-2.96 -1 -4.94 -3 M-15.6 24.39 q2.96 -1 4.94 -3"/><path d="M-15.74 26.95 q-3.37 -1 -5.61 -3 M-15.74 26.95 q3.37 -1 5.61 -3"/><path d="M-15.83 29.5 q-3.57 -1 -5.96 -3 M-15.83 29.5 q3.57 -1 5.96 -3"/><path d="M-15.62 31.97 q-3.57 -1 -5.96 -3 M-15.62 31.97 q3.57 -1 5.96 -3"/><path d="M-15.38 34.43 q-3.37 -1 -5.61 -3 M-15.38 34.43 q3.37 -1 5.61 -3"/><path d="M-15.03 36.88 q-2.96 -1 -4.94 -3 M-15.03 36.88 q2.96 -1 4.94 -3"/><path d="M-14.28 39.22 q-2.39 -1 -3.98 -3 M-14.28 39.22 q2.39 -1 3.98 -3"/><path d="M-13.48 41.57 q-1.67 -1 -2.79 -3 M-13.48 41.57 q1.67 -1 2.79 -3"/><path d="M-13.26 14.2 L-13.18 16.85 L-13.09 19.5 L-13 22.15 L-12.83 24.76 L-12.66 27.38 L-12.47 29.98 L-12.05 32.48 L-11.62 34.99 L-11.14 37.47 L-10.38 39.82 L-9.62 42.18 L-8.39 44.34"/><path d="M-13.18 16.85 q-0.86 -1 -1.44 -3 M-13.18 16.85 q0.86 -1 1.44 -3"/><path d="M-13.09 19.5 q-1.67 -1 -2.79 -3 M-13.09 19.5 q1.67 -1 2.79 -3"/><path d="M-13 22.15 q-2.39 -1 -3.98 -3 M-13 22.15 q2.39 -1 3.98 -3"/><path d="M-12.83 24.76 q-2.96 -1 -4.94 -3 M-12.83 24.76 q2.96 -1 4.94 -3"/><path d="M-12.66 27.38 q-3.37 -1 -5.61 -3 M-12.66 27.38 q3.37 -1 5.61 -3"/><path d="M-12.47 29.98 q-3.57 -1 -5.96 -3 M-12.47 29.98 q3.57 -1 5.96 -3"/><path d="M-12.05 32.48 q-3.57 -1 -5.96 -3 M-12.05 32.48 q3.57 -1 5.96 -3"/><path d="M-11.62 34.99 q-3.37 -1 -5.61 -3 M-11.62 34.99 q3.37 -1 5.61 -3"/><path d="M-11.14 37.47 q-2.96 -1 -4.94 -3 M-11.14 37.47 q2.96 -1 4.94 -3"/><path d="M-10.38 39.82 q-2.39 -1 -3.98 -3 M-10.38 39.82 q2.39 -1 3.98 -3"/><path d="M-9.62 42.18 q-1.67 -1 -2.79 -3 M-9.62 42.18 q1.67 -1 2.79 -3"/></g>
+    <g fill="none" stroke="#E3B85A" stroke-width=".7" opacity=".5"><path d="M-29.14 13 A29.14 6.8 0 0 0 29.14 13"/><path d="M-26.65 26 A26.65 6.22 0 0 0 26.65 26"/><path d="M-20.6 38 A20.6 4.81 0 0 0 20.6 38"/></g>
+    <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z" stroke="#E3B85A" stroke-width="1.6"/>
+      <ellipse rx="30" ry="7" stroke="#E3B85A" stroke-width="1.4"/>
+      <ellipse cy=".8" rx="27" ry="5.4" stroke="#8C7442" stroke-width=".8"/>
+      
+      <path d="M-30 0 A30 7 0 0 0 30 0" stroke="#FFE3A1" stroke-width="1.9"/>
+      <ellipse cy="50" rx="9" ry="2.4" stroke="#E3B85A" stroke-width="1.2"/>
+      <path d="M-22 6 C-21 18 -18 28 -13 36" stroke="#FFE3A1" stroke-width="1.6" opacity=".55"/>
+    </g>
+  </g></g></g></g><g transform="translate(70.09 132.58)"><g class="" style=""><g transform="rotate(5.2) translate(0 -25)"><g>
+    <clipPath id="er1-clip"><path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z"/><ellipse rx="30" ry="7"/></clipPath>
+    <path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z" fill="#0E1322" fill-opacity="0.92"/>
+    <ellipse rx="30" ry="7" fill="#0E1322"/>
+    <g fill="none" stroke="#8C7442" stroke-width=".7" stroke-dasharray="1.5 3" opacity=".7">
+      <path d="M-29.14 13 A29.14 6.8 0 0 1 29.14 13"/><path d="M-26.65 26 A26.65 6.22 0 0 1 26.65 26"/><path d="M-20.6 38 A20.6 4.81 0 0 1 20.6 38"/>
+    </g>
+    <g clip-path="url(#er1-clip)" fill="none" stroke="#E3B85A" color="#E3B85A" stroke-width=".75" stroke-linecap="round" opacity=".85"><path d="M-14.66 14.03 L-14.93 16.63 L-15.2 19.23 L-15.45 21.82 L-15.6 24.39 L-15.74 26.95 L-15.83 29.5 L-15.62 31.97 L-15.38 34.43 L-15.03 36.88 L-14.28 39.22 L-13.48 41.57 L-11.98 43.76"/><path d="M-14.93 16.63 q-0.86 -1 -1.44 -3 M-14.93 16.63 q0.86 -1 1.44 -3"/><path d="M-15.2 19.23 q-1.67 -1 -2.79 -3 M-15.2 19.23 q1.67 -1 2.79 -3"/><path d="M-15.45 21.82 q-2.39 -1 -3.98 -3 M-15.45 21.82 q2.39 -1 3.98 -3"/><path d="M-15.6 24.39 q-2.96 -1 -4.94 -3 M-15.6 24.39 q2.96 -1 4.94 -3"/><path d="M-15.74 26.95 q-3.37 -1 -5.61 -3 M-15.74 26.95 q3.37 -1 5.61 -3"/><path d="M-15.83 29.5 q-3.57 -1 -5.96 -3 M-15.83 29.5 q3.57 -1 5.96 -3"/><path d="M-15.62 31.97 q-3.57 -1 -5.96 -3 M-15.62 31.97 q3.57 -1 5.96 -3"/><path d="M-15.38 34.43 q-3.37 -1 -5.61 -3 M-15.38 34.43 q3.37 -1 5.61 -3"/><path d="M-15.03 36.88 q-2.96 -1 -4.94 -3 M-15.03 36.88 q2.96 -1 4.94 -3"/><path d="M-14.28 39.22 q-2.39 -1 -3.98 -3 M-14.28 39.22 q2.39 -1 3.98 -3"/><path d="M-13.48 41.57 q-1.67 -1 -2.79 -3 M-13.48 41.57 q1.67 -1 2.79 -3"/><path d="M-13.26 14.2 L-13.18 16.85 L-13.09 19.5 L-13 22.15 L-12.83 24.76 L-12.66 27.38 L-12.47 29.98 L-12.05 32.48 L-11.62 34.99 L-11.14 37.47 L-10.38 39.82 L-9.62 42.18 L-8.39 44.34"/><path d="M-13.18 16.85 q-0.86 -1 -1.44 -3 M-13.18 16.85 q0.86 -1 1.44 -3"/><path d="M-13.09 19.5 q-1.67 -1 -2.79 -3 M-13.09 19.5 q1.67 -1 2.79 -3"/><path d="M-13 22.15 q-2.39 -1 -3.98 -3 M-13 22.15 q2.39 -1 3.98 -3"/><path d="M-12.83 24.76 q-2.96 -1 -4.94 -3 M-12.83 24.76 q2.96 -1 4.94 -3"/><path d="M-12.66 27.38 q-3.37 -1 -5.61 -3 M-12.66 27.38 q3.37 -1 5.61 -3"/><path d="M-12.47 29.98 q-3.57 -1 -5.96 -3 M-12.47 29.98 q3.57 -1 5.96 -3"/><path d="M-12.05 32.48 q-3.57 -1 -5.96 -3 M-12.05 32.48 q3.57 -1 5.96 -3"/><path d="M-11.62 34.99 q-3.37 -1 -5.61 -3 M-11.62 34.99 q3.37 -1 5.61 -3"/><path d="M-11.14 37.47 q-2.96 -1 -4.94 -3 M-11.14 37.47 q2.96 -1 4.94 -3"/><path d="M-10.38 39.82 q-2.39 -1 -3.98 -3 M-10.38 39.82 q2.39 -1 3.98 -3"/><path d="M-9.62 42.18 q-1.67 -1 -2.79 -3 M-9.62 42.18 q1.67 -1 2.79 -3"/></g>
+    <g fill="none" stroke="#E3B85A" stroke-width=".7" opacity=".5"><path d="M-29.14 13 A29.14 6.8 0 0 0 29.14 13"/><path d="M-26.65 26 A26.65 6.22 0 0 0 26.65 26"/><path d="M-20.6 38 A20.6 4.81 0 0 0 20.6 38"/></g>
+    <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z" stroke="#E3B85A" stroke-width="1.6"/>
+      <ellipse rx="30" ry="7" stroke="#E3B85A" stroke-width="1.4"/>
+      <ellipse cy=".8" rx="27" ry="5.4" stroke="#8C7442" stroke-width=".8"/>
+      
+      <path d="M-30 0 A30 7 0 0 0 30 0" stroke="#FFE3A1" stroke-width="1.9"/>
+      <ellipse cy="50" rx="9" ry="2.4" stroke="#E3B85A" stroke-width="1.2"/>
+      <path d="M-22 6 C-21 18 -18 28 -13 36" stroke="#FFE3A1" stroke-width="1.6" opacity=".55"/>
+    </g>
+  </g></g></g></g><g transform="translate(74 169)"><g class="" style=""><g transform="rotate(0) translate(0 -25)"><path d="M-30 0 A30 7 0 0 0 30 0" fill="none" stroke="#FFE3A1" stroke-width="1.9"/></g></g></g></g><g transform="translate(70.09 132.58)"><g class="" style=""><g transform="rotate(5.2) translate(0 -25)"><path d="M-30 0 A30 7 0 0 0 30 0" fill="none" stroke="#FFE3A1" stroke-width="1.9"/></g></g></g><g transform="translate(69.4 94.93)"><g class="fall" style=""><g transform="rotate(0) translate(0 -25)"><g>
+    <clipPath id="er2-clip"><path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z"/><ellipse rx="30" ry="7"/></clipPath>
+    <path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z" fill="#0E1322" fill-opacity="0.92"/>
+    <ellipse rx="30" ry="7" fill="#0E1322"/>
+    <g fill="none" stroke="#8C7442" stroke-width=".7" stroke-dasharray="1.5 3" opacity=".7">
+      <path d="M-29.14 13 A29.14 6.8 0 0 1 29.14 13"/><path d="M-26.65 26 A26.65 6.22 0 0 1 26.65 26"/><path d="M-20.6 38 A20.6 4.81 0 0 1 20.6 38"/>
+    </g>
+    <g clip-path="url(#er2-clip)" fill="none" stroke="#E3B85A" color="#E3B85A" stroke-width=".75" stroke-linecap="round" opacity=".85"><path d="M-14.66 14.03 L-14.93 16.63 L-15.2 19.23 L-15.45 21.82 L-15.6 24.39 L-15.74 26.95 L-15.83 29.5 L-15.62 31.97 L-15.38 34.43 L-15.03 36.88 L-14.28 39.22 L-13.48 41.57 L-11.98 43.76"/><path d="M-14.93 16.63 q-0.86 -1 -1.44 -3 M-14.93 16.63 q0.86 -1 1.44 -3"/><path d="M-15.2 19.23 q-1.67 -1 -2.79 -3 M-15.2 19.23 q1.67 -1 2.79 -3"/><path d="M-15.45 21.82 q-2.39 -1 -3.98 -3 M-15.45 21.82 q2.39 -1 3.98 -3"/><path d="M-15.6 24.39 q-2.96 -1 -4.94 -3 M-15.6 24.39 q2.96 -1 4.94 -3"/><path d="M-15.74 26.95 q-3.37 -1 -5.61 -3 M-15.74 26.95 q3.37 -1 5.61 -3"/><path d="M-15.83 29.5 q-3.57 -1 -5.96 -3 M-15.83 29.5 q3.57 -1 5.96 -3"/><path d="M-15.62 31.97 q-3.57 -1 -5.96 -3 M-15.62 31.97 q3.57 -1 5.96 -3"/><path d="M-15.38 34.43 q-3.37 -1 -5.61 -3 M-15.38 34.43 q3.37 -1 5.61 -3"/><path d="M-15.03 36.88 q-2.96 -1 -4.94 -3 M-15.03 36.88 q2.96 -1 4.94 -3"/><path d="M-14.28 39.22 q-2.39 -1 -3.98 -3 M-14.28 39.22 q2.39 -1 3.98 -3"/><path d="M-13.48 41.57 q-1.67 -1 -2.79 -3 M-13.48 41.57 q1.67 -1 2.79 -3"/><path d="M-13.26 14.2 L-13.18 16.85 L-13.09 19.5 L-13 22.15 L-12.83 24.76 L-12.66 27.38 L-12.47 29.98 L-12.05 32.48 L-11.62 34.99 L-11.14 37.47 L-10.38 39.82 L-9.62 42.18 L-8.39 44.34"/><path d="M-13.18 16.85 q-0.86 -1 -1.44 -3 M-13.18 16.85 q0.86 -1 1.44 -3"/><path d="M-13.09 19.5 q-1.67 -1 -2.79 -3 M-13.09 19.5 q1.67 -1 2.79 -3"/><path d="M-13 22.15 q-2.39 -1 -3.98 -3 M-13 22.15 q2.39 -1 3.98 -3"/><path d="M-12.83 24.76 q-2.96 -1 -4.94 -3 M-12.83 24.76 q2.96 -1 4.94 -3"/><path d="M-12.66 27.38 q-3.37 -1 -5.61 -3 M-12.66 27.38 q3.37 -1 5.61 -3"/><path d="M-12.47 29.98 q-3.57 -1 -5.96 -3 M-12.47 29.98 q3.57 -1 5.96 -3"/><path d="M-12.05 32.48 q-3.57 -1 -5.96 -3 M-12.05 32.48 q3.57 -1 5.96 -3"/><path d="M-11.62 34.99 q-3.37 -1 -5.61 -3 M-11.62 34.99 q3.37 -1 5.61 -3"/><path d="M-11.14 37.47 q-2.96 -1 -4.94 -3 M-11.14 37.47 q2.96 -1 4.94 -3"/><path d="M-10.38 39.82 q-2.39 -1 -3.98 -3 M-10.38 39.82 q2.39 -1 3.98 -3"/><path d="M-9.62 42.18 q-1.67 -1 -2.79 -3 M-9.62 42.18 q1.67 -1 2.79 -3"/></g>
+    <g fill="none" stroke="#E3B85A" stroke-width=".7" opacity=".5"><path d="M-29.14 13 A29.14 6.8 0 0 0 29.14 13"/><path d="M-26.65 26 A26.65 6.22 0 0 0 26.65 26"/><path d="M-20.6 38 A20.6 4.81 0 0 0 20.6 38"/></g>
+    <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M-30 0 C-29.5 14 -27 29 -18.5 41 C-15 46 -11 49 -9 50 L9 50 C11 49 15 46 18.5 41 C27 29 29.5 14 30 0 Z" stroke="#E3B85A" stroke-width="1.6"/>
+      <ellipse rx="30" ry="7" stroke="#E3B85A" stroke-width="1.4"/>
+      <ellipse cy=".8" rx="27" ry="5.4" stroke="#8C7442" stroke-width=".8"/>
+      
+      <path d="M-30 0 A30 7 0 0 0 30 0" stroke="#FFE3A1" stroke-width="1.9"/>
+      <ellipse cy="50" rx="9" ry="2.4" stroke="#E3B85A" stroke-width="1.2"/>
+      <path d="M-22 6 C-21 18 -18 28 -13 36" stroke="#FFE3A1" stroke-width="1.6" opacity=".55"/>
+    </g>
+  </g></g></g></g><g class="bang" fill="none" stroke="#E8695A" stroke-width="2" stroke-linecap="round">
+    <path d="M150 134 v-12"/><path d="M168 140 l8 -8"/><path d="M132 140 l-8 -8"/></g></g>
+</svg>
