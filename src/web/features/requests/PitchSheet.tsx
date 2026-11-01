@@ -78,12 +78,17 @@ function PitchForm({ collabId, onSent }: { collabId: string; onSent: () => void 
   );
 }
 
-type Props = { collabId: string; open: boolean; onClose: () => void };
+type Props = { collabId: string; open: boolean; onClose: () => void; onSent: () => void };
 
-export function PitchSheet({ collabId, open, onClose }: Props) {
+export function PitchSheet({ collabId, open, onClose, onSent }: Props) {
+  const finish = () => {
+    onSent();
+    onClose();
+  };
+
   return (
     <Sheet open={open} onClose={onClose} title="Ask to join">
-      <PitchForm collabId={collabId} onSent={onClose} />
+      <PitchForm collabId={collabId} onSent={finish} />
     </Sheet>
   );
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { FinjanStack } from '../../../brand/src/FinjanStack';
+import { CupStack } from '../components/CupStack';
 import type { Collab, CollabRequest } from '../../shared/api';
 import { bahrainToday, endsLabel, shortDate } from '../../shared/dates';
 import { useCollab } from '../api/queries';
@@ -17,9 +17,9 @@ const WAITING_NOTES: Partial<Record<CollabRequest['status'], string>> = {
   declined: 'The café went another way on this one.',
 };
 
-function RequestBar({ request }: { request: CollabRequest }) {
+function RequestBar({ request, justSent }: { request: CollabRequest; justSent: boolean }) {
   return (
-    <div className="action-bar action-bar--split">
+    <div className={`action-bar action-bar--split ${justSent ? 'action-bar--arrived' : ''}`}>
       <div className="action-bar__status">
         <StatusChip status={request.status} />
         {WAITING_NOTES[request.status] && (
@@ -31,16 +31,22 @@ function RequestBar({ request }: { request: CollabRequest }) {
           See my pass
         </Link>
       )}
+      {justSent && (
+        <Link className="button" to="/me">
+          My collabs
+        </Link>
+      )}
     </div>
   );
 }
 
 function ActionBar({ collab, request }: { collab: Collab; request: CollabRequest | null }) {
   const [asking, setAsking] = useState(false);
+  const [justSent, setJustSent] = useState(false);
 
   return (
     <>
-      {request && <RequestBar request={request} />}
+      {request && <RequestBar request={request} justSent={justSent} />}
       {!request && collab.state === 'open' && (
         <div className="action-bar">
           <button
@@ -60,7 +66,12 @@ function ActionBar({ collab, request }: { collab: Collab; request: CollabRequest
         </div>
       )}
       {/* Outside the branches above: if the collab fills mid-pitch, the sheet must stay to say so. */}
-      <PitchSheet collabId={collab.id} open={asking} onClose={() => setAsking(false)} />
+      <PitchSheet
+        collabId={collab.id}
+        open={asking}
+        onClose={() => setAsking(false)}
+        onSent={() => setJustSent(true)}
+      />
     </>
   );
 }
@@ -106,7 +117,7 @@ export function CollabDetail() {
               </p>
               <h1 className="detail__offer">{detail.offer}</h1>
               <div className="detail__tray">
-                <FinjanStack
+                <CupStack
                   spots={detail.spots}
                   taken={detail.spotsTaken}
                   seed={detail.id}

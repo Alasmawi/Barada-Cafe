@@ -3,7 +3,7 @@
 A collab board for cafés and creators, built for Barada Café. A café posts a collab, creators
 pitch from their phones, and the café accepts, sees the post, and marks it served.
 
-**Status:** the API, the creator journey and the café journey are done. Animations and the AI draft are next (Phases 5 and 6).
+**Status:** the API, both journeys and the signature moments are done. The AI draft is next (Phase 6).
 [PLAN.md](PLAN.md) has the full spec and phase list. [DECISIONS.md](DECISIONS.md) records what
 changed along the way.
 
@@ -32,6 +32,13 @@ npm run check
 
 That runs the type checker, ESLint and the tests. The tests run inside the real Workers runtime
 against real D1 (SQLite), so nothing needs mocking and no Cloudflare account is required.
+
+With `npm run dev` running, this checks every screen at 360 and 390px in every preview state. It
+drives your installed Chrome, and it's run by hand, not in CI.
+
+```bash
+npm run test:ui
+```
 
 ## The rule that matters most
 

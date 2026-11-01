@@ -32,8 +32,18 @@ their listed defaults unless this file says otherwise.
 - **The pitch sheet sits outside the action bar's branches,** so it survives the collab filling up
   mid-pitch and can say so.
 - **An error boundary was added** so a crash shows a reload button, not a blank page.
-- **Signature moments wait for Phase 5:** the pass tilt, the accepted and hazz animations, and the
-  pitch folding into a chip. The screens use the static art until then.
+
+## Signature moments
+
+- **`CupStack` replaces the brand's `FinjanStack` in the app.** `FinjanStack` animates for one render
+  only, so the refetch after an accept redrew the art and the cup never finished its move. `/brand`
+  stays unchanged, and `CupStack` uses the same `stackSVG` art.
+- **The served moment is a card over the inbox, not in place.** It doesn't block taps, so staff can
+  keep working. It runs one 3.4s loop of the hazz, which repeats on its own otherwise.
+- **After sending a pitch, the Brewing chip arrives in the action bar** with a link to My collabs.
+  PLAN §7.2 had it fly to the tab, but the detail screen has no tab bar.
+- **With Reduce Motion on,** the accepted moment is skipped and the pass stays flat. Every moment
+  that plays once is remembered per device, and Reset demo clears that.
 
 ## Voice
 

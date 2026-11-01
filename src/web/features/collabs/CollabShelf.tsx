@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FinjanStack } from '../../../../brand/src/FinjanStack';
+import { CupStack } from '../../components/CupStack';
 import { bahrainToday, endsLabel } from '../../../shared/dates';
 import type { Collab } from '../../../shared/api';
 
@@ -33,7 +33,7 @@ export function CollabShelf({ collab, to = `/collabs/${collab.id}`, cafeView }: 
             <p className="shelf__pending">{collab.pendingCount} new {collab.pendingCount === 1 ? 'pitch' : 'pitches'}</p>
           )}
         </div>
-        <FinjanStack spots={collab.spots} taken={collab.spotsTaken} seed={collab.id} width={104} />
+        <CupStack spots={collab.spots} taken={collab.spotsTaken} seed={collab.id} width={104} />
       </Link>
     </li>
   );

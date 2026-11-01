@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import type { RequestWithCollab } from '../../shared/api';
 import { shortDate } from '../../shared/dates';
@@ -10,7 +10,10 @@ import { MessageState } from '../components/MessageState';
 import { ScreenState } from '../components/ScreenState';
 import { Skeleton } from '../components/Skeleton';
 import { StatusChip } from '../components/StatusChip';
+import { AcceptedMoment } from '../features/moments/AcceptedMoment';
+import { hasSeen, markSeen, prefersReducedMotion } from '../features/moments/motion';
 import { SubmitSheet } from '../features/pass/SubmitSheet';
+import { TiltCard } from '../features/pass/TiltCard';
 
 function PassActions({ request }: { request: RequestWithCollab }) {
   const [adding, setAdding] = useState(false);
@@ -46,7 +49,7 @@ function PassActions({ request }: { request: RequestWithCollab }) {
 function PassCard({ request }: { request: RequestWithCollab }) {
   const { collab } = request;
   return (
-    <article className="pass">
+    <TiltCard>
       <div className="pass__top">
         <CupArt seed={collab.id} fill={0.85} size={112} />
         <p className="pass__cafe">
@@ -78,7 +81,29 @@ function PassCard({ request }: { request: RequestWithCollab }) {
         <p className="pass__hint">Show this at the counter</p>
         <p className="pass__code">{request.passCode}</p>
       </div>
-    </article>
+    </TiltCard>
+  );
+}
+
+function PassView({ request }: { request: RequestWithCollab }) {
+  const [moment, setMoment] = useState(
+    () => request.status === 'accepted' && !hasSeen(request.id) && !prefersReducedMotion(),
+  );
+  const finishMoment = useCallback(() => {
+    markSeen(request.id);
+    setMoment(false);
+  }, [request.id]);
+
+  if (moment) return <AcceptedMoment onDone={finishMoment} />;
+
+  return (
+    <div className="pass-view">
+      <div className="pass__status">
+        <StatusChip status={request.status} />
+      </div>
+      <PassCard request={request} />
+      <PassActions request={request} />
+    </div>
   );
 }
 
@@ -123,15 +148,7 @@ export function VisitPass() {
             />
           }
         >
-          {({ request: current }) => (
-            <>
-              <div className="pass__status">
-                <StatusChip status={current.status} />
-              </div>
-              <PassCard request={current} />
-              <PassActions request={current} />
-            </>
-          )}
+          {({ request: current }) => <PassView request={current} />}
         </ScreenState>
       </main>
     </>

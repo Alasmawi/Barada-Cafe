@@ -68,7 +68,7 @@ function PostLink({ url }: { url: string }) {
   );
 }
 
-function SubmittedActions({ request }: { request: InboxRequest }) {
+function SubmittedActions({ request, onServed }: { request: InboxRequest; onServed: () => void }) {
   const complete = useRequestAction(request.id, 'complete');
   return (
     <>
@@ -76,7 +76,7 @@ function SubmittedActions({ request }: { request: InboxRequest }) {
         <button
           className="button button--primary button--grow"
           type="button"
-          onClick={() => complete.mutate()}
+          onClick={() => complete.mutate(undefined, { onSuccess: onServed })}
           disabled={complete.isPending}
         >
           {complete.isPending ? 'Saving…' : 'Mark served'}
@@ -95,9 +95,10 @@ type Props = {
   request: InboxRequest;
   collab: Collab;
   onAccept: (requestId: string) => void;
+  onServed: () => void;
 };
 
-export function InboxCard({ request, collab, onAccept }: Props) {
+export function InboxCard({ request, collab, onAccept, onServed }: Props) {
   const showsPass = request.status === 'accepted' || request.status === 'submitted';
 
   return (
@@ -129,7 +130,9 @@ export function InboxCard({ request, collab, onAccept }: Props) {
           onAccept={() => onAccept(request.id)}
         />
       )}
-      {request.status === 'submitted' && <SubmittedActions request={request} />}
+      {request.status === 'submitted' && (
+        <SubmittedActions request={request} onServed={onServed} />
+      )}
     </li>
   );
 }

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { FinjanStack } from '../../../brand/src/FinjanStack';
+import { CupStack } from '../components/CupStack';
 import { bahrainToday, endsLabel } from '../../shared/dates';
 import { STATUS_LABELS, type RequestStatus } from '../../shared/status';
 import { ApiError } from '../api/client';
@@ -12,6 +12,7 @@ import { Skeleton } from '../components/Skeleton';
 import { spotsLabel } from '../features/collabs/CollabShelf';
 import { NotYourCollab } from '../features/collabs/NotYourCollab';
 import { InboxCard } from '../features/inbox/InboxCard';
+import { ServedMoment } from '../features/moments/ServedMoment';
 
 /** The order work moves through the café, with declined out of the way at the end. */
 const TAB_ORDER: RequestStatus[] = ['pending', 'accepted', 'submitted', 'done', 'declined'];
@@ -46,6 +47,8 @@ function Requests({ collabId }: { collabId: string }) {
   const inbox = useInbox(collabId);
   const [tab, setTab] = useState<RequestStatus>('pending');
   const [notice, setNotice] = useState<string | null>(null);
+  const [served, setServed] = useState<string | null>(null);
+  const clearServed = useCallback(() => setServed(null), []);
   const accept = useAcceptRequest(collabId, (error) => setNotice(acceptErrorMessage(error)));
 
   const detail = collab.data?.collab;
@@ -105,10 +108,12 @@ function Requests({ collabId }: { collabId: string }) {
                       setNotice(null);
                       accept.mutate(requestId);
                     }}
+                    onServed={() => setServed(request.creatorName)}
                   />
                 ))}
               </ul>
             )}
+            {served && <ServedMoment creatorName={served} onDone={clearServed} />}
           </>
         );
       }}
@@ -142,7 +147,7 @@ export function CollabInbox() {
                     Edit collab
                   </Link>
                 </div>
-                <FinjanStack
+                <CupStack
                   spots={detail.spots}
                   taken={detail.spotsTaken}
                   seed={detail.id}

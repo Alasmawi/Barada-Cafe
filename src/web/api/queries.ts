@@ -8,6 +8,7 @@ import type {
 } from '../../shared/api';
 import type { CollabInput } from '../../shared/schemas';
 import { api } from './client';
+import { forgetSeen } from '../features/moments/motion';
 import { setPreviewMode } from './preview';
 
 type UsersResponse = { users: User[]; lastResetAt: string | null };
@@ -152,6 +153,7 @@ export function useResetDemo() {
     mutationFn: () => api.post('/demo/reset'),
     onSuccess: () => {
       setPreviewMode('normal');
+      forgetSeen();
       return queryClient.invalidateQueries();
     },
   });
