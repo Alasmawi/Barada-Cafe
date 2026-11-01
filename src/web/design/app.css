@@ -555,6 +555,40 @@ a {
   border: 0;
 }
 
+/* ---------- AI sentence box ---------- */
+
+.ai-box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-block-end: var(--space-5);
+  padding-block-end: var(--space-5);
+  border-block-end: 1px solid var(--fj-gold-dim);
+}
+
+.ai-box__note {
+  font-size: var(--text-sm);
+  color: var(--fj-gold);
+}
+
+.ai-box__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ai-box__skip {
+  flex: none;
+  min-height: var(--tap-min);
+  padding-inline: var(--space-2);
+  font: inherit;
+  font-size: var(--text-sm);
+  color: var(--fj-mist);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
 /* ---------- status chip ---------- */
 
 .status-chip {

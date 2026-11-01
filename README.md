@@ -3,7 +3,7 @@
 A collab board for cafés and creators, built for Barada Café. A café posts a collab, creators
 pitch from their phones, and the café accepts, sees the post, and marks it served.
 
-**Status:** the API, both journeys and the signature moments are done. The AI draft is next (Phase 6).
+**Status:** the API, both journeys and the signature moments are done. All that's left is the final polish and iPhone pass (Phase 7).
 [PLAN.md](PLAN.md) has the full spec and phase list. [DECISIONS.md](DECISIONS.md) records what
 changed along the way.
 
@@ -23,6 +23,14 @@ This applies migrations to a local D1 database and serves everything on http://l
 The demo data seeds itself the first time the welcome screen loads. Choose Noor to see a request
 in every status, or Huda to run Barada Café. The chip at the top right opens the demo menu, with Reset demo and previews of the
 slow, error and empty states.
+
+No Cloudflare account is needed. Without one, the AI sentence box says it can't help and the form
+works as normal. To use the real model, register a `workers.dev` subdomain, log in with
+`npx wrangler login`, and run:
+
+```bash
+npm run dev:ai
+```
 
 ## Check it
 
@@ -51,6 +59,16 @@ spots and updates the row in one step, and D1 runs each write statement on its o
 request can get between the count and the update. Editing spots and asking to join use the same
 idea. The tests are in [`test/concurrency.test.ts`](test/concurrency.test.ts). They were checked
 by swapping each guard for "SELECT, then UPDATE" and confirming that they fail.
+
+## The AI draft
+
+A café types one sentence and Workers AI fills what it can of the form. The café then edits it and
+publishes it themselves. If the model is slow, fails or talks nonsense, the form stays usable and
+"Skip, I'll type it" is always there.
+
+The model's output is treated as untrusted. It has no tools, sees only the sentence, and every field
+is validated on its own in [`draftCollab.ts`](src/worker/ai/draftCollab.ts), so the worst it can do
+is put text in the acting café's own unpublished form.
 
 ## Layout
 
@@ -81,6 +99,7 @@ All under `/api/v1`. Send the acting user in `X-User-Id`. Only the first group w
 | Creator or café | `GET /requests/:id` | The visit pass |
 | Café staff | `GET /cafe/collabs` | My café's collabs |
 | | `POST /collabs`, `PUT /collabs/:id` | Create, edit |
+| | `POST /ai/draft-collab` | Draft from one sentence. Never saves anything |
 | | `GET /collabs/:id/requests` | Inbox |
 | | `POST /requests/:id/accept` | Also `/decline` and `/complete` |
 
@@ -90,8 +109,9 @@ Errors always look like `{ "error": { "code", "message", "fields"? } }`.
 
 One-time setup, from a machine logged in with `npx wrangler login`:
 
-1. Run `npx wrangler d1 create finjan` and put the id in `wrangler.jsonc`.
-2. Run `npm run deploy`.
+1. Register a `workers.dev` subdomain in the Cloudflare dashboard.
+2. Run `npx wrangler d1 create finjan` and put the id in `wrangler.jsonc`.
+3. Run `npm run deploy`.
 
 To deploy from GitHub Actions instead, add the secret `CLOUDFLARE_API_TOKEN` and the variable
 `CLOUDFLARE_ACCOUNT_ID` to the repository. CI then deploys every push to `main`. It skips the

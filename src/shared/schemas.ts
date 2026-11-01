@@ -36,6 +36,17 @@ export const SubmissionInput = z.object({
 });
 export type SubmissionInput = z.infer<typeof SubmissionInput>;
 
+export const SENTENCE_MAX = 300;
+
+export const DraftRequest = z.object({
+  sentence: z
+    .string()
+    .trim()
+    .min(1, 'Describe your collab in a sentence')
+    .max(SENTENCE_MAX, `Keep it to ${SENTENCE_MAX} characters`),
+});
+export type DraftRequest = z.infer<typeof DraftRequest>;
+
 export const CollabListQuery = z.object({
   state: z.enum(['open', 'full']).optional(),
 });

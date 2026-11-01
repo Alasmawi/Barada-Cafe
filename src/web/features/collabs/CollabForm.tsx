@@ -1,9 +1,11 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
+import type { CollabDraft } from '../../../shared/api';
 import { addDays, bahrainToday } from '../../../shared/dates';
 import { CollabInput, SPOTS_MAX, SPOTS_MIN } from '../../../shared/schemas';
 import { ApiError } from '../../api/client';
 import { useSaveCollab } from '../../api/queries';
+import { AiDraftBox } from './AiDraftBox';
 
 const DEFAULT_RUN_DAYS = 7;
 
@@ -70,6 +72,15 @@ export function CollabForm({ collabId, initial, onSaved }: Props) {
     setErrors((current) => ({ ...current, [field]: undefined }));
   };
 
+  const applyDraft = ({ spots, ...text }: CollabDraft['draft']) => {
+    setDraft((current) => ({
+      ...current,
+      ...text,
+      ...(spots === undefined ? {} : { spots: String(spots) }),
+    }));
+    setErrors({});
+  };
+
   const stepSpots = (change: number) => {
     const next = (Number(draft.spots) || 0) + change;
     update('spots', String(Math.min(Math.max(next, SPOTS_MIN), SPOTS_MAX)));
@@ -103,92 +114,95 @@ export function CollabForm({ collabId, initial, onSaved }: Props) {
   const idleLabel = collabId ? 'Save changes' : 'Publish collab';
 
   return (
-    <form className="collab-form" onSubmit={submit} noValidate>
-      <Field label="Title" error={errors.title}>
-        <input
-          className="field__input"
-          value={draft.title}
-          onChange={(event) => update('title', event.target.value)}
-          placeholder="Saffron latte first pour"
-          aria-invalid={errors.title !== undefined}
-        />
-      </Field>
-      <Field label="What you're offering" error={errors.offer}>
-        <textarea
-          className="field__input field__input--area"
-          rows={2}
-          value={draft.offer}
-          onChange={(event) => update('offer', event.target.value)}
-          placeholder="Two lattes and a slice of kunafa on the house"
-          aria-invalid={errors.offer !== undefined}
-        />
-      </Field>
-      <Field label="What to post" error={errors.deliverable}>
-        <textarea
-          className="field__input field__input--area"
-          rows={2}
-          value={draft.deliverable}
-          onChange={(event) => update('deliverable', event.target.value)}
-          placeholder="One Reel of the pour, tagging the café"
-          aria-invalid={errors.deliverable !== undefined}
-        />
-      </Field>
-      <div className="collab-form__row">
-        <Field label="Spots" error={errors.spots}>
-          <span className="stepper">
-            <button
-              className="stepper__button"
-              type="button"
-              onClick={() => stepSpots(-1)}
-              aria-label="One spot fewer"
-            >
-              −
-            </button>
-            <input
-              className="stepper__value"
-              inputMode="numeric"
-              value={draft.spots}
-              onChange={(event) => update('spots', event.target.value)}
-              aria-invalid={errors.spots !== undefined}
-            />
-            <button
-              className="stepper__button"
-              type="button"
-              onClick={() => stepSpots(1)}
-              aria-label="One spot more"
-            >
-              +
-            </button>
-          </span>
-        </Field>
-        <Field label="Last day" error={errors.endsOn}>
+    <>
+      {!collabId && <AiDraftBox onDraft={applyDraft} />}
+      <form className="collab-form" onSubmit={submit} noValidate>
+        <Field label="Title" error={errors.title}>
           <input
             className="field__input"
-            type="date"
-            value={draft.endsOn}
-            min={bahrainToday()}
-            onChange={(event) => update('endsOn', event.target.value)}
-            aria-invalid={errors.endsOn !== undefined}
+            value={draft.title}
+            onChange={(event) => update('title', event.target.value)}
+            placeholder="Saffron latte first pour"
+            aria-invalid={errors.title !== undefined}
           />
         </Field>
-      </div>
-      {failure && (
-        <p className="form-error" role="alert">
-          {failure}
-        </p>
-      )}
-      <div className="action-bar action-bar--split">
-        <button className="button" type="button" onClick={() => navigate(-1)}>
-          Cancel
-        </button>
-        <button
-          className="button button--primary button--grow"
-          type="submit"
-          disabled={save.isPending}
-        >
-          {save.isPending ? 'Saving…' : idleLabel}
-        </button>
-      </div>
-    </form>
+        <Field label="What you're offering" error={errors.offer}>
+          <textarea
+            className="field__input field__input--area"
+            rows={2}
+            value={draft.offer}
+            onChange={(event) => update('offer', event.target.value)}
+            placeholder="Two lattes and a slice of kunafa on the house"
+            aria-invalid={errors.offer !== undefined}
+          />
+        </Field>
+        <Field label="What to post" error={errors.deliverable}>
+          <textarea
+            className="field__input field__input--area"
+            rows={2}
+            value={draft.deliverable}
+            onChange={(event) => update('deliverable', event.target.value)}
+            placeholder="One Reel of the pour, tagging the café"
+            aria-invalid={errors.deliverable !== undefined}
+          />
+        </Field>
+        <div className="collab-form__row">
+          <Field label="Spots" error={errors.spots}>
+            <span className="stepper">
+              <button
+                className="stepper__button"
+                type="button"
+                onClick={() => stepSpots(-1)}
+                aria-label="One spot fewer"
+              >
+                −
+              </button>
+              <input
+                className="stepper__value"
+                inputMode="numeric"
+                value={draft.spots}
+                onChange={(event) => update('spots', event.target.value)}
+                aria-invalid={errors.spots !== undefined}
+              />
+              <button
+                className="stepper__button"
+                type="button"
+                onClick={() => stepSpots(1)}
+                aria-label="One spot more"
+              >
+                +
+              </button>
+            </span>
+          </Field>
+          <Field label="Last day" error={errors.endsOn}>
+            <input
+              className="field__input"
+              type="date"
+              value={draft.endsOn}
+              min={bahrainToday()}
+              onChange={(event) => update('endsOn', event.target.value)}
+              aria-invalid={errors.endsOn !== undefined}
+            />
+          </Field>
+        </div>
+        {failure && (
+          <p className="form-error" role="alert">
+            {failure}
+          </p>
+        )}
+        <div className="action-bar action-bar--split">
+          <button className="button" type="button" onClick={() => navigate(-1)}>
+            Cancel
+          </button>
+          <button
+            className="button button--primary button--grow"
+            type="submit"
+            disabled={save.isPending}
+          >
+            {save.isPending ? 'Saving…' : idleLabel}
+          </button>
+        </div>
+      </form>
+    </>
   );
 }

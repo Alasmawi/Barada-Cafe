@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { addDays, bahrainToday, daysBetween, endsLabel, shortDate } from '../src/shared/dates';
+import {
+  addDays,
+  bahrainToday,
+  daysBetween,
+  endsLabel,
+  lastDayOfMonth,
+  shortDate,
+} from '../src/shared/dates';
 import { detectPlatform, isHttpsUrl } from '../src/shared/postLink';
 import { collabState } from '../src/shared/status';
 
@@ -14,6 +21,14 @@ describe('date arithmetic', () => {
   it('crosses month and year boundaries', () => {
     expect(addDays('2026-12-31', 1)).toBe('2027-01-01');
     expect(addDays('2026-03-01', -1)).toBe('2026-02-28');
+  });
+
+  it.each([
+    ['2026-11-15', '2026-11-30'],
+    ['2026-12-31', '2026-12-31'],
+    ['2028-02-01', '2028-02-29'],
+  ])('finds the last day of the month from %s', (date, last) => {
+    expect(lastDayOfMonth(date)).toBe(last);
   });
 
   it('counts whole days in either direction', () => {

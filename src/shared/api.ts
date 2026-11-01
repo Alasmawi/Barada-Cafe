@@ -1,3 +1,4 @@
+import type { CollabInput } from './schemas';
 import type { CollabState, RequestStatus } from './status';
 
 /** JSON shapes the API returns. The web client imports these, so the two can't drift. */
@@ -53,6 +54,14 @@ export type InboxRequest = CollabRequest & {
 
 /** A request as the creator sees it, with the collab it belongs to. */
 export type RequestWithCollab = CollabRequest & { collab: Collab };
+
+/** What the AI could fill. Every field passed validation, and nothing here is ever published. */
+export type CollabDraft = {
+  draft: Partial<CollabInput>;
+  unfilled: (keyof CollabInput)[];
+  /** Set when the AI gave us nothing usable, so the café knows the form is theirs. */
+  warning: string | null;
+};
 
 export type ErrorCode =
   | 'UNKNOWN_USER'

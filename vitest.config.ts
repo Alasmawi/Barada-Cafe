@@ -8,6 +8,8 @@ export default defineConfig(async () => {
     plugins: [
       cloudflareTest({
         wrangler: { configPath: './wrangler.jsonc' },
+        // Tests never call the real model: ai-draft.test.ts passes in fixture clients.
+        remoteBindings: false,
         miniflare: { bindings: { TEST_MIGRATIONS: migrations } },
       }),
     ],

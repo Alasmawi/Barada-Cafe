@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
   Collab,
+  CollabDraft,
   CollabRequest,
   InboxRequest,
   RequestWithCollab,
@@ -95,6 +96,10 @@ export function useSaveCollab(collabId?: string) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['collabs'] }),
   });
 }
+
+/** Not a query or mutation: it changes nothing, and the caller needs to be able to cancel it. */
+export const requestDraft = (sentence: string, signal: AbortSignal) =>
+  api.post<CollabDraft>('/ai/draft-collab', { sentence }, signal);
 
 function withAccepted(collab: CollabResponse): CollabResponse {
   const spotsTaken = collab.collab.spotsTaken + 1;

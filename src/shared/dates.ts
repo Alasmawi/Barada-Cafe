@@ -15,6 +15,11 @@ export function daysBetween(from: string, to: string): number {
   return Math.round((Date.parse(to) - Date.parse(from)) / DAY_MS);
 }
 
+export function lastDayOfMonth(date: string): string {
+  const [year = 0, month = 0] = date.split('-').map(Number);
+  return new Date(Date.UTC(year, month, 0)).toISOString().slice(0, 10);
+}
+
 export function endsLabel(endsOn: string, today: string): string {
   const days = daysBetween(today, endsOn);
   if (days < 0) return 'Ended';

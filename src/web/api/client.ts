@@ -16,9 +16,12 @@ export class ApiError extends Error {
   }
 }
 
-type RequestOptions = { method?: string; body?: unknown };
+type RequestOptions = { method?: string; body?: unknown; signal?: AbortSignal };
 
-async function request<T>(path: string, { method = 'GET', body }: RequestOptions = {}): Promise<T> {
+async function request<T>(
+  path: string,
+  { method = 'GET', body, signal }: RequestOptions = {},
+): Promise<T> {
   const preview = getPreviewMode();
   if (preview === 'slow') await new Promise((resolve) => setTimeout(resolve, SLOW_PREVIEW_MS));
   if (preview === 'error') {
@@ -33,6 +36,7 @@ async function request<T>(path: string, { method = 'GET', body }: RequestOptions
       ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
     },
     body: body === undefined ? undefined : JSON.stringify(body),
+    signal,
   });
 
   const payload: unknown = await response.json().catch(() => null);
@@ -50,7 +54,8 @@ async function request<T>(path: string, { method = 'GET', body }: RequestOptions
 
 export const api = {
   get: <T>(path: string) => request<T>(path),
-  post: <T>(path: string, body?: unknown) => request<T>(path, { method: 'POST', body }),
+  post: <T>(path: string, body?: unknown, signal?: AbortSignal) =>
+    request<T>(path, { method: 'POST', body, signal }),
   put: <T>(path: string, body?: unknown) => request<T>(path, { method: 'PUT', body }),
 
   /** A GET whose `key` holds a list, which the Empty preview blanks. */

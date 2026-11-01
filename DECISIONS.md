@@ -45,6 +45,17 @@ their listed defaults unless this file says otherwise.
 - **With Reduce Motion on,** the accepted moment is skipped and the pass stays flat. Every moment
   that plays once is remembered per device, and Reset demo clears that.
 
+## AI draft
+
+- **The AI binding is local-only by default.** Remote bindings need a Cloudflare login and a
+  `workers.dev` subdomain, which would break the first run on a clean clone. `npm run dev:ai` opts in.
+- **"This month" is resolved in code,** because models are unreliable at date arithmetic.
+- **Model: `@cf/meta/llama-3.3-70b-instruct-fp8-fast`,** which Cloudflare lists for JSON mode. Output
+  can arrive as an object or a string, so both are handled.
+- **The limits are in code:** 300-character sentence, 300 output tokens, 8s timeout, staff only.
+  There is no per-user rate limit, so a public demo can use up the free daily allowance, after which
+  the box falls back to the plain form.
+
 ## Voice
 
 Finjan is a collab board first. Screens, navigation, actions and counts use plain words: collabs,
