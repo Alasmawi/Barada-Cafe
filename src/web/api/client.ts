@@ -51,6 +51,7 @@ async function request<T>(path: string, { method = 'GET', body }: RequestOptions
 export const api = {
   get: <T>(path: string) => request<T>(path),
   post: <T>(path: string, body?: unknown) => request<T>(path, { method: 'POST', body }),
+  put: <T>(path: string, body?: unknown) => request<T>(path, { method: 'PUT', body }),
 
   /** A GET whose `key` holds a list, which the Empty preview blanks. */
   getList: async <T extends object>(path: string, key: keyof T): Promise<T> => {

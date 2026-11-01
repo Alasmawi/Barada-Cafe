@@ -3,7 +3,7 @@
 A collab board for cafés and creators, built for Barada Café. A café posts a collab, creators
 pitch from their phones, and the café accepts, sees the post, and marks it served.
 
-**Status:** the API and the creator journey are done. The café screens are next (Phase 4).
+**Status:** the API, the creator journey and the café journey are done. Animations and the AI draft are next (Phases 5 and 6).
 [PLAN.md](PLAN.md) has the full spec and phase list. [DECISIONS.md](DECISIONS.md) records what
 changed along the way.
 
@@ -21,7 +21,7 @@ npm run dev
 
 This applies migrations to a local D1 database and serves everything on http://localhost:5173.
 The demo data seeds itself the first time the welcome screen loads. Choose Noor to see a request
-in every status. The chip at the top right opens the demo menu, with Reset demo and previews of the
+in every status, or Huda to run Barada Café. The chip at the top right opens the demo menu, with Reset demo and previews of the
 slow, error and empty states.
 
 ## Check it

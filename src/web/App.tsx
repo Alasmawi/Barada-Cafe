@@ -5,7 +5,9 @@ import { ApiError } from './api/client';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { CreatorTabs, RequireRole } from './components/Layout';
 import { OfflineBanner } from './components/OfflineBanner';
-import { CafeHome } from './routes/CafeHome';
+import { CafeCollabs } from './routes/CafeCollabs';
+import { CollabEditor } from './routes/CollabEditor';
+import { CollabInbox } from './routes/CollabInbox';
 import { CollabDetail } from './routes/CollabDetail';
 import { Feed } from './routes/Feed';
 import { MyCollabs } from './routes/MyCollabs';
@@ -56,7 +58,10 @@ function AppRoutes() {
             <Route path="/me/passes/:id" element={<VisitPass />} />
           </Route>
           <Route element={<RequireRole role="cafe_staff" />}>
-            <Route path="/cafe/*" element={<CafeHome />} />
+            <Route path="/cafe" element={<CafeCollabs />} />
+            <Route path="/cafe/collabs/new" element={<CollabEditor />} />
+            <Route path="/cafe/collabs/:id" element={<CollabInbox />} />
+            <Route path="/cafe/collabs/:id/edit" element={<CollabEditor />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -9,7 +9,7 @@ export function Feed() {
 
   return (
     <>
-      <h1 className="page__title">Pick your cup</h1>
+      <h1 className="page__title">Open collabs</h1>
       <ScreenState
         query={feed}
         errorTitle="The feed spilled."
@@ -18,7 +18,7 @@ export function Feed() {
         empty={
           <MessageState
             art="empty"
-            title="Nothing brewing yet"
+            title="No open collabs yet"
             body="Cafés post new collabs every week."
             action={
               <button className="button" type="button" onClick={() => feed.refetch()}>
@@ -40,7 +40,7 @@ export function Feed() {
               </ul>
               {full.length > 0 && (
                 <section>
-                  <h2 className="section-title">Fully poured</h2>
+                  <h2 className="section-title">Full collabs</h2>
                   <ul className="shelf-list">
                     {full.map((collab) => (
                       <CollabShelf key={collab.id} collab={collab} />

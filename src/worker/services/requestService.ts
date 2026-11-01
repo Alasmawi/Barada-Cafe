@@ -12,11 +12,11 @@ const invalidTransition = () =>
   new DomainError('INVALID_TRANSITION', 409, "This request has moved on, so that can't be done now.");
 const collabEnded = () => new DomainError('COLLAB_ENDED', 409, 'This collab has ended.');
 const collabFull = () =>
-  new DomainError('COLLAB_FULL', 409, 'All cups are taken — this collab has no spots left.');
+  new DomainError('COLLAB_FULL', 409, 'This collab has no spots left.');
 
 async function loadRequest(db: D1Database, id: string): Promise<CollabRequest> {
   const request = await requestsRepo.findById(db, id);
-  if (!request) throw notFound('This request has been cleared away.');
+  if (!request) throw notFound('This request has been removed.');
   return request;
 }
 

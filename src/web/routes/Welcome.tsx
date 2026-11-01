@@ -42,8 +42,8 @@ function EmptyMajlis() {
   return (
     <MessageState
       art="empty"
-      title="The majlis is empty."
-      body="Reset the demo to set the table."
+      title="No one's here yet."
+      body="Reset the demo to bring back the sample cafés and creators."
       action={
         <button
           className="button button--primary"
@@ -70,8 +70,8 @@ export function Welcome() {
       <img className="welcome__scene" src={scene} alt="" />
       <h1 className="welcome__title">Every cup is a spot.</h1>
       <p className="welcome__intro">
-        Cafés pour a set number of cups. Creators ask for one, visit, and post. Choose who you are
-        to try it.
+        The collab board for cafés and creators. Cafés post collabs, creators ask to join, visit
+        and share a post. Choose who you are to try it.
       </p>
 
       <ScreenState

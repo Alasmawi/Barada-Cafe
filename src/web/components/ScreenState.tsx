@@ -7,7 +7,7 @@ type Props<T> = {
   query: UseQueryResult<T>;
   skeleton: ReactNode;
   errorTitle: string;
-  /** Shown instead of the error when the server says the thing doesn't exist. */
+  /** Shown instead of the error when the thing doesn't exist, or isn't this user's to see. */
   notFound?: ReactNode;
   isEmpty?: (data: T) => boolean;
   empty?: ReactNode;
@@ -26,7 +26,7 @@ export function ScreenState<T>({
 }: Props<T>) {
   if (query.isPending) {
     return (
-      <div role="status" aria-label="Pouring…">
+      <div role="status" aria-label="Loading">
         {skeleton}
       </div>
     );
@@ -34,7 +34,8 @@ export function ScreenState<T>({
 
   // A failed refresh keeps showing the data we have: only a screen with nothing to show errors.
   if (query.data === undefined) {
-    if (notFound && query.error instanceof ApiError && query.error.status === 404) {
+    const { error } = query;
+    if (notFound && error instanceof ApiError && [403, 404].includes(error.status)) {
       return notFound;
     }
     return (
@@ -43,7 +44,7 @@ export function ScreenState<T>({
         title={errorTitle}
         action={
           <button className="button" type="button" onClick={() => query.refetch()}>
-            {query.isFetching ? 'Pouring…' : 'Try again'}
+            {query.isFetching ? 'Trying…' : 'Try again'}
           </button>
         }
       />

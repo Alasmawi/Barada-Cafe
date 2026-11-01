@@ -55,7 +55,7 @@ function ActionBar({ collab, request }: { collab: Collab; request: CollabRequest
       {!request && collab.state !== 'open' && (
         <div className="action-bar">
           <p className="action-bar__note">
-            {collab.state === 'full' ? 'All cups are taken.' : 'This collab has ended.'}
+            {collab.state === 'full' ? 'All spots are taken.' : 'This collab has ended.'}
           </p>
         </div>
       )}
@@ -85,12 +85,12 @@ export function CollabDetail() {
       <main className="page page--bar">
         <ScreenState
           query={collab}
-          errorTitle="Couldn't pour this one."
+          errorTitle="Couldn't load this collab."
           skeleton={<DetailSkeleton />}
           notFound={
             <MessageState
               art="empty"
-              title="This collab has been cleared away."
+              title="This collab has been removed."
               action={
                 <Link className="button" to="/">
                   Back to the feed

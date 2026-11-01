@@ -18,11 +18,11 @@ function assertEndDateNotPast(endsOn: string, today: string): void {
 
 export async function loadCollab(db: D1Database, id: string, today: string): Promise<Collab> {
   const collab = await collabsRepo.findById(db, id, today);
-  if (!collab) throw notFound('This collab has been cleared away.');
+  if (!collab) throw notFound('This collab has been removed.');
   return collab;
 }
 
-/** The feed: open collabs first, then "Fully poured". Ended collabs are left out. */
+/** The feed: open collabs first, then full ones. Ended collabs are left out. */
 export async function listFeed(
   db: D1Database,
   state: Extract<CollabState, 'open' | 'full'> | undefined,
@@ -84,11 +84,11 @@ export async function update(
   const saved = await collabsRepo.updateIfSpotsCoverTaken(db, id, input);
   if (!saved) {
     const { spotsTaken } = await loadCollab(db, id, today);
-    const holders = spotsTaken === 1 ? '1 creator already has a cup' : `${spotsTaken} creators already have cups`;
+    const holders = spotsTaken === 1 ? '1 creator is' : `${spotsTaken} creators are`;
     throw new DomainError(
       'SPOTS_BELOW_TAKEN',
       409,
-      `${holders} — spots can't go below ${spotsTaken}.`,
+      `${holders} already accepted — spots can't go below ${spotsTaken}.`,
     );
   }
   return loadCollab(db, id, today);

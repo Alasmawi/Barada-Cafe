@@ -101,7 +101,7 @@ export function VisitPass() {
           notFound={
             <MessageState
               art="empty"
-              title="This pass has been cleared away."
+              title="This pass has been removed."
               action={
                 <Link className="button" to="/me">
                   Back to my collabs
@@ -113,8 +113,8 @@ export function VisitPass() {
           empty={
             <MessageState
               art="empty"
-              title="This pass is still brewing."
-              body="We'll pour it when the café says yes."
+              title="This pass isn't ready yet."
+              body="It appears here when the café accepts you."
               action={
                 <Link className="button" to="/me">
                   Back to my collabs

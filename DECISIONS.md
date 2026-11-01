@@ -35,6 +35,13 @@ their listed defaults unless this file says otherwise.
 - **Signature moments wait for Phase 5:** the pass tilt, the accepted and hazz animations, and the
   pitch folding into a chip. The screens use the static art until then.
 
+## Voice
+
+Finjan is a collab board first. Screens, navigation, actions and counts use plain words: collabs,
+spots, pitches. This narrows PLAN §7.4: "Your menu", "Fully poured" and "Pouring…" read like a
+café's menu, not a collab board. Coffee stays in the art, the tagline and the creator's status
+labels from `brand/README.md`. Café staff see plain names in the inbox (New, Accepted, Declined).
+
 ## Testing the race
 
 The local runtime gives the first request in a parallel batch a one-step head start: its UPDATE

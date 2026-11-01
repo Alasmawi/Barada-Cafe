@@ -88,7 +88,7 @@ describe('editing a collab', () => {
     expect(response.status).toBe(409);
     const { error } = await response.json<ErrorBody>();
     expect(error.code).toBe('SPOTS_BELOW_TAKEN');
-    expect(error.message).toBe("2 creators already have cups — spots can't go below 2.");
+    expect(error.message).toBe("2 creators are already accepted — spots can't go below 2.");
     expect((await getCollab(collabId, staff[0]!)).spots).toBe(3);
   });
 

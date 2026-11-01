@@ -37,13 +37,13 @@ export function MyCollabs() {
       <h1 className="page__title">My collabs</h1>
       <ScreenState
         query={requests}
-        errorTitle="Couldn't find your cups."
+        errorTitle="Couldn't load your collabs."
         skeleton={<Skeleton className="skeleton--row" count={4} />}
         isEmpty={(data) => data.requests.length === 0}
         empty={
           <MessageState
             art="empty"
-            title="You haven't asked for a cup yet."
+            title="You haven't joined a collab yet."
             action={
               <Link className="button button--primary" to="/">
                 Browse collabs

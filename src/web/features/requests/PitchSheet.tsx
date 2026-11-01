@@ -11,7 +11,7 @@ const STARTERS = ['I film slow pours for', 'My followers ask me about', 'This fi
 
 function sendErrorMessage(error: unknown): string {
   if (error instanceof ApiError && error.code === 'COLLAB_FULL') {
-    return 'All cups are taken — this one filled up while you were writing.';
+    return 'All spots are taken — this one filled up while you were writing.';
   }
   if (error instanceof ApiError && error.code === 'COLLAB_ENDED') {
     return 'This collab ended while you were writing.';
@@ -72,7 +72,7 @@ function PitchForm({ collabId, onSent }: { collabId: string; onSent: () => void 
         type="submit"
         disabled={!valid || ask.isPending}
       >
-        {ask.isPending ? 'Pouring…' : 'Send my pitch'}
+        {ask.isPending ? 'Sending…' : 'Send my pitch'}
       </button>
     </form>
   );
