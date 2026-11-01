@@ -3,9 +3,36 @@
 A collab board for cafés and creators, built for Barada Café. A café posts a collab, creators
 pitch from their phones, and the café accepts, sees the post, and marks it served.
 
-**Status:** the API, both journeys and the signature moments are done. All that's left is the final polish and iPhone pass (Phase 7).
-[PLAN.md](PLAN.md) has the full spec and phase list. [DECISIONS.md](DECISIONS.md) records what
-changed along the way.
+**Live link:** not deployed yet (see [Deploy](#deploy)).
+
+[PLAN.md](PLAN.md) has the full spec. [DECISIONS.md](DECISIONS.md) records what changed along the
+way and the questions still open for Barada.
+
+## Two-minute demo
+
+One phone can play both sides: the name chip at the top right switches user.
+
+**As a creator (Noor)**
+
+1. Browse the feed. A taller stack of cups means more spots. Full collabs sit at the bottom.
+2. Open *Your first month of our new cold brew*, tap **Ask to join** and send a one-line pitch.
+3. In **My collabs**, open the saffron collab under *Your cup's ready*. The pass plays once, then
+   drag across it to tilt it. The code on it is what staff check at the counter.
+4. Tap **I've posted** and paste any Instagram or TikTok link. The field recognises it.
+
+**As a café (Huda)**
+
+1. Switch to Huda. Open *Saffron latte first pour*.
+2. Tap **Accept** on a pitch. A cup moves from the stack to the tray.
+3. In **Posted**, tap **Mark served** on Ali's post.
+4. Tap **Post a collab**, type one sentence and tap **Fill the form for me**, then edit and publish.
+
+**The rule that matters:** open *Karak tasting flight* as Huda on one phone and Yusuf on another.
+It has one spot left and three creators waiting. Tap Accept on different pitches at the same moment:
+one gets the spot, the other sees that a teammate took it.
+
+The demo menu also has **Slow**, **Error** and **Empty** previews, which show the other states of
+every screen, and **Reset demo**, which puts everything back for everyone.
 
 ## Run it
 
@@ -23,6 +50,13 @@ This applies migrations to a local D1 database and serves everything on http://l
 The demo data seeds itself the first time the welcome screen loads. Choose Noor to see a request
 in every status, or Huda to run Barada Café. The chip at the top right opens the demo menu, with Reset demo and previews of the
 slow, error and empty states.
+
+To open it on a phone on the same Wi-Fi, run this and use the Network address it prints. It makes the
+dev server reachable by anyone on that network, so stop it when you're done.
+
+```bash
+npm run dev:phone
+```
 
 No Cloudflare account is needed. Without one, the AI sentence box says it can't help and the form
 works as normal. To use the real model, register a `workers.dev` subdomain, log in with

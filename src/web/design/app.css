@@ -894,7 +894,7 @@ a {
 }
 
 .starter {
-  min-height: 36px;
+  min-height: var(--tap-min);
   padding-inline: var(--space-3);
   font: inherit;
   font-size: var(--text-xs);

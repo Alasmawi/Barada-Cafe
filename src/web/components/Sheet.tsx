@@ -21,6 +21,26 @@ export function Sheet({ open, onClose, title, children }: Props) {
     dialog.current?.querySelector('input')?.focus();
   }, [open]);
 
+  // iOS keeps fixed elements behind the keyboard, which would hide the sheet's send button.
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    const element = dialog.current;
+    if (!open || !viewport || !element) return;
+
+    const liftAboveKeyboard = () => {
+      const covered = window.innerHeight - viewport.height - viewport.offsetTop;
+      element.style.marginBlockEnd = `${Math.max(covered, 0)}px`;
+    };
+    liftAboveKeyboard();
+    viewport.addEventListener('resize', liftAboveKeyboard);
+    viewport.addEventListener('scroll', liftAboveKeyboard);
+    return () => {
+      viewport.removeEventListener('resize', liftAboveKeyboard);
+      viewport.removeEventListener('scroll', liftAboveKeyboard);
+      element.style.marginBlockEnd = '';
+    };
+  }, [open]);
+
   const closeOnBackdrop = (event: MouseEvent) => {
     if (event.target === dialog.current) onClose();
   };

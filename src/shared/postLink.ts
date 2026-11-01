@@ -11,8 +11,13 @@ export const PLATFORM_LABELS: Record<PostPlatform, string> = {
   other: 'Your post',
 };
 
+/** Not URL.canParse, which is missing before iOS 17. */
 function parseUrl(value: string): URL | null {
-  return URL.canParse(value) ? new URL(value) : null;
+  try {
+    return new URL(value);
+  } catch {
+    return null;
+  }
 }
 
 export function isHttpsUrl(value: string): boolean {

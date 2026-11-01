@@ -85,8 +85,25 @@ So any race for a last spot passed even with a broken guard. The tests now fire 
 Production doesn't depend on this timing, because the guard is a single statement.
 The risk it closes is a test that looks like proof and isn't.
 
+## Smaller changes from the plan
+
+- **No toasts.** Each result shows where the person is already looking, so they weren't needed.
+- **The "Served posts" list is the inbox's Served tab,** which holds each post's link.
+- **The unit tests share `test/shared.test.ts`** instead of having a file each.
+- **Sheets lift above the keyboard** with `visualViewport`, because iOS leaves fixed elements behind
+  it. This could only be checked on a real iPhone.
+
+## Questions for Barada
+
+From PLAN §2.3. The defaults in brackets are what's built.
+
+1. Should a café be able to release a no-show's spot? (No)
+2. Is one request per creator per collab right, or can a declined creator try again? (One)
+3. Should creators see collabs that are already full? (Yes, under Full collabs)
+
 ## Next steps
 
 - Per-device demo spaces (⚑4) if global reset gets in the way of several reviewers at once.
+- A per-user limit on the AI draft, if the free daily allowance runs out during reviews.
 - `POST /demo/reset` is open to anyone by design, so a page with no users can recover. That's fine
   for a demo and would have to go before real data exists.

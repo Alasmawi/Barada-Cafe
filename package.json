@@ -17,7 +17,8 @@
     "test": "vitest run",
     "check": "npm run typecheck && npm run lint && npm run test",
     "test:ui": "node test-ui/smoke.mjs",
-    "dev:ai": "AI_REMOTE=1 npm run dev"
+    "dev:ai": "AI_REMOTE=1 npm run dev",
+    "dev:phone": "npm run dev -- --host"
   },
   "dependencies": {
     "@tanstack/react-query": "5.105.0",
