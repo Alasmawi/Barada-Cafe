@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import type { RequestWithCollab } from '../../shared/api';
+import { bahrainToday } from '../../shared/dates';
+import { nextStep } from '../../shared/requestSteps';
 import { STATUS_LABELS, type RequestStatus } from '../../shared/status';
 import { useMyRequests } from '../api/queries';
 import { CupArt } from '../components/CupArt';
@@ -23,6 +25,9 @@ function RequestRow({ request }: { request: RequestWithCollab }) {
         <span className="request-row__text">
           <span className="request-row__cafe">{request.collab.cafeName}</span>
           <span className="request-row__offer">{request.collab.offer}</span>
+          <span className="request-row__next">
+            {nextStep(request.status, request.collab.endsOn, bahrainToday())}
+          </span>
         </span>
       </Link>
     </li>

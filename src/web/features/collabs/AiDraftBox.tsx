@@ -61,7 +61,7 @@ export function AiDraftBox({ onDraft }: Props) {
   return (
     <section className="ai-box">
       <label className="field">
-        <span className="field__label">Describe your collab in one sentence</span>
+        <span className="field__label">Short on time? Describe it in one sentence</span>
         <textarea
           className="field__input field__input--area"
           rows={2}

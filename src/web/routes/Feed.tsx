@@ -1,11 +1,13 @@
-import { useFeed } from '../api/queries';
+import { useFeed, useMyRequests } from '../api/queries';
 import { MessageState } from '../components/MessageState';
 import { ScreenState } from '../components/ScreenState';
-import { Skeleton } from '../components/Skeleton';
-import { CollabShelf } from '../features/collabs/CollabShelf';
+import { CollabShelf, ShelfSkeleton } from '../features/collabs/CollabShelf';
 
 export function Feed() {
   const feed = useFeed();
+  const myRequests = useMyRequests();
+  const statusOf = (collabId: string) =>
+    myRequests.data?.requests.find((request) => request.collabId === collabId)?.status;
 
   return (
     <>
@@ -13,7 +15,7 @@ export function Feed() {
       <ScreenState
         query={feed}
         errorTitle="The feed spilled."
-        skeleton={<Skeleton className="skeleton--shelf" count={3} />}
+        skeleton={<ShelfSkeleton />}
         isEmpty={({ collabs }) => collabs.length === 0}
         empty={
           <MessageState
@@ -22,7 +24,7 @@ export function Feed() {
             body="Cafés post new collabs every week."
             action={
               <button className="button" type="button" onClick={() => feed.refetch()}>
-                Check back soon
+                Refresh
               </button>
             }
           />
@@ -35,7 +37,7 @@ export function Feed() {
             <>
               <ul className="shelf-list">
                 {open.map((collab) => (
-                  <CollabShelf key={collab.id} collab={collab} />
+                  <CollabShelf key={collab.id} collab={collab} myStatus={statusOf(collab.id)} />
                 ))}
               </ul>
               {full.length > 0 && (
@@ -43,7 +45,7 @@ export function Feed() {
                   <h2 className="section-title">Full collabs</h2>
                   <ul className="shelf-list">
                     {full.map((collab) => (
-                      <CollabShelf key={collab.id} collab={collab} />
+                      <CollabShelf key={collab.id} collab={collab} myStatus={statusOf(collab.id)} />
                     ))}
                   </ul>
                 </section>

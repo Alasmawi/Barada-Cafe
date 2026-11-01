@@ -42,6 +42,7 @@ export function ScreenState<T>({
       <MessageState
         art="error"
         title={errorTitle}
+        body="Check your connection, then try again."
         action={
           <button className="button" type="button" onClick={() => query.refetch()}>
             {query.isFetching ? 'Trying…' : 'Try again'}

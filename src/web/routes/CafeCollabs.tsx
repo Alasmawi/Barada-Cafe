@@ -3,8 +3,7 @@ import { useCafeCollabs } from '../api/queries';
 import { AppHeader } from '../components/Layout';
 import { MessageState } from '../components/MessageState';
 import { ScreenState } from '../components/ScreenState';
-import { Skeleton } from '../components/Skeleton';
-import { CollabShelf } from '../features/collabs/CollabShelf';
+import { CollabShelf, ShelfSkeleton } from '../features/collabs/CollabShelf';
 
 export function CafeCollabs() {
   const collabs = useCafeCollabs();
@@ -18,7 +17,7 @@ export function CafeCollabs() {
         <ScreenState
           query={collabs}
           errorTitle="Couldn't open your collabs."
-          skeleton={<Skeleton className="skeleton--shelf" count={3} />}
+          skeleton={<ShelfSkeleton />}
           isEmpty={(data) => data.collabs.length === 0}
           empty={<MessageState art="empty" title="No collabs posted yet." />}
         >

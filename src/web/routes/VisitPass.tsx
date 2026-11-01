@@ -1,16 +1,17 @@
 import { useCallback, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import type { RequestWithCollab } from '../../shared/api';
-import { shortDate } from '../../shared/dates';
+import { bahrainToday, shortDate } from '../../shared/dates';
 import { detectPlatform, PLATFORM_LABELS } from '../../shared/postLink';
+import { nextStep } from '../../shared/requestSteps';
 import { useRequest } from '../api/queries';
 import { CupArt } from '../components/CupArt';
 import { BackHeader } from '../components/Layout';
 import { MessageState } from '../components/MessageState';
 import { ScreenState } from '../components/ScreenState';
 import { Skeleton } from '../components/Skeleton';
-import { StatusChip } from '../components/StatusChip';
 import { AcceptedMoment } from '../features/moments/AcceptedMoment';
+import { Journey } from '../features/pass/Journey';
 import { hasSeen, markSeen, prefersReducedMotion } from '../features/moments/motion';
 import { SubmitSheet } from '../features/pass/SubmitSheet';
 import { TiltCard } from '../features/pass/TiltCard';
@@ -22,7 +23,9 @@ function PassActions({ request }: { request: RequestWithCollab }) {
   if (request.status === 'done') {
     return (
       <div className="action-bar">
-        <p className="action-bar__note">Served. Thank you for visiting.</p>
+        <Link className="button button--primary button--wide" to="/">
+          Find your next collab
+        </Link>
       </div>
     );
   }
@@ -48,6 +51,8 @@ function PassActions({ request }: { request: RequestWithCollab }) {
 
 function PassCard({ request }: { request: RequestWithCollab }) {
   const { collab } = request;
+  // Once the visit is behind them the code is only a reference, so it stops asking for attention.
+  const visiting = request.status === 'accepted';
   return (
     <TiltCard>
       <div className="pass__top">
@@ -62,10 +67,12 @@ function PassCard({ request }: { request: RequestWithCollab }) {
           <dt>What to post</dt>
           <dd>{collab.deliverable}</dd>
         </div>
-        <div className="facts__row">
-          <dt>Visit by</dt>
-          <dd>{shortDate(collab.endsOn)}</dd>
-        </div>
+        {visiting && (
+          <div className="facts__row">
+            <dt>Visit by</dt>
+            <dd>{shortDate(collab.endsOn)}</dd>
+          </div>
+        )}
         {request.postUrl && (
           <div className="facts__row">
             <dt>Your link</dt>
@@ -78,8 +85,8 @@ function PassCard({ request }: { request: RequestWithCollab }) {
         )}
       </dl>
       <div className="pass__stub">
-        <p className="pass__hint">Show this at the counter</p>
-        <p className="pass__code">{request.passCode}</p>
+        <p className="pass__hint">{visiting ? 'Show this at the counter' : 'Pass code'}</p>
+        <p className={`pass__code ${visiting ? '' : 'pass__code--used'}`}>{request.passCode}</p>
       </div>
     </TiltCard>
   );
@@ -98,9 +105,10 @@ function PassView({ request }: { request: RequestWithCollab }) {
 
   return (
     <div className="pass-view">
-      <div className="pass__status">
-        <StatusChip status={request.status} />
-      </div>
+      <Journey status={request.status} />
+      <p className="pass__next">
+        {nextStep(request.status, request.collab.endsOn, bahrainToday())}
+      </p>
       <PassCard request={request} />
       <PassActions request={request} />
     </div>

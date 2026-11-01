@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Link, NavLink, Navigate, Outlet } from 'react-router-dom';
 import mark from '../../../brand/svg/finjan-mark-static.svg';
 import type { Role } from '../../shared/api';
+import { useMyRequests } from '../api/queries';
 import { useSession } from '../session';
 import { DemoMenu } from './DemoMenu';
 
@@ -42,6 +43,10 @@ export function BackHeader({ to, label }: { to: string; label: string }) {
 
 /** The two top-level creator screens share the header and the tab bar. */
 export function CreatorTabs() {
+  // There are no notifications, so this is how a creator learns they got in.
+  const requests = useMyRequests();
+  const ready = requests.data?.requests.filter(({ status }) => status === 'accepted').length ?? 0;
+
   return (
     <>
       <AppHeader />
@@ -54,6 +59,11 @@ export function CreatorTabs() {
         </NavLink>
         <NavLink className="tab-bar__link" to="/me" end>
           My collabs
+          {ready > 0 && (
+            <span className="tab-bar__badge" aria-label={`${ready} ready to visit`}>
+              {ready}
+            </span>
+          )}
         </NavLink>
       </nav>
     </>

@@ -108,7 +108,7 @@ export function DemoMenu() {
   return (
     <>
       <button className="role-chip" type="button" onClick={() => setOpen(true)}>
-        {user?.name ?? 'Demo'}
+        {user?.name ?? 'Demo'} <span aria-hidden>▾</span>
       </button>
       <Sheet open={open} onClose={() => setOpen(false)} title="Demo menu">
         {user && (

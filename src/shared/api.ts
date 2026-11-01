@@ -10,6 +10,7 @@ export type User = {
   name: string;
   role: Role;
   cafeId: string | null;
+  cafeName: string | null;
   handle: string | null;
   avatarSeed: string;
 };

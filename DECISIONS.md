@@ -85,6 +85,19 @@ So any race for a last spot passed even with a broken guard. The tests now fire 
 Production doesn't depend on this timing, because the guard is a single statement.
 The risk it closes is a test that looks like proof and isn't.
 
+## UX review
+
+A pass over every screen, judged as a first-time user, changed these:
+
+- **The feed shows your status on each collab,** so nobody pitches for one twice by accident.
+- **The My collabs tab shows a badge when a pass is ready.** With no notifications in v1, this is how
+  a creator learns they got in.
+- **Every request says what happens next,** and the pass shows a four-step journey.
+- **A pass stops asking to be shown once it's used.** The code steps back after the post is in.
+- **No dead ends:** declined, full and ended screens all lead back to the feed.
+- **The inbox hides empty tabs and opens on the first one with work in it.**
+- **Welcome picks a side first,** so every person fits on one screen, and staff show their café.
+
 ## Smaller changes from the plan
 
 - **No toasts.** Each result shows where the person is already looking, so they weren't needed.

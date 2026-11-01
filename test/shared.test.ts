@@ -8,6 +8,7 @@ import {
   shortDate,
 } from '../src/shared/dates';
 import { detectPlatform, isHttpsUrl } from '../src/shared/postLink';
+import { nextStep } from '../src/shared/requestSteps';
 import { collabState } from '../src/shared/status';
 
 describe('bahrainToday', () => {
@@ -49,6 +50,20 @@ describe('date labels', () => {
 
   it('formats a short date', () => {
     expect(shortDate('2026-11-05')).toBe('Thu 5 Nov');
+  });
+});
+
+describe('nextStep', () => {
+  it('gives an accepted creator their deadline', () => {
+    expect(nextStep('accepted', '2026-11-05', '2026-11-01')).toBe(
+      'Visit by Thu 5 Nov, then add your post link.',
+    );
+  });
+
+  it('drops the deadline once it has passed', () => {
+    expect(nextStep('accepted', '2026-10-31', '2026-11-01')).toBe(
+      'Add your post link when it’s live.',
+    );
   });
 });
 

@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { CupStack } from '../components/CupStack';
 import type { Collab, CollabRequest } from '../../shared/api';
 import { bahrainToday, endsLabel, shortDate } from '../../shared/dates';
+import { nextStep } from '../../shared/requestSteps';
 import { useCollab } from '../api/queries';
 import { BackHeader } from '../components/Layout';
 import { MessageState } from '../components/MessageState';
@@ -12,25 +13,29 @@ import { StatusChip } from '../components/StatusChip';
 import { spotsLabel } from '../features/collabs/CollabShelf';
 import { PitchSheet } from '../features/requests/PitchSheet';
 
-const WAITING_NOTES: Partial<Record<CollabRequest['status'], string>> = {
-  pending: 'The café will read your pitch soon.',
-  declined: 'The café went another way on this one.',
-};
+function BrowseLink() {
+  return (
+    <Link className="button" to="/">
+      Browse collabs
+    </Link>
+  );
+}
 
-function RequestBar({ request, justSent }: { request: CollabRequest; justSent: boolean }) {
+type RequestBarProps = { request: CollabRequest; endsOn: string; justSent: boolean };
+
+function RequestBar({ request, endsOn, justSent }: RequestBarProps) {
   return (
     <div className={`action-bar action-bar--split ${justSent ? 'action-bar--arrived' : ''}`}>
       <div className="action-bar__status">
         <StatusChip status={request.status} />
-        {WAITING_NOTES[request.status] && (
-          <p className="action-bar__note">{WAITING_NOTES[request.status]}</p>
-        )}
+        <p className="action-bar__note">{nextStep(request.status, endsOn, bahrainToday())}</p>
       </div>
       {request.passCode && (
         <Link className="button button--primary" to={`/me/passes/${request.id}`}>
           See my pass
         </Link>
       )}
+      {request.status === 'declined' && <BrowseLink />}
       {justSent && (
         <Link className="button" to="/me">
           My collabs
@@ -46,7 +51,7 @@ function ActionBar({ collab, request }: { collab: Collab; request: CollabRequest
 
   return (
     <>
-      {request && <RequestBar request={request} justSent={justSent} />}
+      {request && <RequestBar request={request} endsOn={collab.endsOn} justSent={justSent} />}
       {!request && collab.state === 'open' && (
         <div className="action-bar">
           <button
@@ -59,10 +64,11 @@ function ActionBar({ collab, request }: { collab: Collab; request: CollabRequest
         </div>
       )}
       {!request && collab.state !== 'open' && (
-        <div className="action-bar">
+        <div className="action-bar action-bar--split">
           <p className="action-bar__note">
             {collab.state === 'full' ? 'All spots are taken.' : 'This collab has ended.'}
           </p>
+          <BrowseLink />
         </div>
       )}
       {/* Outside the branches above: if the collab fills mid-pitch, the sheet must stay to say so. */}
@@ -116,6 +122,7 @@ export function CollabDetail() {
                 {detail.cafeName} · {detail.cafeArea}
               </p>
               <h1 className="detail__offer">{detail.offer}</h1>
+              <p className="detail__title">{detail.title}</p>
               <div className="detail__tray">
                 <CupStack
                   spots={detail.spots}
@@ -126,10 +133,6 @@ export function CollabDetail() {
                 <p className="detail__spots">{spotsLabel(detail)}</p>
               </div>
               <dl className="facts">
-                <div className="facts__row">
-                  <dt>The collab</dt>
-                  <dd>{detail.title}</dd>
-                </div>
                 <div className="facts__row">
                   <dt>What to post</dt>
                   <dd>{detail.deliverable}</dd>

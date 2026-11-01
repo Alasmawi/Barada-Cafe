@@ -1,7 +1,8 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import lockup from '../../../brand/svg/finjan-lockup.svg';
 import scene from '../../../brand/svg/scene-serve.svg';
-import type { User } from '../../shared/api';
+import type { Role, User } from '../../shared/api';
 import { useResetDemo, useUsers } from '../api/queries';
 import { CupArt } from '../components/CupArt';
 import { DemoMenu } from '../components/DemoMenu';
@@ -10,9 +11,15 @@ import { ScreenState } from '../components/ScreenState';
 import { Skeleton } from '../components/Skeleton';
 import { useSession } from '../session';
 
-function UserGroup({ title, users }: { title: string; users: User[] }) {
+const SIDES: { role: Role; label: string }[] = [
+  { role: 'creator', label: 'I make content' },
+  { role: 'cafe_staff', label: 'I run a café' },
+];
+
+function ChooseUser({ users }: { users: User[] }) {
   const { signIn } = useSession();
   const navigate = useNavigate();
+  const [side, setSide] = useState<Role>('creator');
 
   const choose = (user: User) => {
     signIn(user);
@@ -20,18 +27,33 @@ function UserGroup({ title, users }: { title: string; users: User[] }) {
   };
 
   return (
-    <section className="user-group">
-      <h2 className="user-group__title">{title}</h2>
-      <ul className="user-group__list">
-        {users.map((user) => (
-          <li key={user.id}>
-            <button className="user-row" type="button" onClick={() => choose(user)}>
-              <CupArt seed={user.avatarSeed} size={40} />
-              <span className="user-row__name">{user.name}</span>
-              {user.handle && <span className="user-row__detail">{user.handle}</span>}
-            </button>
-          </li>
+    <section>
+      <div className="segmented segmented--two" role="radiogroup" aria-label="Choose a side">
+        {SIDES.map(({ role, label }) => (
+          <button
+            key={role}
+            className="segmented__option"
+            type="button"
+            role="radio"
+            aria-checked={side === role}
+            onClick={() => setSide(role)}
+          >
+            {label}
+          </button>
         ))}
+      </div>
+      <ul className="user-group__list">
+        {users
+          .filter((user) => user.role === side)
+          .map((user) => (
+            <li key={user.id}>
+              <button className="user-row" type="button" onClick={() => choose(user)}>
+                <CupArt seed={user.avatarSeed} size={40} />
+                <span className="user-row__name">{user.name}</span>
+                <span className="user-row__detail">{user.handle ?? user.cafeName}</span>
+              </button>
+            </li>
+          ))}
       </ul>
     </section>
   );
@@ -71,7 +93,7 @@ export function Welcome() {
       <h1 className="welcome__title">Every cup is a spot.</h1>
       <p className="welcome__intro">
         The collab board for cafés and creators. Cafés post collabs, creators ask to join, visit
-        and share a post. Choose who you are to try it.
+        and share a post.
       </p>
 
       <ScreenState
@@ -81,12 +103,7 @@ export function Welcome() {
         isEmpty={({ users: list }) => list.length === 0}
         empty={<EmptyMajlis />}
       >
-        {({ users: list }) => (
-          <>
-            <UserGroup title="I make content" users={list.filter((u) => u.role === 'creator')} />
-            <UserGroup title="I run a café" users={list.filter((u) => u.role === 'cafe_staff')} />
-          </>
-        )}
+        {({ users: list }) => <ChooseUser users={list} />}
       </ScreenState>
     </main>
   );

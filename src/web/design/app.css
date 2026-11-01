@@ -45,7 +45,7 @@ a {
   font-weight: 600;
   line-height: 1.2;
   color: var(--fj-gold-hi);
-  margin-block: var(--space-2) var(--space-3);
+  margin-block: var(--space-2) 0;
 }
 
 .section-title {
@@ -135,12 +135,28 @@ a {
 .tab-bar__link {
   flex: 1;
   display: grid;
+  grid-auto-flow: column;
+  justify-content: center;
   place-items: center;
   min-height: 56px;
   color: var(--fj-mist);
   text-decoration: none;
   font-size: var(--text-sm);
   font-weight: 500;
+}
+
+.tab-bar__badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  margin-inline-start: var(--space-1);
+  padding-inline: 5px;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--fj-ink);
+  background: var(--fj-gold);
+  border-radius: var(--radius-pill);
 }
 
 .tab-bar__link.active {
@@ -257,8 +273,13 @@ a {
 
 /* ---------- collab detail ---------- */
 
+.detail__title {
+  margin-block-end: var(--space-5);
+  color: var(--fj-mist);
+}
+
 .detail__offer {
-  margin-block: var(--space-2) var(--space-5);
+  margin-block: var(--space-2);
   font-family: var(--font-display);
   font-size: var(--text-xl);
   font-weight: 600;
@@ -322,6 +343,11 @@ a {
   gap: var(--space-3);
 }
 
+.action-bar--split .button:not(.button--grow) {
+  flex: none;
+  white-space: nowrap;
+}
+
 .action-bar__status {
   min-width: 0;
 }
@@ -335,11 +361,45 @@ a {
 /* ---------- café inbox ---------- */
 
 .shelf__pending {
-  margin-block-start: var(--space-1);
+  display: inline-block;
+  margin-block-start: var(--space-2);
+  padding: 2px var(--space-3);
   font-size: var(--text-xs);
   font-weight: 600;
-  color: var(--fj-gold);
+  color: var(--fj-ink);
+  background: var(--fj-gold);
+  border-radius: var(--radius-pill);
 }
+
+.shelf__urgent {
+  font-weight: 600;
+  color: var(--fj-qahwa);
+}
+
+.shelf__mine {
+  margin-block-start: var(--space-2);
+}
+
+.shelf-skeleton {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-block: var(--space-5) var(--space-3);
+  border-block-end: var(--border-hairline);
+}
+
+.shelf-skeleton__text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.skeleton--eyebrow { display: block; width: 45%; height: 12px; }
+.skeleton--title { display: block; height: 18px; }
+.skeleton--short { width: 70%; }
+.skeleton--cups { flex: none; width: 64px; height: 88px; border-radius: 0 0 28px 28px; }
 
 .inbox-head {
   display: flex;
@@ -561,9 +621,11 @@ a {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  margin-block-end: var(--space-5);
-  padding-block-end: var(--space-5);
-  border-block-end: 1px solid var(--fj-gold-dim);
+  margin-block: var(--space-3) var(--space-5);
+  padding: var(--space-3);
+  background: var(--fj-ink-2);
+  border: var(--border-gold);
+  border-radius: var(--radius-md);
 }
 
 .ai-box__note {
@@ -637,6 +699,16 @@ a {
   font-weight: 500;
 }
 
+.request-row__next {
+  font-size: var(--text-xs);
+  color: var(--fj-mist);
+}
+
+.request-section--accepted .request-row__next {
+  font-weight: 600;
+  color: var(--fj-gold);
+}
+
 .cup-art {
   flex: none;
   display: inline-flex;
@@ -650,8 +722,74 @@ a {
 
 /* ---------- the visit pass: a ticket with a tear-off stub ---------- */
 
-.pass__status {
-  margin-block: var(--space-2) var(--space-3);
+/* Four steps on a gold thread, filled up to where this request has reached. */
+.journey {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: var(--space-2) 0 var(--space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.journey__step {
+  position: relative;
+  padding-block-start: var(--space-4);
+  font-size: var(--text-xs);
+  text-align: center;
+  color: var(--fj-mist);
+}
+
+.journey__step::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 3px;
+  inset-inline-start: 50%;
+  width: 100%;
+  height: 1px;
+  background: var(--fj-ink-3);
+}
+
+.journey__step:last-child::before {
+  display: none;
+}
+
+.journey__step::after {
+  content: '';
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: calc(50% - 4px);
+  width: 8px;
+  height: 8px;
+  background: var(--fj-ink-3);
+  border-radius: 50%;
+}
+
+.journey__step--reached {
+  color: var(--fj-porcelain);
+}
+
+.journey__step--reached::after {
+  background: var(--fj-gold);
+}
+
+.journey__step--reached:not(:last-child)::before {
+  background: var(--fj-gold-dim);
+}
+
+.journey__step[aria-current='step'] {
+  font-weight: 600;
+  color: var(--fj-gold-hi);
+}
+
+.journey__step[aria-current='step']::after {
+  box-shadow: 0 0 8px var(--fj-gold);
+}
+
+.pass__next {
+  margin-block-end: var(--space-3);
+  font-size: var(--text-sm);
+  text-align: center;
+  color: var(--fj-mist);
 }
 
 .pass {
@@ -785,6 +923,12 @@ a {
   color: var(--fj-gold-hi);
 }
 
+.pass__code--used {
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--fj-mist);
+}
+
 /* ---------- sheets and forms ---------- */
 
 .sheet {
@@ -876,24 +1020,34 @@ a {
   border-radius: var(--radius-sm);
 }
 
+.field__input::placeholder {
+  color: var(--fj-mist);
+  opacity: 0.55;
+}
+
 .field__input[aria-invalid='true'] {
   border-color: var(--fj-pomegranate);
 }
 
 .pitch-tools {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
 }
 
+/* One scrolling line, because the keyboard leaves little room for chips. */
 .starter-list {
+  flex: 1;
   display: flex;
-  flex-wrap: wrap;
   gap: var(--space-2);
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
 
 .starter {
+  flex: none;
   min-height: var(--tap-min);
   padding-inline: var(--space-3);
   font: inherit;
@@ -967,6 +1121,11 @@ a {
   border-radius: var(--radius-sm);
 }
 
+.segmented--two {
+  grid-template-columns: repeat(2, 1fr);
+  margin-block: var(--space-3) var(--space-1);
+}
+
 .segmented__option {
   min-height: var(--tap-min);
   padding: 0;
@@ -1006,7 +1165,10 @@ a {
 .welcome__scene {
   display: block;
   width: 100%;
-  margin-block-start: var(--space-3);
+  max-height: 148px;
+  margin-block-start: var(--space-2);
+  object-fit: contain;
+  object-position: center bottom;
 }
 
 .welcome__title {
@@ -1020,13 +1182,6 @@ a {
 .welcome__intro {
   margin-block: var(--space-2) var(--space-3);
   color: var(--fj-mist);
-}
-
-.user-group__title {
-  margin-block: var(--space-5) var(--space-1);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--fj-gold);
 }
 
 .user-row {

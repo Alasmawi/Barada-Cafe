@@ -45,7 +45,8 @@ function InboxSkeleton() {
 function Requests({ collabId }: { collabId: string }) {
   const collab = useCollab(collabId);
   const inbox = useInbox(collabId);
-  const [tab, setTab] = useState<RequestStatus>('pending');
+  // Null until staff choose or act, so the inbox opens where the work is.
+  const [chosenTab, setChosenTab] = useState<RequestStatus | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [served, setServed] = useState<string | null>(null);
   const clearServed = useCallback(() => setServed(null), []);
@@ -69,23 +70,25 @@ function Requests({ collabId }: { collabId: string }) {
       }
     >
       {({ requests }) => {
+        const countOf = (status: RequestStatus) =>
+          requests.filter((request) => request.status === status).length;
+        const tab = chosenTab ?? TAB_ORDER.find((status) => countOf(status) > 0) ?? 'pending';
+        const tabs = TAB_ORDER.filter((status) => countOf(status) > 0 || status === tab);
         const inTab = requests.filter(({ status }) => status === tab);
         return (
           <>
             <div className="inbox-tabs" role="tablist" aria-label="Pitches by status">
-              {TAB_ORDER.map((status) => (
+              {tabs.map((status) => (
                 <button
                   key={status}
                   className="inbox-tabs__tab"
                   type="button"
                   role="tab"
                   aria-selected={tab === status}
-                  onClick={() => setTab(status)}
+                  onClick={() => setChosenTab(status)}
                 >
                   {TAB_LABELS[status]}{' '}
-                  <span className="inbox-tabs__count">
-                    {requests.filter((request) => request.status === status).length}
-                  </span>
+                  <span className="inbox-tabs__count">{countOf(status)}</span>
                 </button>
               ))}
             </div>
@@ -106,9 +109,13 @@ function Requests({ collabId }: { collabId: string }) {
                     collab={detail}
                     onAccept={(requestId) => {
                       setNotice(null);
+                      setChosenTab(tab);
                       accept.mutate(requestId);
                     }}
-                    onServed={() => setServed(request.creatorName)}
+                    onServed={() => {
+                      setChosenTab(tab);
+                      setServed(request.creatorName);
+                    }}
                   />
                 ))}
               </ul>
