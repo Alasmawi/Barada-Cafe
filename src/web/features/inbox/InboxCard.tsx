@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Collab, InboxRequest } from '../../../shared/api';
 import { detectPlatform, PLATFORM_LABELS } from '../../../shared/postLink';
 import { useRequestAction } from '../../api/queries';
+import { SocialLinks } from '../creators/SocialLinks';
 import { Ring } from '../rings/Ring';
 
 function PendingActions({
@@ -115,6 +116,7 @@ export function InboxCard({ request, collab, onAccept, onCompleted }: Props) {
       {request.creatorSignature && (
         <p className="creator-line">{request.creatorSignature}</p>
       )}
+      <SocialLinks socials={request.creatorSocials} />
       {request.status === 'invited' ? (
         <p className="note">Invited. Waiting for their answer.</p>
       ) : (

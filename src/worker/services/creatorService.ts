@@ -1,11 +1,18 @@
 import type { CreatorCard, User } from '../../shared/api';
+import type { Socials } from '../../shared/socials';
 import type { AiClient } from '../ai/aiClient';
 import { factsKey, factSummary, summarizeCreator } from '../ai/summarizeCreator';
 import { notFound } from '../http/errors';
 import * as usersRepo from '../repositories/usersRepo';
-import { assertStaff } from './permissions';
+import { assertCreator, assertStaff } from './permissions';
 
 const RESULT_LIMIT = 30;
+
+export async function updateSocials(db: D1Database, actor: User, socials: Socials): Promise<User> {
+  assertCreator(actor);
+  await usersRepo.saveSocials(db, actor.id, socials);
+  return { ...actor, socials };
+}
 
 function toCard(creator: usersRepo.StoredCreator): CreatorCard {
   const { aiSummary, summaryKey, ...card } = creator;

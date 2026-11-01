@@ -1,11 +1,18 @@
 import { Hono } from 'hono';
 import { SubmissionInput } from '../../shared/schemas';
+import { SocialsInput } from '../../shared/socials';
 import type { AppEnv } from '../env';
 import { parseBody } from '../http/validate';
+import * as creatorService from '../services/creatorService';
 import * as requestService from '../services/requestService';
 
 export const requestRoutes = new Hono<AppEnv>()
   .get('/me', (c) => c.json({ user: c.get('actor') }))
+  .put('/me/socials', async (c) => {
+    const socials = await parseBody(c, SocialsInput);
+    const user = await creatorService.updateSocials(c.env.DB, c.get('actor'), socials);
+    return c.json({ user });
+  })
   .get('/me/requests', async (c) => {
     return c.json({ requests: await requestService.listMine(c.env.DB, c.get('actor')) });
   })

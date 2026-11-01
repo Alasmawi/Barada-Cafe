@@ -9,6 +9,7 @@ import type {
   User,
 } from '../../shared/api';
 import type { CollabInput, LoginInput, SignUpInput } from '../../shared/schemas';
+import type { Socials } from '../../shared/socials';
 import { api } from './client';
 import { setPreviewMode } from './preview';
 
@@ -189,6 +190,12 @@ export function useAnswerInvite(requestId: string) {
         queryClient.invalidateQueries({ queryKey: ['collabs'] }),
         queryClient.invalidateQueries({ queryKey: ['requests'] }),
       ]),
+  });
+}
+
+export function useSaveSocials() {
+  return useMutation({
+    mutationFn: (socials: Socials) => api.put<UserResponse>('/me/socials', socials),
   });
 }
 

@@ -5,7 +5,7 @@ import { DomainError } from '../http/errors';
 import * as usersRepo from '../repositories/usersRepo';
 
 /** The newest file in /migrations. Health fails if the deploy skipped a migration. */
-const SCHEMA_VERSION = '0001_init.sql';
+const SCHEMA_VERSION = '0002_socials_and_post_details.sql';
 
 /** Routes that run before anyone has chosen who they are. */
 export const publicRoutes = new Hono<AppEnv>()

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Link, NavLink, Navigate, Outlet } from 'react-router-dom';
+import { Link, NavLink, Navigate, Outlet, useLocation } from 'react-router-dom';
 import type { Role } from '../../shared/api';
 import { useMyRequests } from '../api/queries';
 import { useSession } from '../session';
@@ -51,6 +51,16 @@ function Tab({ to, icon, label, badge }: { to: string; icon: IconName; label: st
   );
 }
 
+/** Keyed by path, so changing tab plays the same entrance as opening a screen. */
+function TabPage() {
+  const { pathname } = useLocation();
+  return (
+    <main key={pathname} className="page page--tabs">
+      <Outlet />
+    </main>
+  );
+}
+
 export function CreatorTabs() {
   // There are no notifications, so this is how a creator learns something changed.
   const requests = useMyRequests();
@@ -60,9 +70,7 @@ export function CreatorTabs() {
 
   return (
     <>
-      <main className="page page--tabs">
-        <Outlet />
-      </main>
+      <TabPage />
       <nav className="tab-bar" aria-label="Main">
         <Tab to="/" icon="browse" label="Browse" />
         <Tab to="/me" icon="applications" label="Applications" badge={waiting} />
@@ -75,9 +83,7 @@ export function CreatorTabs() {
 export function BusinessTabs() {
   return (
     <>
-      <main className="page page--tabs">
-        <Outlet />
-      </main>
+      <TabPage />
       <nav className="tab-bar" aria-label="Main">
         <Tab to="/business" icon="overview" label="Overview" />
         <Tab to="/business/collabs" icon="posts" label="My posts" />

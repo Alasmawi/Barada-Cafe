@@ -153,6 +153,24 @@ export function CollabDetail() {
                   <dt>You post</dt>
                   <dd>{detail.deliverable}</dd>
                 </div>
+                {detail.details && (
+                  <div className="info-row">
+                    <dt>About this post</dt>
+                    <dd className="info-row__long">{detail.details}</dd>
+                  </div>
+                )}
+                {detail.requirements && (
+                  <div className="info-row">
+                    <dt>Who they're looking for</dt>
+                    <dd className="info-row__long">{detail.requirements}</dd>
+                  </div>
+                )}
+                {detail.location && (
+                  <div className="info-row">
+                    <dt>Location</dt>
+                    <dd>{detail.location}</dd>
+                  </div>
+                )}
                 <div className="info-row">
                   <dt>Spots</dt>
                   <dd>

@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import type { User } from '../../shared/api';
 import { BUSINESS_TYPES, HOUSE_NAMES, HOUSES, type BusinessType, type House } from '../../shared/houses';
 import { SignUpInput } from '../../shared/schemas';
+import type { Socials } from '../../shared/socials';
 import { FORMATS, MAX_TAGS, NICHES, VIBES, type VibeTag } from '../../shared/tags';
 import { ApiError } from '../api/client';
 import { signUp } from '../api/queries';
 import { HOME, NavBar } from '../components/Layout';
 import { BrandMark } from '../components/BrandMark';
+import { SocialFields } from '../features/creators/SocialFields';
 import { Ring } from '../features/rings/Ring';
 import { useSession } from '../session';
 
@@ -116,6 +118,7 @@ function CreatorForm() {
   const [name, setName] = useState('');
   const [handle, setHandle] = useState('@');
   const [signature, setSignature] = useState('');
+  const [socials, setSocials] = useState<Socials>({});
   const [tags, setTags] = useState<string[]>(['Coffee', 'Reels']);
   const [vibe, setVibe] = useState<VibeTag>('Calm');
   const allTags = [...tags, vibe];
@@ -127,7 +130,7 @@ function CreatorForm() {
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    void send({ role: 'creator', username, password, name, handle, signature, tags: allTags });
+    void send({ role: 'creator', username, password, name, handle, signature, socials, tags: allTags });
   };
 
   return (
@@ -191,6 +194,15 @@ function CreatorForm() {
           placeholder="What your content is about"
         />
       </Field>
+      <fieldset className="pill-group">
+        <legend className="pill-group__label">Your socials (optional)</legend>
+        <SocialFields socials={socials} onChange={setSocials} />
+      </fieldset>
+      {errors.socials && (
+        <p className="form-error" role="alert">
+          {errors.socials}
+        </p>
+      )}
       <Credentials
         errors={errors}
         username={username}

@@ -6,7 +6,7 @@ This replaces the Finjan theme described in the older sections below.
 
 - **Finjan is gone.** The name, cups, coffee wording, gold on night, animations and brand assets are
   all removed. It's now Collab Board, in cream and red.
-- **Native on a phone.** System font, large titles, grouped lists, a tab bar with icons, sheets with
+- **Native on a phone.** Plus Jakarta Sans, bundled so it needs no network, with large titles, grouped lists, a tab bar with icons, sheets with
   a grabber, and installable to the home screen. No tilt, handwriting or decorative motion.
 - **Squares are businesses, circles are creators.** That rule runs through every screen, so the two
   sides can't be confused. Each also has its own sign-up path, tabs and vocabulary.
@@ -16,6 +16,14 @@ This replaces the Finjan theme described in the older sections below.
   Accepted, Posted, Completed and Declined.
 - **Business identity is a colour and a mark.** Five curated pairs, picked at sign-up. Per-brand
   typefaces were dropped because mixed fonts were what made the app feel unlike a phone app.
+- **Socials are usernames, not links.** The app builds each link, so one can only ever go to the
+  real site over https. There are five platforms, all optional.
+- **AI is a sparkle icon.** It opens a sheet, so the form stays clear for people who don't use it.
+  Skip is still always there and cancels the request.
+- **Posts can say more.** About, who they're looking for and location are optional, with higher
+  limits on the offer and what to post. AI doesn't fill the new fields.
+- **Motion stays quiet.** Screens ease in, lists arrive in sequence, and controls answer touch.
+  Nothing loops except the rings, and Reduce Motion turns it all off.
 - **Rings stay as specified,** with colours retuned for cream and heavier lines for small sizes.
 - **The accepted animation, served animation and tilting pass are gone,** replaced by a code card
   and a plain confirmation.

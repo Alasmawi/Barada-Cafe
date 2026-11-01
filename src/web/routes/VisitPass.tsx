@@ -77,6 +77,12 @@ function Application({ request }: { request: RequestWithCollab }) {
           <dt>You post</dt>
           <dd>{collab.deliverable}</dd>
         </div>
+        {collab.location && (
+          <div className="info-row">
+            <dt>Location</dt>
+            <dd>{collab.location}</dd>
+          </div>
+        )}
         {visiting && (
           <div className="info-row">
             <dt>Visit by</dt>

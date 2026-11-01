@@ -15,6 +15,9 @@ type CollabRow = {
   title: string;
   offer: string;
   deliverable: string;
+  details: string;
+  requirements: string;
+  location: string;
   spots: number;
   spots_taken: number;
   pending_count: number;
@@ -24,7 +27,7 @@ type CollabRow = {
 
 const SELECT_COLLAB = `
   SELECT
-    c.id, c.kind, c.business_id, c.title, c.offer, c.deliverable, c.spots, c.ends_on, c.created_at,
+    c.id, c.kind, c.business_id, c.title, c.offer, c.deliverable, c.details, c.requirements, c.location, c.spots, c.ends_on, c.created_at,
     businesses.name AS business_name,
     businesses.area AS business_area,
     businesses.type AS business_type,
@@ -49,6 +52,9 @@ function toCollab(row: CollabRow, today: string): Collab {
     title: row.title,
     offer: row.offer,
     deliverable: row.deliverable,
+    details: row.details,
+    requirements: row.requirements,
+    location: row.location,
     spots: row.spots,
     spotsTaken: row.spots_taken,
     spotsLeft: Math.max(row.spots - row.spots_taken, 0),
@@ -105,8 +111,9 @@ export async function insert(
 ): Promise<void> {
   await db
     .prepare(
-      `INSERT INTO collabs (id, kind, business_id, title, offer, deliverable, spots, ends_on, created_by, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO collabs (id, kind, business_id, title, offer, deliverable, details, requirements,
+                            location, spots, ends_on, created_by, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .bind(
       collab.id,
@@ -115,6 +122,9 @@ export async function insert(
       collab.title,
       collab.offer,
       collab.deliverable,
+      collab.details,
+      collab.requirements,
+      collab.location,
       collab.spots,
       collab.endsOn,
       collab.createdBy,
@@ -136,13 +146,25 @@ export async function updateIfSpotsCoverTaken(
   const { meta } = await db
     .prepare(
       `UPDATE collabs
-       SET title = ?1, offer = ?2, deliverable = ?3, spots = ?4, ends_on = ?5, kind = ?7
+       SET title = ?1, offer = ?2, deliverable = ?3, spots = ?4, ends_on = ?5, kind = ?7,
+           details = ?8, requirements = ?9, location = ?10
        WHERE id = ?6
          AND ?4 >= (SELECT COUNT(*) FROM requests
                     WHERE requests.collab_id = collabs.id
                       AND requests.status IN (${SPOT_HOLDING_SQL}))`,
     )
-    .bind(input.title, input.offer, input.deliverable, input.spots, input.endsOn, id, input.kind)
+    .bind(
+      input.title,
+      input.offer,
+      input.deliverable,
+      input.spots,
+      input.endsOn,
+      id,
+      input.kind,
+      input.details,
+      input.requirements,
+      input.location,
+    )
     .run();
   return meta.changes === 1;
 }

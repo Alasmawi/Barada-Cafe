@@ -1,4 +1,4 @@
-/* Cream and red, set in the phone's own typeface. */
+/* Cream and red, set in Plus Jakarta Sans. */
 :root {
   color-scheme: light;
 
@@ -14,7 +14,7 @@
   --green: #2f6b3f;
   --green-soft: #e2efe2;
 
-  --font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --font: 'Plus Jakarta Sans Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
   --text-xs: 0.8125rem;
   --text-sm: 0.9375rem;

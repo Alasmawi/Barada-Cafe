@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import type { CreatorCard } from '../../../shared/api';
 import { useSummarize } from '../../api/queries';
+import { Icon } from '../../components/Icon';
 import { Ring } from '../rings/Ring';
 import { InviteSheet } from './InviteSheet';
+import { SocialLinks } from './SocialLinks';
 
 export function CreatorResult({ creator }: { creator: CreatorCard }) {
   const summarize = useSummarize(creator.id);
@@ -21,6 +23,7 @@ export function CreatorResult({ creator }: { creator: CreatorCard }) {
           {creator.signature && <p className="creator-line">{creator.signature}</p>}
         </div>
       </div>
+      <SocialLinks socials={creator.socials} />
       <ul className="tag-list">
         {creator.tags.map((tag) => (
           <li key={tag} className="tag tag--quiet">
@@ -38,12 +41,13 @@ export function CreatorResult({ creator }: { creator: CreatorCard }) {
       <div className="button-row">
         {!creator.isAiSummary && !noBetter && (
           <button
-            className="button"
+            className="icon-button icon-button--soft"
             type="button"
+            aria-label={summarize.isPending ? 'Writing AI summary' : 'Write an AI summary'}
             onClick={() => summarize.mutate()}
             disabled={summarize.isPending}
           >
-            {summarize.isPending ? 'Writing…' : 'AI summary'}
+            <Icon name="sparkle" />
           </button>
         )}
         <button

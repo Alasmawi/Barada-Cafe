@@ -23,14 +23,17 @@ Every demo account uses the password `demo-password`, and the welcome screen lis
 2. Open one you haven't applied to, tap **Apply** and send a line about why you fit.
 3. In **Applications**, open Layali's invite and tap **Accept invite**.
 4. Open an accepted application to see its code, then add your post link.
-5. Open **Profile** to see your ring. It has one circle per tag, and dots mark your formats.
+5. Open **Profile** to see your ring and edit your socials. The ring has one circle per tag, and
+   dots mark your formats.
 
 **As a business (`huda`)**
 
 1. **Overview** shows new applicants and what needs a decision.
-2. In **Creators**, search for *food*. Tap **AI summary**, or **Invite** to offer them a post.
+2. In **Creators**, search for *food*. Tap the sparkle icon for an AI summary, or **Invite** to offer
+   them a post.
 3. In **My posts**, open one and tap **Accept** on an applicant.
-4. Tap the plus button, type one sentence and tap **Fill the form for me**, then publish.
+4. Tap the plus button, then the sparkle icon, type a sentence and tap **Fill the form**. Edit it,
+   then publish.
 
 **The rule that matters:** open *Karak tasting flight* as `huda` on one phone and `yusuf` on another.
 It has one spot left and three creators waiting. Tap Accept on different applicants at the same

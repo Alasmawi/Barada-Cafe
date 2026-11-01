@@ -5,7 +5,7 @@ import { addDays, bahrainToday } from '../../../shared/dates';
 import { COLLAB_KINDS, CollabInput, SPOTS_MAX, SPOTS_MIN } from '../../../shared/schemas';
 import { ApiError } from '../../api/client';
 import { useSaveCollab } from '../../api/queries';
-import { AiDraftBox } from './AiDraftBox';
+import { AiDraftButton } from './AiDraftButton';
 import { KIND_LABELS } from './CollabShared';
 
 const DEFAULT_RUN_DAYS = 7;
@@ -18,6 +18,9 @@ const blankDraft = (): Draft => ({
   title: '',
   offer: '',
   deliverable: '',
+  details: '',
+  requirements: '',
+  location: '',
   spots: '3',
   endsOn: addDays(bahrainToday(), DEFAULT_RUN_DAYS),
 });
@@ -117,8 +120,8 @@ export function CollabForm({ collabId, initial, onSaved }: Props) {
 
   return (
     <>
-      {!collabId && <AiDraftBox onDraft={applyDraft} />}
-      <form className="form" onSubmit={submit} noValidate>
+      {/* Outside the form: the AI sheet holds a form of its own, and forms can't nest. */}
+      <div className="form__top">
         <div className="segmented segmented--two" role="radiogroup" aria-label="What are you posting?">
           {COLLAB_KINDS.map((kind) => (
             <button
@@ -133,6 +136,9 @@ export function CollabForm({ collabId, initial, onSaved }: Props) {
             </button>
           ))}
         </div>
+          {!collabId && <AiDraftButton onDraft={applyDraft} />}
+        </div>
+      <form className="form" onSubmit={submit} noValidate>
         <Field label="Title" error={errors.title}>
           <input
             className="field__input"
@@ -145,7 +151,7 @@ export function CollabForm({ collabId, initial, onSaved }: Props) {
         <Field label="What you're offering" error={errors.offer}>
           <textarea
             className="field__input field__input--area"
-            rows={2}
+            rows={4}
             value={draft.offer}
             onChange={(event) => update('offer', event.target.value)}
             placeholder="A free meal for two"
@@ -155,11 +161,40 @@ export function CollabForm({ collabId, initial, onSaved }: Props) {
         <Field label="What to post" error={errors.deliverable}>
           <textarea
             className="field__input field__input--area"
-            rows={2}
+            rows={4}
             value={draft.deliverable}
             onChange={(event) => update('deliverable', event.target.value)}
             placeholder="One Reel tagging us"
             aria-invalid={errors.deliverable !== undefined}
+          />
+        </Field>
+        <Field label="About this post (optional)" error={errors.details}>
+          <textarea
+            className="field__input field__input--area field__input--tall"
+            rows={6}
+            value={draft.details}
+            onChange={(event) => update('details', event.target.value)}
+            placeholder="The story behind it, when to come, and what makes it worth doing"
+            aria-invalid={errors.details !== undefined}
+          />
+        </Field>
+        <Field label="Who you're looking for (optional)" error={errors.requirements}>
+          <textarea
+            className="field__input field__input--area"
+            rows={4}
+            value={draft.requirements}
+            onChange={(event) => update('requirements', event.target.value)}
+            placeholder="The kind of creator, their area, or their style"
+            aria-invalid={errors.requirements !== undefined}
+          />
+        </Field>
+        <Field label="Location (optional)" error={errors.location}>
+          <input
+            className="field__input"
+            value={draft.location}
+            onChange={(event) => update('location', event.target.value)}
+            placeholder="Your branch or address"
+            aria-invalid={errors.location !== undefined}
           />
         </Field>
         <div className="collab-form__row">

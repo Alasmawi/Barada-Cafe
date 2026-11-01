@@ -28,12 +28,12 @@ const STAFF = [
 ];
 
 const CREATORS = [
-  { id: 'usr_noor', username: 'noor', name: 'Noor', handle: '@noor.sips', tags: 'Coffee,Food,Reels,Calm', signature: 'Slow pours, quiet mornings.' },
-  { id: 'usr_salman', username: 'salman', name: 'Salman', handle: '@salman.eats', tags: 'Food,Beauty,Fashion,TikTok,Playful', signature: 'Loud, honest, hungry.' },
-  { id: 'usr_lulwa', username: 'lulwa', name: 'Lulwa', handle: '@lulwa.films', tags: 'Film,Stories,Bold', signature: 'Every frame on purpose.' },
-  { id: 'usr_ali', username: 'ali', name: 'Ali', handle: '@ali.around.bh', tags: 'Travel,Coffee,Food,Fitness,Carousels,Playful', signature: 'Bahrain, one corner at a time.' },
-  { id: 'usr_fatima', username: 'fatima', name: 'Fatima', handle: '@fatima.frames', tags: 'Fashion,Film,Reels,Calm', signature: 'Quiet colour, clean lines.' },
-  { id: 'usr_reem', username: 'reem', name: 'Reem', handle: '@reem.reviews', tags: 'Beauty,Fashion,Carousels,Stories,Calm', signature: 'Reviews you can trust.' },
+  { id: 'usr_noor', username: 'noor', name: 'Noor', handle: '@noor.sips', tags: 'Coffee,Food,Reels,Calm', signature: 'Slow pours, quiet mornings.', socials: { instagram: 'noor.sips', tiktok: 'noorsips' } },
+  { id: 'usr_salman', username: 'salman', name: 'Salman', handle: '@salman.eats', tags: 'Food,Beauty,Fashion,TikTok,Playful', signature: 'Loud, honest, hungry.', socials: { tiktok: 'salman.eats', snapchat: 'salmaneats' } },
+  { id: 'usr_lulwa', username: 'lulwa', name: 'Lulwa', handle: '@lulwa.films', tags: 'Film,Stories,Bold', signature: 'Every frame on purpose.', socials: { instagram: 'lulwa.films', youtube: 'lulwafilms', x: 'lulwafilms' } },
+  { id: 'usr_ali', username: 'ali', name: 'Ali', handle: '@ali.around.bh', tags: 'Travel,Coffee,Food,Fitness,Carousels,Playful', signature: 'Bahrain, one corner at a time.', socials: { instagram: 'ali.around.bh', youtube: 'alialaround' } },
+  { id: 'usr_fatima', username: 'fatima', name: 'Fatima', handle: '@fatima.frames', tags: 'Fashion,Film,Reels,Calm', signature: 'Quiet colour, clean lines.', socials: { instagram: 'fatima.frames' } },
+  { id: 'usr_reem', username: 'reem', name: 'Reem', handle: '@reem.reviews', tags: 'Beauty,Fashion,Carousels,Stories,Calm', signature: 'Reviews you can trust.', socials: { instagram: 'reem.reviews', tiktok: 'reemreviews' } },
 ];
 
 const BUSINESSES = [
@@ -47,6 +47,9 @@ const BUSINESSES = [
 type SeedCollab = {
   id: string;
   kind?: 'offer';
+  details?: string;
+  requirements?: string;
+  location?: string;
   businessId: string;
   createdBy: string;
   title: string;
@@ -60,6 +63,9 @@ type SeedCollab = {
 const COLLABS: SeedCollab[] = [
   {
     id: 'col_oud',
+    details: "Spend an evening with our perfumer learning how oud is blended, then make your own bottle to take home. Sessions run after closing, so you'll have the shop to yourself.",
+    requirements: "Beauty or lifestyle creators who like slow, detailed content.",
+    location: "Layali Perfumes, Seef",
     businessId: 'biz_layali',
     createdBy: 'usr_layla',
     title: 'An evening of oud',
@@ -70,6 +76,9 @@ const COLLABS: SeedCollab[] = [
   },
   {
     id: 'col_mat',
+    details: "Join any class across four weeks. We'd love an honest look at how it feels to start from scratch, so no fitness background is needed.",
+    requirements: "Anyone curious about starting mat classes. Beginners are welcome.",
+    location: "Move Studio, Juffair",
     businessId: 'biz_move',
     createdBy: 'usr_sami',
     title: 'A month of mat classes',
@@ -81,6 +90,9 @@ const COLLABS: SeedCollab[] = [
 
   {
     id: 'col_saffron',
+    details: "We're launching a saffron latte this month and want it to feel like a slow, cosy treat. Come on a weekday morning when the light is best, and our baristas will make it with you.",
+    requirements: "Food or coffee creators in Bahrain, comfortable filming in a busy café.",
+    location: "Barada Café, Adliya",
     businessId: 'biz_barada',
     createdBy: 'usr_huda',
     title: 'Saffron latte first pour',
@@ -409,8 +421,8 @@ export async function seed(db: D1Database, now: Date = new Date()): Promise<void
     ...CREATORS.map((user) =>
       db
         .prepare(
-          `INSERT INTO users (id, username, password_hash, name, role, handle, tags, signature)
-           VALUES (?, ?, ?, ?, 'creator', ?, ?, ?)`,
+          `INSERT INTO users (id, username, password_hash, name, role, handle, tags, signature, socials)
+           VALUES (?, ?, ?, ?, 'creator', ?, ?, ?, ?)`,
         )
         .bind(
           user.id,
@@ -420,14 +432,15 @@ export async function seed(db: D1Database, now: Date = new Date()): Promise<void
           user.handle,
           user.tags,
           user.signature,
+          JSON.stringify(user.socials),
         ),
     ),
     ...COLLABS.map((collab) =>
       db
         .prepare(
-          `INSERT INTO collabs (id, kind, business_id, title, offer, deliverable, spots, ends_on,
-                                created_by, created_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO collabs (id, kind, business_id, title, offer, deliverable, details,
+                                requirements, location, spots, ends_on, created_by, created_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         )
         .bind(
           collab.id,
@@ -436,6 +449,9 @@ export async function seed(db: D1Database, now: Date = new Date()): Promise<void
           collab.title,
           collab.offer,
           collab.deliverable,
+          collab.details ?? '',
+          collab.requirements ?? '',
+          collab.location ?? '',
           collab.spots,
           addDays(today, collab.endsIn),
           collab.createdBy,

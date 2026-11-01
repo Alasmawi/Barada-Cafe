@@ -32,11 +32,12 @@ export async function signUp(db: D1Database, input: SignUpInput): Promise<string
         handle: input.handle,
         tags: input.tags,
         signature: input.signature || null,
+        socials: input.socials,
       });
     } else {
       await usersRepo.insertBusinessOwner(
         db,
-        { ...shared, name: input.businessName, handle: null, tags: [], signature: null },
+        { ...shared, name: input.businessName, handle: null, tags: [], signature: null, socials: {} },
         {
           id: newId('biz'),
           name: input.businessName,

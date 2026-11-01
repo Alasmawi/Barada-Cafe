@@ -1,5 +1,6 @@
 import type { CreatorCard, Role, User } from '../../shared/api';
 import type { BusinessType, House } from '../../shared/houses';
+import { parseSocials, type Socials } from '../../shared/socials';
 
 type UserRow = {
   id: string;
@@ -13,6 +14,7 @@ type UserRow = {
   handle: string | null;
   tags: string;
   signature: string | null;
+  socials: string;
 };
 
 type CreatorRow = UserRow & {
@@ -36,12 +38,13 @@ function toUser(row: UserRow): User {
     handle: row.handle,
     tags: toTags(row.tags),
     signature: row.signature,
+    socials: parseSocials(row.socials),
   };
 }
 
 const SELECT_USER = `
   SELECT users.id, users.username, users.name, users.role, users.business_id, users.handle,
-         users.tags, users.signature,
+         users.tags, users.signature, users.socials,
          businesses.name AS business_name,
          businesses.type AS business_type,
          businesses.house AS business_house
@@ -101,6 +104,7 @@ function toCreatorCard(row: CreatorRow): StoredCreator {
     handle: row.handle,
     tags: toTags(row.tags),
     signature: row.signature,
+    socials: parseSocials(row.socials),
     servedCount: row.served_count,
     aiSummary: row.summary,
     summaryKey: row.summary_key,
@@ -160,13 +164,14 @@ export type NewUser = {
   handle: string | null;
   tags: string[];
   signature: string | null;
+  socials: Socials;
 };
 
 const insertUserStatement = (db: D1Database, user: NewUser, role: Role, businessId: string | null) =>
   db
     .prepare(
-      `INSERT INTO users (id, username, password_hash, name, role, business_id, handle, tags, signature)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO users (id, username, password_hash, name, role, business_id, handle, tags, signature, socials)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .bind(
       user.id,
@@ -178,7 +183,15 @@ const insertUserStatement = (db: D1Database, user: NewUser, role: Role, business
       user.handle,
       user.tags.join(','),
       user.signature,
+      JSON.stringify(user.socials),
     );
+
+export async function saveSocials(db: D1Database, id: string, socials: Socials): Promise<void> {
+  await db
+    .prepare('UPDATE users SET socials = ? WHERE id = ?')
+    .bind(JSON.stringify(socials), id)
+    .run();
+}
 
 export async function insertCreator(db: D1Database, user: NewUser): Promise<void> {
   await insertUserStatement(db, user, 'creator', null).run();

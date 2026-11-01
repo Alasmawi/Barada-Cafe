@@ -1,15 +1,63 @@
+import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { logOut, useMyRequests } from '../api/queries';
+import { SocialsInput, type Socials } from '../../shared/socials';
+import { logOut, useMyRequests, useSaveSocials } from '../api/queries';
 import { BrandMark } from '../components/BrandMark';
 import { DemoMenu } from '../components/DemoMenu';
 import { LargeTitle } from '../components/Layout';
+import { Sheet } from '../components/Sheet';
+import { SocialFields } from '../features/creators/SocialFields';
+import { SocialLinks } from '../features/creators/SocialLinks';
 import { Ring } from '../features/rings/Ring';
 import { useSession } from '../session';
+
+function SocialsForm({ current, onSaved }: { current: Socials; onSaved: () => void }) {
+  const { signIn } = useSession();
+  const save = useSaveSocials();
+  const [socials, setSocials] = useState(current);
+  const [invalid, setInvalid] = useState<string | null>(null);
+
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    const parsed = SocialsInput.safeParse(socials);
+    if (!parsed.success) {
+      setInvalid(parsed.error.issues[0]?.message ?? null);
+      return;
+    }
+    setInvalid(null);
+    save.mutate(parsed.data, {
+      onSuccess: ({ user }) => {
+        signIn(user);
+        onSaved();
+      },
+    });
+  };
+
+  return (
+    <form className="form" onSubmit={submit}>
+      <SocialFields socials={socials} onChange={setSocials} />
+      {invalid && (
+        <p className="form-error" role="alert">
+          {invalid}
+        </p>
+      )}
+      {save.isError && (
+        <p className="form-error" role="alert">
+          Didn't save. Try again.
+        </p>
+      )}
+      <button className="button button--primary button--wide" type="submit" disabled={save.isPending}>
+        {save.isPending ? 'Saving…' : 'Save'}
+      </button>
+    </form>
+  );
+}
 
 export function Profile() {
   const { user, signOut } = useSession();
   const navigate = useNavigate();
   const requests = useMyRequests();
+  const [editing, setEditing] = useState(false);
   const done = requests.data?.requests.filter(({ status }) => status === 'done') ?? [];
 
   const leave = async () => {
@@ -36,6 +84,19 @@ export function Profile() {
           ))}
         </ul>
       </div>
+      <h2 className="group-label">Socials</h2>
+      <section className="group group--padded profile__socials">
+        <SocialLinks socials={user.socials} />
+        {Object.keys(user.socials).length === 0 && (
+          <p className="note">Add your socials so businesses can see your work.</p>
+        )}
+        <button className="button button--wide" type="button" onClick={() => setEditing(true)}>
+          Edit socials
+        </button>
+      </section>
+      <Sheet open={editing} onClose={() => setEditing(false)} title="Your socials">
+        <SocialsForm current={user.socials} onSaved={() => setEditing(false)} />
+      </Sheet>
       <h2 className="group-label">Worked with</h2>
       {done.length === 0 ? (
         <p className="note note--inset">Completed collabs appear here.</p>

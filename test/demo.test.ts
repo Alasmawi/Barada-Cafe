@@ -96,7 +96,7 @@ describe('health', () => {
     const response = await api('/health');
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ ok: true, schema: '0001_init.sql' });
+    expect(await response.json()).toEqual({ ok: true, schema: '0002_socials_and_post_details.sql' });
   });
 });
 

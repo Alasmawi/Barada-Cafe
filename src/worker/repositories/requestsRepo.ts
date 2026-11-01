@@ -1,4 +1,5 @@
 import type { CollabRequest, InboxRequest } from '../../shared/api';
+import { parseSocials } from '../../shared/socials';
 import type { RequestStatus } from '../../shared/status';
 import { SPOT_HOLDING_SQL } from './sql';
 
@@ -21,6 +22,7 @@ type InboxRow = RequestRow & {
   creator_handle: string | null;
   creator_tags: string;
   creator_signature: string | null;
+  creator_socials: string;
 };
 
 function toRequest(row: RequestRow): CollabRequest {
@@ -63,7 +65,8 @@ export async function listInbox(db: D1Database, collabId: string): Promise<Inbox
               users.name AS creator_name,
               users.handle AS creator_handle,
               users.tags AS creator_tags,
-              users.signature AS creator_signature
+              users.signature AS creator_signature,
+              users.socials AS creator_socials
        FROM requests
        JOIN users ON users.id = requests.creator_id
        WHERE requests.collab_id = ?
@@ -77,6 +80,7 @@ export async function listInbox(db: D1Database, collabId: string): Promise<Inbox
     creatorHandle: row.creator_handle,
     creatorTags: row.creator_tags ? row.creator_tags.split(',') : [],
     creatorSignature: row.creator_signature,
+    creatorSocials: parseSocials(row.creator_socials),
   }));
 }
 

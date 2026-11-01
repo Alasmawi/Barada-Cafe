@@ -1,5 +1,6 @@
 import type { BusinessType, House } from './houses';
 import type { CollabInput, CollabKind } from './schemas';
+import type { Socials } from './socials';
 import type { CollabState, RequestStatus } from './status';
 
 /** JSON shapes the API returns. The web client imports these, so the two can't drift. */
@@ -18,6 +19,7 @@ export type User = {
   handle: string | null;
   tags: string[];
   signature: string | null;
+  socials: Socials;
 };
 
 /** What a business sees when it searches for creators. */
@@ -27,6 +29,7 @@ export type CreatorCard = {
   handle: string | null;
   tags: string[];
   signature: string | null;
+  socials: Socials;
   servedCount: number;
   summary: string;
   /** False while the summary is only the plain facts, so the AI can be asked for one. */
@@ -44,6 +47,9 @@ export type Collab = {
   title: string;
   offer: string;
   deliverable: string;
+  details: string;
+  requirements: string;
+  location: string;
   spots: number;
   spotsTaken: number;
   spotsLeft: number;
@@ -73,6 +79,7 @@ export type InboxRequest = CollabRequest & {
   creatorHandle: string | null;
   creatorTags: string[];
   creatorSignature: string | null;
+  creatorSocials: Socials;
 };
 
 /** A request as the creator sees it, with the collab it belongs to. */

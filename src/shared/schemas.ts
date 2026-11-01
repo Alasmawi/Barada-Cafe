@@ -1,11 +1,17 @@
 import { z } from 'zod';
 import { BUSINESS_TYPES, HOUSE_NAMES } from './houses';
 import { isHttpsUrl } from './postLink';
+import { SocialsInput } from './socials';
 import { isValidTagSet } from './tags';
 
 export const SPOTS_MIN = 1;
 export const SPOTS_MAX = 50;
 export const PITCH_MAX = 140;
+export const OFFER_MAX = 400;
+export const DELIVERABLE_MAX = 500;
+export const DETAILS_MAX = 1000;
+export const REQUIREMENTS_MAX = 500;
+export const LOCATION_MAX = 80;
 
 export const COLLAB_KINDS = ['collab', 'offer'] as const;
 export type CollabKind = (typeof COLLAB_KINDS)[number];
@@ -13,8 +19,11 @@ export type CollabKind = (typeof COLLAB_KINDS)[number];
 export const CollabInput = z.object({
   kind: z.enum(COLLAB_KINDS, 'Choose collab or offer').default('collab'),
   title: z.string().trim().min(1, 'Give the collab a title').max(80, 'Keep the title under 80 characters'),
-  offer: z.string().trim().min(1, "Say what you're offering").max(200, 'Keep the offer under 200 characters'),
-  deliverable: z.string().trim().min(1, 'Say what to post').max(300, 'Keep this under 300 characters'),
+  offer: z.string().trim().min(1, "Say what you're offering").max(OFFER_MAX, `Keep this under ${OFFER_MAX} characters`),
+  deliverable: z.string().trim().min(1, 'Say what to post').max(DELIVERABLE_MAX, `Keep this under ${DELIVERABLE_MAX} characters`),
+  details: z.string().trim().max(DETAILS_MAX, `Keep this under ${DETAILS_MAX} characters`).default(''),
+  requirements: z.string().trim().max(REQUIREMENTS_MAX, `Keep this under ${REQUIREMENTS_MAX} characters`).default(''),
+  location: z.string().trim().max(LOCATION_MAX, `Keep this under ${LOCATION_MAX} characters`).default(''),
   spots: z
     .number('Choose the number of spots')
     .int('Spots must be a whole number')
@@ -77,6 +86,7 @@ export const CreatorSignUp = z.object({
     .trim()
     .regex(/^@[a-zA-Z0-9._]{2,30}$/, 'Start with @, like @noor.sips'),
   signature: z.string().trim().max(60, 'Keep it to one short line').default(''),
+  socials: SocialsInput.default({}),
   tags: z.array(z.string()).refine(isValidTagSet, 'Pick what you make, a format and a vibe'),
 });
 export type CreatorSignUp = z.infer<typeof CreatorSignUp>;

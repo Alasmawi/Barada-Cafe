@@ -18,7 +18,7 @@ export function Sheet({ open, onClose, title, children }: Props) {
     }
     dialog.current?.showModal();
     // showModal() focuses the close button. A form opens to be typed in, anything else to be read.
-    (dialog.current?.querySelector('input') ?? dialog.current)?.focus();
+    (dialog.current?.querySelector<HTMLElement>('input, textarea') ?? dialog.current)?.focus();
   }, [open]);
 
   // iOS keeps fixed elements behind the keyboard, which would hide the sheet's send button.
