@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { CollabInput, CollabListQuery, PitchInput } from '../../shared/schemas';
+import { CollabInput, CollabListQuery, InviteInput, PitchInput } from '../../shared/schemas';
 import type { AppEnv } from '../env';
 import { parse, parseBody } from '../http/validate';
 import * as collabService from '../services/collabService';
@@ -37,6 +37,16 @@ export const collabRoutes = new Hono<AppEnv>()
     );
     return c.json({ request }, created ? 201 : 200);
   })
-  .get('/cafe/collabs', async (c) => {
-    return c.json({ collabs: await collabService.listForCafe(c.env.DB, c.get('actor')) });
+  .post('/collabs/:id/invites', async (c) => {
+    const { creatorId } = await parseBody(c, InviteInput);
+    const { request, created } = await requestService.invite(
+      c.env.DB,
+      c.get('actor'),
+      c.req.param('id'),
+      creatorId,
+    );
+    return c.json({ request }, created ? 201 : 200);
+  })
+  .get('/business/collabs', async (c) => {
+    return c.json({ collabs: await collabService.listForBusiness(c.env.DB, c.get('actor')) });
   });

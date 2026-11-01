@@ -12,7 +12,7 @@ import {
 } from './helpers';
 
 /**
- * The rule from the brief: a collab never accepts more creators than it has spots, even
+ * The rule from the collab: a collab never accepts more creators than it has spots, even
  * with a double tap or two staff accepting at the same moment.
  *
  * Each race fires real HTTP requests at the Worker in parallel. The final assertion reads

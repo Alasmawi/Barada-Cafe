@@ -17,8 +17,8 @@ export function Sheet({ open, onClose, title, children }: Props) {
       return;
     }
     dialog.current?.showModal();
-    // showModal() focuses the close button, but a form sheet is opened to be typed in.
-    dialog.current?.querySelector('input')?.focus();
+    // showModal() focuses the close button. A form opens to be typed in, anything else to be read.
+    (dialog.current?.querySelector('input') ?? dialog.current)?.focus();
   }, [open]);
 
   // iOS keeps fixed elements behind the keyboard, which would hide the sheet's send button.
@@ -46,9 +46,10 @@ export function Sheet({ open, onClose, title, children }: Props) {
   };
 
   return (
-    <dialog ref={dialog} className="sheet" onClose={onClose} onClick={closeOnBackdrop}>
+    <dialog ref={dialog} className="sheet" tabIndex={-1} onClose={onClose} onClick={closeOnBackdrop}>
       {open && (
         <div className="sheet__panel">
+          <span className="sheet__grabber" aria-hidden />
           <div className="sheet__header">
             <h2 className="sheet__title">{title}</h2>
             <button className="sheet__close" type="button" onClick={onClose} aria-label="Close">

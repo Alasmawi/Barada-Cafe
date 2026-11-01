@@ -1,70 +1,87 @@
 import type { ReactNode } from 'react';
 import { Link, NavLink, Navigate, Outlet } from 'react-router-dom';
-import mark from '../../../brand/svg/finjan-mark-static.svg';
 import type { Role } from '../../shared/api';
 import { useMyRequests } from '../api/queries';
 import { useSession } from '../session';
-import { DemoMenu } from './DemoMenu';
+import { Icon, type IconName } from './Icon';
 
-const HOME: Record<Role, string> = { creator: '/', cafe_staff: '/cafe' };
+export const HOME: Record<Role, string> = { creator: '/', business: '/business' };
 
 /** Sends visitors to the welcome screen, and each role to its own side of the app. */
 export function RequireRole({ role }: { role: Role }) {
-  const { user } = useSession();
+  const { user, loading } = useSession();
+  if (loading) return <main className="page" aria-busy="true" />;
   if (!user) return <Navigate to="/welcome" replace />;
   if (user.role !== role) return <Navigate to={HOME[user.role]} replace />;
   return <Outlet />;
 }
 
-export function AppHeader({ start }: { start?: ReactNode }) {
+/** The compact bar on pushed screens: back on the left, the title centred. */
+export function NavBar({ to, title, action }: { to: string; title?: string; action?: ReactNode }) {
   return (
-    <header className="app-header">
-      {start ?? (
-        <Link className="app-header__home" to="/" aria-label="Finjan home">
-          <img src={mark} alt="" />
-        </Link>
-      )}
-      <DemoMenu />
+    <header className="nav-bar">
+      <Link className="nav-bar__back" to={to} aria-label="Back">
+        <Icon name="back" />
+      </Link>
+      <span className="nav-bar__title">{title}</span>
+      <span className="nav-bar__action">{action}</span>
     </header>
   );
 }
 
-export function BackHeader({ to, label }: { to: string; label: string }) {
+/** The big title at the top of each tab, as on iOS. */
+export function LargeTitle({ children, action }: { children: ReactNode; action?: ReactNode }) {
   return (
-    <AppHeader
-      start={
-        <Link className="back-link" to={to}>
-          <span aria-hidden>‹</span> {label}
-        </Link>
-      }
-    />
+    <header className="large-title">
+      <h1>{children}</h1>
+      {action}
+    </header>
   );
 }
 
-/** The two top-level creator screens share the header and the tab bar. */
+function Tab({ to, icon, label, badge }: { to: string; icon: IconName; label: string; badge?: number }) {
+  return (
+    <NavLink className="tab-bar__link" to={to} end>
+      <span className="tab-bar__icon">
+        <Icon name={icon} />
+        {badge ? <span className="tab-bar__badge">{badge}</span> : null}
+      </span>
+      {label}
+    </NavLink>
+  );
+}
+
 export function CreatorTabs() {
-  // There are no notifications, so this is how a creator learns they got in.
+  // There are no notifications, so this is how a creator learns something changed.
   const requests = useMyRequests();
-  const ready = requests.data?.requests.filter(({ status }) => status === 'accepted').length ?? 0;
+  const waiting =
+    requests.data?.requests.filter(({ status }) => status === 'accepted' || status === 'invited')
+      .length ?? 0;
 
   return (
     <>
-      <AppHeader />
       <main className="page page--tabs">
         <Outlet />
       </main>
       <nav className="tab-bar" aria-label="Main">
-        <NavLink className="tab-bar__link" to="/" end>
-          Browse
-        </NavLink>
-        <NavLink className="tab-bar__link" to="/me" end>
-          My collabs
-          {ready > 0 && (
-            <span className="tab-bar__badge" aria-label={`${ready} ready to visit`}>
-              {ready}
-            </span>
-          )}
-        </NavLink>
+        <Tab to="/" icon="browse" label="Browse" />
+        <Tab to="/me" icon="applications" label="Applications" badge={waiting} />
+        <Tab to="/profile" icon="profile" label="Profile" />
+      </nav>
+    </>
+  );
+}
+
+export function BusinessTabs() {
+  return (
+    <>
+      <main className="page page--tabs">
+        <Outlet />
+      </main>
+      <nav className="tab-bar" aria-label="Main">
+        <Tab to="/business" icon="overview" label="Overview" />
+        <Tab to="/business/collabs" icon="posts" label="My posts" />
+        <Tab to="/business/creators" icon="creators" label="Creators" />
       </nav>
     </>
   );

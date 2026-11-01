@@ -17,6 +17,14 @@ export const requestRoutes = new Hono<AppEnv>()
     const request = await requestService.accept(c.env.DB, c.get('actor'), c.req.param('id'));
     return c.json({ request });
   })
+  .post('/requests/:id/accept-invite', async (c) => {
+    const request = await requestService.acceptInvite(c.env.DB, c.get('actor'), c.req.param('id'));
+    return c.json({ request });
+  })
+  .post('/requests/:id/decline-invite', async (c) => {
+    const request = await requestService.declineInvite(c.env.DB, c.get('actor'), c.req.param('id'));
+    return c.json({ request });
+  })
   .post('/requests/:id/decline', async (c) => {
     const request = await requestService.decline(c.env.DB, c.get('actor'), c.req.param('id'));
     return c.json({ request });

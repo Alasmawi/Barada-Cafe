@@ -1,4 +1,11 @@
-export const REQUEST_STATUSES = ['pending', 'accepted', 'declined', 'submitted', 'done'] as const;
+export const REQUEST_STATUSES = [
+  'invited',
+  'pending',
+  'accepted',
+  'declined',
+  'submitted',
+  'done',
+] as const;
 export type RequestStatus = (typeof REQUEST_STATUSES)[number];
 
 /** Statuses that hold a spot. A spot stays taken once given (no releasing no-shows in v1). */
@@ -10,11 +17,12 @@ export const SPOT_HOLDING_STATUSES = [
 
 /** UI labels. Code keeps the plain status names (brand/README.md). */
 export const STATUS_LABELS: Record<RequestStatus, string> = {
-  pending: 'Brewing',
-  accepted: "Your cup's ready",
+  invited: 'Invited',
+  pending: 'Applied',
+  accepted: 'Accepted',
   submitted: 'Posted',
-  done: 'Served',
-  declined: 'Not this time',
+  done: 'Completed',
+  declined: 'Declined',
 };
 
 export type CollabState = 'open' | 'full' | 'ended';

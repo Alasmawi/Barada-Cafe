@@ -2,10 +2,11 @@ import { useState, type FormEvent, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { CollabDraft } from '../../../shared/api';
 import { addDays, bahrainToday } from '../../../shared/dates';
-import { CollabInput, SPOTS_MAX, SPOTS_MIN } from '../../../shared/schemas';
+import { COLLAB_KINDS, CollabInput, SPOTS_MAX, SPOTS_MIN } from '../../../shared/schemas';
 import { ApiError } from '../../api/client';
 import { useSaveCollab } from '../../api/queries';
 import { AiDraftBox } from './AiDraftBox';
+import { KIND_LABELS } from './CollabShared';
 
 const DEFAULT_RUN_DAYS = 7;
 
@@ -13,6 +14,7 @@ type Draft = Omit<CollabInput, 'spots'> & { spots: string };
 type FieldErrors = Partial<Record<keyof CollabInput, string>>;
 
 const blankDraft = (): Draft => ({
+  kind: 'collab',
   title: '',
   offer: '',
   deliverable: '',
@@ -111,18 +113,32 @@ export function CollabForm({ collabId, initial, onSaved }: Props) {
     });
   };
 
-  const idleLabel = collabId ? 'Save changes' : 'Publish collab';
+  const idleLabel = collabId ? 'Save changes' : 'Publish';
 
   return (
     <>
       {!collabId && <AiDraftBox onDraft={applyDraft} />}
-      <form className="collab-form" onSubmit={submit} noValidate>
+      <form className="form" onSubmit={submit} noValidate>
+        <div className="segmented segmented--two" role="radiogroup" aria-label="What are you posting?">
+          {COLLAB_KINDS.map((kind) => (
+            <button
+              key={kind}
+              className="segmented__option"
+              type="button"
+              role="radio"
+              aria-checked={draft.kind === kind}
+              onClick={() => update('kind', kind)}
+            >
+              {KIND_LABELS[kind]}
+            </button>
+          ))}
+        </div>
         <Field label="Title" error={errors.title}>
           <input
             className="field__input"
             value={draft.title}
             onChange={(event) => update('title', event.target.value)}
-            placeholder="Saffron latte first pour"
+            placeholder="New menu launch"
             aria-invalid={errors.title !== undefined}
           />
         </Field>
@@ -132,7 +148,7 @@ export function CollabForm({ collabId, initial, onSaved }: Props) {
             rows={2}
             value={draft.offer}
             onChange={(event) => update('offer', event.target.value)}
-            placeholder="Two lattes and a slice of kunafa on the house"
+            placeholder="A free meal for two"
             aria-invalid={errors.offer !== undefined}
           />
         </Field>
@@ -142,7 +158,7 @@ export function CollabForm({ collabId, initial, onSaved }: Props) {
             rows={2}
             value={draft.deliverable}
             onChange={(event) => update('deliverable', event.target.value)}
-            placeholder="One Reel of the pour, tagging the café"
+            placeholder="One Reel tagging us"
             aria-invalid={errors.deliverable !== undefined}
           />
         </Field>

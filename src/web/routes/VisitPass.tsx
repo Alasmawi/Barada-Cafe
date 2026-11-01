@@ -1,30 +1,26 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import type { RequestWithCollab } from '../../shared/api';
 import { bahrainToday, shortDate } from '../../shared/dates';
 import { detectPlatform, PLATFORM_LABELS } from '../../shared/postLink';
 import { nextStep } from '../../shared/requestSteps';
 import { useRequest } from '../api/queries';
-import { CupArt } from '../components/CupArt';
-import { BackHeader } from '../components/Layout';
+import { BrandMark } from '../components/BrandMark';
+import { NavBar } from '../components/Layout';
 import { MessageState } from '../components/MessageState';
 import { ScreenState } from '../components/ScreenState';
 import { Skeleton } from '../components/Skeleton';
-import { AcceptedMoment } from '../features/moments/AcceptedMoment';
 import { Journey } from '../features/pass/Journey';
-import { hasSeen, markSeen, prefersReducedMotion } from '../features/moments/motion';
 import { SubmitSheet } from '../features/pass/SubmitSheet';
-import { TiltCard } from '../features/pass/TiltCard';
 
 function PassActions({ request }: { request: RequestWithCollab }) {
   const [adding, setAdding] = useState(false);
-  const label = request.status === 'submitted' ? 'Change my link' : "I've posted — add link";
 
   if (request.status === 'done') {
     return (
       <div className="action-bar">
         <Link className="button button--primary button--wide" to="/">
-          Find your next collab
+          Browse collabs
         </Link>
       </div>
     );
@@ -37,7 +33,7 @@ function PassActions({ request }: { request: RequestWithCollab }) {
         type="button"
         onClick={() => setAdding(true)}
       >
-        {label}
+        {request.status === 'submitted' ? 'Change my link' : 'Add my post link'}
       </button>
       <SubmitSheet
         requestId={request.id}
@@ -49,32 +45,46 @@ function PassActions({ request }: { request: RequestWithCollab }) {
   );
 }
 
-function PassCard({ request }: { request: RequestWithCollab }) {
+function Application({ request }: { request: RequestWithCollab }) {
   const { collab } = request;
-  // Once the visit is behind them the code is only a reference, so it stops asking for attention.
   const visiting = request.status === 'accepted';
+
   return (
-    <TiltCard>
-      <div className="pass__top">
-        <CupArt seed={collab.id} fill={0.85} size={112} />
-        <p className="pass__cafe">
-          {collab.cafeName} · {collab.cafeArea}
-        </p>
-        <h1 className="pass__offer">{collab.offer}</h1>
-      </div>
-      <dl className="facts">
-        <div className="facts__row">
-          <dt>What to post</dt>
+    <>
+      <section className={`brand-banner house--${collab.businessHouse}`}>
+        <BrandMark house={collab.businessHouse} size={64} />
+        <div>
+          <p className="brand-banner__name">{collab.businessName}</p>
+          <p className="brand-banner__detail">{collab.title}</p>
+        </div>
+      </section>
+      <Journey status={request.status} />
+      <p className="note note--centre">
+        {nextStep(request.status, collab.endsOn, bahrainToday())}
+      </p>
+      {visiting && (
+        <section className="code-card">
+          <p className="note">Show this code at {collab.businessName}</p>
+          <p className="code-card__code">{request.passCode}</p>
+        </section>
+      )}
+      <dl className="group">
+        <div className="info-row">
+          <dt>You get</dt>
+          <dd>{collab.offer}</dd>
+        </div>
+        <div className="info-row">
+          <dt>You post</dt>
           <dd>{collab.deliverable}</dd>
         </div>
         {visiting && (
-          <div className="facts__row">
+          <div className="info-row">
             <dt>Visit by</dt>
             <dd>{shortDate(collab.endsOn)}</dd>
           </div>
         )}
         {request.postUrl && (
-          <div className="facts__row">
+          <div className="info-row">
             <dt>Your link</dt>
             <dd>
               <a href={request.postUrl} target="_blank" rel="noreferrer">
@@ -84,79 +94,40 @@ function PassCard({ request }: { request: RequestWithCollab }) {
           </div>
         )}
       </dl>
-      <div className="pass__stub">
-        <p className="pass__hint">{visiting ? 'Show this at the counter' : 'Pass code'}</p>
-        <p className={`pass__code ${visiting ? '' : 'pass__code--used'}`}>{request.passCode}</p>
-      </div>
-    </TiltCard>
-  );
-}
-
-function PassView({ request }: { request: RequestWithCollab }) {
-  const [moment, setMoment] = useState(
-    () => request.status === 'accepted' && !hasSeen(request.id) && !prefersReducedMotion(),
-  );
-  const finishMoment = useCallback(() => {
-    markSeen(request.id);
-    setMoment(false);
-  }, [request.id]);
-
-  if (moment) return <AcceptedMoment onDone={finishMoment} />;
-
-  return (
-    <div className="pass-view">
-      <Journey status={request.status} />
-      <p className="pass__next">
-        {nextStep(request.status, request.collab.endsOn, bahrainToday())}
-      </p>
-      <PassCard request={request} />
       <PassActions request={request} />
-    </div>
+    </>
   );
-}
-
-function PassSkeleton() {
-  return <Skeleton className="skeleton--pass" />;
 }
 
 export function VisitPass() {
   const { id = '' } = useParams();
   const request = useRequest(id);
+  const backToList = (
+    <Link className="button" to="/me">
+      Back to Applications
+    </Link>
+  );
 
   return (
     <>
-      <BackHeader to="/me" label="My collabs" />
+      <NavBar to="/me" title="Application" />
       <main className="page page--bar">
         <ScreenState
           query={request}
-          errorTitle="The pass didn't load."
-          skeleton={<PassSkeleton />}
-          notFound={
-            <MessageState
-              art="empty"
-              title="This pass has been removed."
-              action={
-                <Link className="button" to="/me">
-                  Back to my collabs
-                </Link>
-              }
-            />
-          }
+          errorTitle="Couldn't load this application."
+          skeleton={<Skeleton className="skeleton--card" count={2} />}
+          notFound={<MessageState art="empty" title="This has been removed." action={backToList} />}
           isEmpty={({ request: current }) => current.passCode === null}
           empty={
             <MessageState
               art="empty"
-              title="This pass isn't ready yet."
-              body="It appears here when the café accepts you."
-              action={
-                <Link className="button" to="/me">
-                  Back to my collabs
-                </Link>
-              }
+              title="Not accepted yet"
+              body="You'll see the details here once the business accepts you."
+              action={backToList}
             />
           }
         >
-          {({ request: current }) => <PassView request={current} />}
+          {({ request: current }) => <Application request={current} />}
         </ScreenState>
       </main>
     </>

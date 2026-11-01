@@ -7,12 +7,12 @@ export function assertCreator(actor: User): void {
   if (actor.role !== 'creator') throw forbidden('Only creators can do this.');
 }
 
-/** Narrows to staff with a café, for callers that need the café id. */
-export function assertStaff(actor: User): asserts actor is User & { cafeId: string } {
-  if (actor.role !== 'cafe_staff' || !actor.cafeId) throw forbidden('Only café staff can do this.');
+/** Narrows to staff with a business, for callers that need the business id. */
+export function assertStaff(actor: User): asserts actor is User & { businessId: string } {
+  if (actor.role !== 'business' || !actor.businessId) throw forbidden('Only business staff can do this.');
 }
 
-export function assertStaffOf(actor: User, cafeId: string): void {
+export function assertStaffOf(actor: User, businessId: string): void {
   assertStaff(actor);
-  if (actor.cafeId !== cafeId) throw forbidden('This collab belongs to another café.');
+  if (actor.businessId !== businessId) throw forbidden('This collab belongs to another business.');
 }

@@ -1,25 +1,46 @@
-import type { CollabInput } from './schemas';
+import type { BusinessType, House } from './houses';
+import type { CollabInput, CollabKind } from './schemas';
 import type { CollabState, RequestStatus } from './status';
 
 /** JSON shapes the API returns. The web client imports these, so the two can't drift. */
 
-export type Role = 'cafe_staff' | 'creator';
+export type Role = 'business' | 'creator';
 
 export type User = {
   id: string;
+  username: string;
   name: string;
   role: Role;
-  cafeId: string | null;
-  cafeName: string | null;
+  businessId: string | null;
+  businessName: string | null;
+  businessType: BusinessType | null;
+  businessHouse: House | null;
   handle: string | null;
-  avatarSeed: string;
+  tags: string[];
+  signature: string | null;
+};
+
+/** What a business sees when it searches for creators. */
+export type CreatorCard = {
+  id: string;
+  name: string;
+  handle: string | null;
+  tags: string[];
+  signature: string | null;
+  servedCount: number;
+  summary: string;
+  /** False while the summary is only the plain facts, so the AI can be asked for one. */
+  isAiSummary: boolean;
 };
 
 export type Collab = {
   id: string;
-  cafeId: string;
-  cafeName: string;
-  cafeArea: string;
+  kind: CollabKind;
+  businessId: string;
+  businessName: string;
+  businessArea: string;
+  businessType: BusinessType;
+  businessHouse: House;
   title: string;
   offer: string;
   deliverable: string;
@@ -46,11 +67,12 @@ export type CollabRequest = {
   completedAt: string | null;
 };
 
-/** A request as the café sees it in the inbox. */
+/** A request as the business sees it in the inbox. */
 export type InboxRequest = CollabRequest & {
   creatorName: string;
   creatorHandle: string | null;
-  creatorAvatarSeed: string;
+  creatorTags: string[];
+  creatorSignature: string | null;
 };
 
 /** A request as the creator sees it, with the collab it belongs to. */
@@ -60,12 +82,14 @@ export type RequestWithCollab = CollabRequest & { collab: Collab };
 export type CollabDraft = {
   draft: Partial<CollabInput>;
   unfilled: (keyof CollabInput)[];
-  /** Set when the AI gave us nothing usable, so the café knows the form is theirs. */
+  /** Set when the AI gave us nothing usable, so the business knows the form is theirs. */
   warning: string | null;
 };
 
 export type ErrorCode =
-  | 'UNKNOWN_USER'
+  | 'NOT_SIGNED_IN'
+  | 'WRONG_LOGIN'
+  | 'USERNAME_TAKEN'
   | 'FORBIDDEN'
   | 'NOT_FOUND'
   | 'VALIDATION_FAILED'

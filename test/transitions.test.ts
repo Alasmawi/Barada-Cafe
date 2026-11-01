@@ -35,7 +35,7 @@ describe('request status machine', () => {
     const accepted = await accept(requestId, staffId);
     const { request } = await accepted.json<{ request: CollabRequest }>();
     expect(request.status).toBe('accepted');
-    expect(request.passCode).toMatch(/^FJ-[A-HJ-NP-Z2-9]{4}$/);
+    expect(request.passCode).toMatch(/^CB-[A-HJ-NP-Z2-9]{4}$/);
 
     await submitLink(requestId, creatorId);
     expect((await getRequest(requestId)).status).toBe('submitted');

@@ -1,57 +1,34 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { User } from '../shared/api';
-
-const STORAGE_KEY = 'finjan.user';
-
-function readStoredUser(): User | null {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? (JSON.parse(stored) as User) : null;
-  } catch {
-    return null;
-  }
-}
-
-function storeUser(user: User | null): void {
-  try {
-    if (user) localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-    else localStorage.removeItem(STORAGE_KEY);
-  } catch {
-    // Private mode: the session lasts until the page is closed.
-  }
-}
-
-let currentUser = readStoredUser();
-
-/** Read by the API client, which runs outside React. */
-export const actingUserId = () => currentUser?.id ?? null;
-
-function setCurrentUser(user: User | null): void {
-  currentUser = user;
-  storeUser(user);
-}
+import { api } from './api/client';
 
 type Session = {
   user: User | null;
+  /** True until we know whether the browser holds a session. */
+  loading: boolean;
   signIn: (user: User) => void;
   signOut: () => void;
 };
 
 const SessionContext = createContext<Session | null>(null);
 
+/** The session itself is an HttpOnly cookie, which this code can't read. It asks who it is. */
 export function SessionProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState(currentUser);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const signIn = useCallback((next: User) => {
-    setCurrentUser(next);
-    setUser(next);
-  }, []);
-  const signOut = useCallback(() => {
-    setCurrentUser(null);
-    setUser(null);
+  useEffect(() => {
+    api
+      .me()
+      .then(({ user: current }) => setUser(current))
+      .catch(() => setUser(null))
+      .finally(() => setLoading(false));
   }, []);
 
-  const session = useMemo(() => ({ user, signIn, signOut }), [user, signIn, signOut]);
+  const signIn = useCallback((next: User) => setUser(next), []);
+  const signOut = useCallback(() => setUser(null), []);
+
+  const session = useMemo(() => ({ user, loading, signIn, signOut }), [user, loading, signIn, signOut]);
   return <SessionContext.Provider value={session}>{children}</SessionContext.Provider>;
 }
 

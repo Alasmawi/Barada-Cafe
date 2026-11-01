@@ -8,7 +8,7 @@ import {
   decline,
   errorCode,
   getRequest,
-  makeCafe,
+  makeBusiness,
   makeCollab,
   makeCreators,
   makeRequestIn,
@@ -30,14 +30,14 @@ async function expectForbidden(response: Response) {
 }
 
 describe('who is acting', () => {
-  it('answers 401 with no X-User-Id', async () => {
+  it('answers 401 with no session', async () => {
     const response = await api('/collabs');
 
     expect(response.status).toBe(401);
-    expect(await errorCode(response)).toBe('UNKNOWN_USER');
+    expect(await errorCode(response)).toBe('NOT_SIGNED_IN');
   });
 
-  it('answers 401 for an unknown X-User-Id', async () => {
+  it('answers 401 for a user who does not exist', async () => {
     const response = await api('/collabs', { as: 'usr_nobody' });
 
     expect(response.status).toBe(401);
@@ -96,10 +96,10 @@ describe('a creator', () => {
   });
 });
 
-describe('staff of another café', () => {
+describe('staff of another business', () => {
   it('cannot see requests, accept, decline, complete or edit', async () => {
     const { collabId, requestId } = await makeRequestIn('pending');
-    const { staff } = await makeCafe();
+    const { staff } = await makeBusiness();
     const outsider = staff[0]!;
 
     await expectForbidden(await api(`/collabs/${collabId}/requests`, { as: outsider }));

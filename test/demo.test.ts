@@ -4,36 +4,36 @@ import type { Collab, RequestWithCollab, User } from '../src/shared/api';
 import { REQUEST_STATUSES } from '../src/shared/status';
 import { accept, api, countHeldSpots, errorCode } from './helpers';
 
-type UsersBody = { users: User[]; lastResetAt: string | null };
+type AccountsBody = { accounts: User[]; lastResetAt: string | null };
 
 const resetDemo = () => api('/demo/reset', { method: 'POST' });
 
 describe('demo data', () => {
   it('seeds itself on first boot when the database is empty', async () => {
     await env.DB.batch(
-      ['requests', 'collabs', 'users', 'cafes'].map((table) =>
+      ['requests', 'collabs', 'users', 'businesses'].map((table) =>
         env.DB.prepare(`DELETE FROM ${table}`),
       ),
     );
 
-    const response = await api('/users');
-    const { users, lastResetAt } = await response.json<UsersBody>();
+    const response = await api('/demo/accounts');
+    const { accounts, lastResetAt } = await response.json<AccountsBody>();
 
-    expect(users.length).toBeGreaterThan(0);
+    expect(accounts.length).toBeGreaterThan(0);
     expect(lastResetAt).not.toBeNull();
   });
 
-  it('gives Barada two staff and leaves a neighbour to show the cross-café rule', async () => {
+  it('gives Barada two staff and leaves a neighbour to show the cross-business rule', async () => {
     await resetDemo();
 
-    const { users } = await (await api('/users')).json<UsersBody>();
-    const staffByCafe = Object.groupBy(
-      users.filter(({ role }) => role === 'cafe_staff'),
-      ({ cafeId }) => cafeId!,
+    const { accounts } = await (await api('/demo/accounts')).json<AccountsBody>();
+    const staffByBusiness = Object.groupBy(
+      accounts.filter(({ role }) => role === 'business'),
+      ({ businessId }) => businessId!,
     );
 
-    expect(staffByCafe['caf_barada']).toHaveLength(2);
-    expect(Object.keys(staffByCafe).length).toBeGreaterThan(1);
+    expect(staffByBusiness['biz_barada']).toHaveLength(2);
+    expect(Object.keys(staffByBusiness).length).toBeGreaterThan(1);
   });
 
   it('gives Noor a request in every status', async () => {
@@ -58,7 +58,7 @@ describe('demo data', () => {
 
     const feed = await api('/collabs', { as: 'usr_noor' });
     const { collabs } = await feed.json<{ collabs: Collab[] }>();
-    const mine = await api('/cafe/collabs', { as: 'usr_huda' });
+    const mine = await api('/business/collabs', { as: 'usr_huda' });
     const barada = (await mine.json<{ collabs: Collab[] }>()).collabs;
 
     expect(collabs.map(({ state }) => state)).toContain('open');

@@ -19,7 +19,8 @@ type RequestRow = {
 type InboxRow = RequestRow & {
   creator_name: string;
   creator_handle: string | null;
-  creator_avatar_seed: string;
+  creator_tags: string;
+  creator_signature: string | null;
 };
 
 function toRequest(row: RequestRow): CollabRequest {
@@ -61,7 +62,8 @@ export async function listInbox(db: D1Database, collabId: string): Promise<Inbox
       `SELECT requests.*,
               users.name AS creator_name,
               users.handle AS creator_handle,
-              users.avatar_seed AS creator_avatar_seed
+              users.tags AS creator_tags,
+              users.signature AS creator_signature
        FROM requests
        JOIN users ON users.id = requests.creator_id
        WHERE requests.collab_id = ?
@@ -73,7 +75,8 @@ export async function listInbox(db: D1Database, collabId: string): Promise<Inbox
     ...toRequest(row),
     creatorName: row.creator_name,
     creatorHandle: row.creator_handle,
-    creatorAvatarSeed: row.creator_avatar_seed,
+    creatorTags: row.creator_tags ? row.creator_tags.split(',') : [],
+    creatorSignature: row.creator_signature,
   }));
 }
 
@@ -86,6 +89,42 @@ export async function listForCreator(
     .bind(creatorId)
     .all<RequestRow>();
   return results.map(toRequest);
+}
+
+/** The same rule as asking to join: an invite can't be sent to a collab with no spots left. */
+export async function insertInviteIfCollabOpen(
+  db: D1Database,
+  invite: {
+    id: string;
+    collabId: string;
+    creatorId: string;
+    invitedBy: string;
+    createdAt: string;
+    today: string;
+  },
+): Promise<boolean> {
+  const { meta } = await db
+    .prepare(
+      `INSERT INTO requests (id, collab_id, creator_id, pitch, status, invited_by, created_at)
+       SELECT ?1, c.id, ?3, '', 'invited', ?4, ?5
+       FROM collabs c
+       WHERE c.id = ?2
+         AND c.ends_on >= ?6
+         AND (SELECT COUNT(*) FROM requests taken
+              WHERE taken.collab_id = c.id
+                AND taken.status IN (${SPOT_HOLDING_SQL})) < c.spots
+       ON CONFLICT (collab_id, creator_id) DO NOTHING`,
+    )
+    .bind(
+      invite.id,
+      invite.collabId,
+      invite.creatorId,
+      invite.invitedBy,
+      invite.createdAt,
+      invite.today,
+    )
+    .run();
+  return meta.changes === 1;
 }
 
 /**
@@ -138,35 +177,49 @@ export async function insertIfCollabOpen(
  */
 export async function acceptIfSpotAvailable(
   db: D1Database,
-  accept: { id: string; decidedAt: string; decidedBy: string; passCode: string; today: string },
+  accept: {
+    id: string;
+    from: 'pending' | 'invited';
+    decidedAt: string;
+    decidedBy: string;
+    passCode: string;
+    today: string;
+  },
 ): Promise<boolean> {
   const { meta } = await db
     .prepare(
       `UPDATE requests
        SET status = 'accepted', decided_at = ?1, decided_by = ?2, pass_code = ?3
        WHERE id = ?4
-         AND status = 'pending'
+         AND status = ?6
          AND (SELECT ends_on FROM collabs WHERE id = requests.collab_id) >= ?5
          AND (SELECT COUNT(*) FROM requests AS taken
               WHERE taken.collab_id = requests.collab_id
                 AND taken.status IN (${SPOT_HOLDING_SQL}))
              < (SELECT spots FROM collabs WHERE id = requests.collab_id)`,
     )
-    .bind(accept.decidedAt, accept.decidedBy, accept.passCode, accept.id, accept.today)
+    .bind(
+      accept.decidedAt,
+      accept.decidedBy,
+      accept.passCode,
+      accept.id,
+      accept.today,
+      accept.from,
+    )
     .run();
   return meta.changes === 1;
 }
 
-export async function declineIfPending(
+export async function declineIfOpen(
   db: D1Database,
-  decline: { id: string; decidedAt: string; decidedBy: string },
+  decline: { id: string; from: 'pending' | 'invited'; decidedAt: string; decidedBy: string },
 ): Promise<boolean> {
   const { meta } = await db
     .prepare(
       `UPDATE requests SET status = 'declined', decided_at = ?, decided_by = ?
-       WHERE id = ? AND status = 'pending'`,
+       WHERE id = ? AND status = ?`,
     )
-    .bind(decline.decidedAt, decline.decidedBy, decline.id)
+    .bind(decline.decidedAt, decline.decidedBy, decline.id, decline.from)
     .run();
   return meta.changes === 1;
 }

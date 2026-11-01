@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { lastResetAt, seed, seedIfEmpty } from '../demo/seed';
+import { DEMO_PASSWORD_HASH, lastResetAt, seed, seedIfEmpty } from '../demo/seed';
 import type { AppEnv } from '../env';
 import { DomainError } from '../http/errors';
 import * as usersRepo from '../repositories/usersRepo';
@@ -18,13 +18,13 @@ export const publicRoutes = new Hono<AppEnv>()
     }
     return c.json({ ok: true, schema: row.name });
   })
-  .get('/users', async (c) => {
+  .get('/demo/accounts', async (c) => {
     await seedIfEmpty(c.env.DB);
-    const [users, resetAt] = await Promise.all([
-      usersRepo.listAll(c.env.DB),
+    const [accounts, resetAt] = await Promise.all([
+      usersRepo.listDemoAccounts(c.env.DB, DEMO_PASSWORD_HASH),
       lastResetAt(c.env.DB),
     ]);
-    return c.json({ users, lastResetAt: resetAt });
+    return c.json({ accounts, lastResetAt: resetAt });
   })
   .post('/demo/reset', async (c) => {
     await seed(c.env.DB);

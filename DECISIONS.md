@@ -1,5 +1,26 @@
 # Decisions
 
+## Collab Board: the current design
+
+This replaces the Finjan theme described in the older sections below.
+
+- **Finjan is gone.** The name, cups, coffee wording, gold on night, animations and brand assets are
+  all removed. It's now Collab Board, in cream and red.
+- **Native on a phone.** System font, large titles, grouped lists, a tab bar with icons, sheets with
+  a grabber, and installable to the home screen. No tilt, handwriting or decorative motion.
+- **Squares are businesses, circles are creators.** That rule runs through every screen, so the two
+  sides can't be confused. Each also has its own sign-up path, tabs and vocabulary.
+- **Collabs and offers.** A post has a kind, and both follow the same flow: creators apply, and the
+  business accepts. What separates them is only the label and the Browse filter, so far.
+- **Word changes.** Collabs replaced briefs again, in the code too. Statuses are plain: Applied,
+  Accepted, Posted, Completed and Declined.
+- **Business identity is a colour and a mark.** Five curated pairs, picked at sign-up. Per-brand
+  typefaces were dropped because mixed fonts were what made the app feel unlike a phone app.
+- **Rings stay as specified,** with colours retuned for cream and heavier lines for small sizes.
+- **The accepted animation, served animation and tilting pass are gone,** replaced by a code card
+  and a plain confirmation.
+
+
 Changes from [PLAN.md](PLAN.md), and choices it left open. The flags in PLAN §2.2 were built with
 their listed defaults unless this file says otherwise.
 
@@ -110,11 +131,46 @@ A pass over every screen, judged as a first-time user, changed these:
 
 From PLAN §2.3. The defaults in brackets are what's built.
 
-1. Should a café be able to release a no-show's spot? (No)
+1. Should a business be able to release a no-show's spot? (No)
 2. Is one request per creator per collab right, or can a declined creator try again? (One)
-3. Should creators see collabs that are already full? (Yes, under Full collabs)
+3. Should creators see collabs that are already full? (Yes, on the wall)
+
+## The Wall
+
+- **The board is for any business,** so a business gets a house: a colour, a typeface and a seal.
+  Cups stay as Finjan's symbol for spots. Foil cups no longer identify anyone.
+- **Briefs replaced collabs everywhere,** including the code. `requests` keeps its name, because
+  "application" doesn't fit an invite, and the word never appears on screen.
+- **A ring is drawn from tags, and nothing else.** One perfect circle per tag, up to six. Niches are
+  plain, formats carry evenly spaced dots, and the vibe sets the line weight. It all spins as one
+  group, so the speed is the same. Two creators with the same tags get the same ring.
+- **The dots are what show the spin.** A perfect circle looks the same at every angle. A format is
+  required, which guarantees every ring has dots.
+- **Real accounts replaced the `X-User-Id` header.** The brief allowed a faked login, but sign-up
+  needs real ones. Sessions are random tokens, stored as hashes, in an `HttpOnly` cookie.
+- **The schema in `0001_init.sql` was rewritten rather than migrated,** since nothing is deployed.
+- **Invites hold no spot.** Accepting one goes through the same guard as staff accepting, so more
+  invites can go out than there are spots, and the first to accept get them.
+- **AI summaries are on demand, with facts as the default.** Every result starts with a plain line
+  from the database, so search costs no AI allowance. Only the facts reach the model, and answers
+  with markup or links are dropped.
+- **"The feel we're after" was left out of briefs.** It was in the design, but no one asked for the
+  field, and it would add to the post form.
+
+## Deployment notes
+
+- **The product is Finjan Board,** so the name says what it is. The logo stays Finjan, and the
+  database keeps the name `finjan`.
+- **The real model was checked on the live site.** Five sentences gave good drafts, a partial draft,
+  a clean fallback for nonsense, and a blocked injection attempt. It first returned markup in a
+  title, so draft fields containing `<` or `>` are now dropped.
+- **Vague sentences can still get a guessed spot count,** as the model filled in 1 when none was
+  given. The business reviews every field before publishing.
 
 ## Next steps
+
+- Say what an offer means in practice, if it should differ from a collab. It might skip applying
+  or need no post in return.
 
 - Per-device demo spaces (⚑4) if global reset gets in the way of several reviewers at once.
 - A per-user limit on the AI draft, if the free daily allowance runs out during reviews.

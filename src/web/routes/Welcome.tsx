@@ -1,71 +1,122 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import lockup from '../../../brand/svg/finjan-lockup.svg';
-import scene from '../../../brand/svg/scene-serve.svg';
-import type { Role, User } from '../../shared/api';
-import { useResetDemo, useUsers } from '../api/queries';
-import { CupArt } from '../components/CupArt';
+import { useState, type FormEvent } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import type { User } from '../../shared/api';
+import { ApiError } from '../api/client';
+import { logIn, useDemoAccounts, useResetDemo } from '../api/queries';
+import { BrandMark } from '../components/BrandMark';
 import { DemoMenu } from '../components/DemoMenu';
+import { Icon } from '../components/Icon';
+import { HOME } from '../components/Layout';
 import { MessageState } from '../components/MessageState';
 import { ScreenState } from '../components/ScreenState';
 import { Skeleton } from '../components/Skeleton';
+import { Ring } from '../features/rings/Ring';
 import { useSession } from '../session';
 
-const SIDES: { role: Role; label: string }[] = [
-  { role: 'creator', label: 'I make content' },
-  { role: 'cafe_staff', label: 'I run a café' },
-];
+/** Shown on this screen on purpose: every demo account shares it. */
+const DEMO_PASSWORD = 'demo-password';
 
-function ChooseUser({ users }: { users: User[] }) {
+function useEnter() {
   const { signIn } = useSession();
   const navigate = useNavigate();
-  const [side, setSide] = useState<Role>('creator');
-
-  const choose = (user: User) => {
+  return (user: User) => {
     signIn(user);
-    navigate(user.role === 'creator' ? '/' : '/cafe', { replace: true });
+    navigate(HOME[user.role], { replace: true });
+  };
+}
+
+function LoginSheetForm() {
+  const enter = useEnter();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [failure, setFailure] = useState<string | null>(null);
+  const [sending, setSending] = useState(false);
+
+  const send = async (event: FormEvent) => {
+    event.preventDefault();
+    setSending(true);
+    setFailure(null);
+    try {
+      enter((await logIn({ username, password })).user);
+    } catch (error) {
+      setFailure(
+        error instanceof ApiError && error.code === 'WRONG_LOGIN'
+          ? error.message
+          : "Couldn't log in. Check your connection, then try again.",
+      );
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
-    <section>
-      <div className="segmented segmented--two" role="radiogroup" aria-label="Choose a side">
-        {SIDES.map(({ role, label }) => (
-          <button
-            key={role}
-            className="segmented__option"
-            type="button"
-            role="radio"
-            aria-checked={side === role}
-            onClick={() => setSide(role)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-      <ul className="user-group__list">
-        {users
-          .filter((user) => user.role === side)
-          .map((user) => (
-            <li key={user.id}>
-              <button className="user-row" type="button" onClick={() => choose(user)}>
-                <CupArt seed={user.avatarSeed} size={40} />
-                <span className="user-row__name">{user.name}</span>
-                <span className="user-row__detail">{user.handle ?? user.cafeName}</span>
-              </button>
-            </li>
-          ))}
-      </ul>
-    </section>
+    <form className="form" onSubmit={send}>
+      <label className="field">
+        <span className="field__label">Username</span>
+        <input
+          className="field__input"
+          value={username}
+          onChange={(event) => setUsername(event.target.value)}
+          autoComplete="username"
+          autoCapitalize="none"
+        />
+      </label>
+      <label className="field">
+        <span className="field__label">Password</span>
+        <input
+          className="field__input"
+          type="password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          autoComplete="current-password"
+        />
+      </label>
+      {failure && (
+        <p className="form-error" role="alert">
+          {failure}
+        </p>
+      )}
+      <button
+        className="button button--primary button--wide"
+        type="submit"
+        disabled={sending || !username || !password}
+      >
+        {sending ? 'Logging in…' : 'Log in'}
+      </button>
+    </form>
   );
 }
 
-function EmptyMajlis() {
+function DemoAccount({ account }: { account: User }) {
+  const enter = useEnter();
+  const open = async () =>
+    enter((await logIn({ username: account.username, password: DEMO_PASSWORD })).user);
+
+  return (
+    <li>
+      <button className="list-row" type="button" onClick={open}>
+        {account.businessHouse ? (
+          <BrandMark house={account.businessHouse} size={40} />
+        ) : (
+          <Ring tags={account.tags} size={40} name={account.name} />
+        )}
+        <span className="list-row__text">
+          <span className="list-row__title">{account.businessName ?? account.name}</span>
+          <span className="list-row__detail">{account.handle ?? `${account.name}, staff`}</span>
+        </span>
+        <Icon name="chevron" size={18} />
+      </button>
+    </li>
+  );
+}
+
+function EmptyDemo() {
   const reset = useResetDemo();
   return (
     <MessageState
       art="empty"
-      title="No one's here yet."
-      body="Reset the demo to bring back the sample cafés and creators."
+      title="No demo accounts yet"
+      body="Reset the demo to bring back the sample businesses and creators."
       action={
         <button
           className="button button--primary"
@@ -81,29 +132,70 @@ function EmptyMajlis() {
 }
 
 export function Welcome() {
-  const users = useUsers();
+  const accounts = useDemoAccounts();
 
   return (
     <main className="page welcome">
-      <div className="welcome__demo">
+      <div className="welcome__top">
+        <img src="/icon.svg" alt="" width={56} height={56} />
         <DemoMenu />
       </div>
-      <img className="welcome__lockup" src={lockup} alt="Finjan · فنجان" />
-      <img className="welcome__scene" src={scene} alt="" />
-      <h1 className="welcome__title">Every cup is a spot.</h1>
-      <p className="welcome__intro">
-        The collab board for cafés and creators. Cafés post collabs, creators ask to join, visit
-        and share a post.
-      </p>
+      <h1 className="welcome__title">Collab Board</h1>
+      <p className="welcome__intro">Businesses post collabs and offers. Creators apply.</p>
 
+      <div className="choice-list">
+        <Link className="choice-card" to="/signup/business">
+          <span className="choice-card__mark choice-card__mark--business" />
+          <span className="list-row__text">
+            <span className="list-row__title">I'm a business</span>
+            <span className="list-row__detail">Post collabs and offers, and choose your creators</span>
+          </span>
+          <Icon name="chevron" size={18} />
+        </Link>
+        <Link className="choice-card" to="/signup/creator">
+          <span className="choice-card__mark choice-card__mark--creator" />
+          <span className="list-row__text">
+            <span className="list-row__title">I'm a creator</span>
+            <span className="list-row__detail">Browse collabs and offers, and apply</span>
+          </span>
+          <Icon name="chevron" size={18} />
+        </Link>
+      </div>
+
+      <h2 className="group-label">Already have an account?</h2>
+      <section className="group group--padded">
+        <LoginSheetForm />
+      </section>
+
+      <h2 className="group-label">Try the demo</h2>
+      <p className="note note--inset">Tap an account. The password for all of them is {DEMO_PASSWORD}.</p>
       <ScreenState
-        query={users}
-        errorTitle="We couldn't seat you. Check your connection."
+        query={accounts}
+        errorTitle="Couldn't load the demo accounts."
         skeleton={<Skeleton className="skeleton--row" count={3} />}
-        isEmpty={({ users: list }) => list.length === 0}
-        empty={<EmptyMajlis />}
+        isEmpty={(data) => data.accounts.length === 0}
+        empty={<EmptyDemo />}
       >
-        {({ users: list }) => <ChooseUser users={list} />}
+        {(data) => (
+          <>
+            <h3 className="group-label">Businesses</h3>
+            <ul className="group">
+              {data.accounts
+                .filter(({ role }) => role === 'business')
+                .map((account) => (
+                  <DemoAccount key={account.id} account={account} />
+                ))}
+            </ul>
+            <h3 className="group-label">Creators</h3>
+            <ul className="group">
+              {data.accounts
+                .filter(({ role }) => role === 'creator')
+                .map((account) => (
+                  <DemoAccount key={account.id} account={account} />
+                ))}
+            </ul>
+          </>
+        )}
       </ScreenState>
     </main>
   );

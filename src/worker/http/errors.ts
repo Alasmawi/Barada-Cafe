@@ -27,7 +27,7 @@ export const handleError: ErrorHandler<AppEnv> = (error, c) => {
 
   console.error('Unexpected error', error);
   const body: ErrorBody = {
-    error: { code: 'UNEXPECTED', message: 'Something spilled on our side. Please try again.' },
+    error: { code: 'UNEXPECTED', message: 'Something went wrong on our side. Try again.' },
   };
   return c.json(body, 500);
 };

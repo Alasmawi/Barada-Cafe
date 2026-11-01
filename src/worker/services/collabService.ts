@@ -48,9 +48,9 @@ export async function getDetail(
   return { collab, myRequest };
 }
 
-export async function listForCafe(db: D1Database, actor: User): Promise<Collab[]> {
+export async function listForBusiness(db: D1Database, actor: User): Promise<Collab[]> {
   assertStaff(actor);
-  return collabsRepo.listForCafe(db, actor.cafeId, bahrainToday());
+  return collabsRepo.listForBusiness(db, actor.businessId, bahrainToday());
 }
 
 export async function create(db: D1Database, actor: User, input: CollabInput): Promise<Collab> {
@@ -62,7 +62,7 @@ export async function create(db: D1Database, actor: User, input: CollabInput): P
   await collabsRepo.insert(db, {
     ...input,
     id,
-    cafeId: actor.cafeId,
+    businessId: actor.businessId,
     createdBy: actor.id,
     createdAt: new Date().toISOString(),
   });
@@ -77,7 +77,7 @@ export async function update(
 ): Promise<Collab> {
   const today = bahrainToday();
   const collab = await loadCollab(db, id, today);
-  assertStaffOf(actor, collab.cafeId);
+  assertStaffOf(actor, collab.businessId);
   // An ended collab can have its copy fixed without having to invent a new date.
   if (input.endsOn !== collab.endsOn) assertEndDateNotPast(input.endsOn, today);
 

@@ -7,17 +7,18 @@ const BASE_URL = process.env.BASE_URL ?? 'http://localhost:5173';
 const WIDTHS = [360, 390];
 const MODES = ['normal', 'slow', 'error', 'empty'];
 
-const USERS = {
-  creator: { id: 'usr_noor', name: 'Noor', role: 'creator', cafeId: null, avatarSeed: 'usr_noor' },
-  staff: { id: 'usr_huda', name: 'Huda', role: 'cafe_staff', cafeId: 'caf_barada', avatarSeed: 'usr_huda' },
-};
+const ACCOUNTS = { creator: 'noor', staff: 'huda' };
+const DEMO_PASSWORD = 'demo-password';
 
 const ROUTES = {
-  creator: ['/welcome', '/', '/collabs/col_saffron', '/collabs/col_missing', '/me',
+  creator: ['/', '/collabs/col_saffron', '/collabs/col_oud', '/collabs/col_missing', '/me', '/profile',
     '/me/passes/req_brunch_noor', '/me/passes/req_lastcup_noor'],
-  staff: ['/cafe', '/cafe/collabs/new', '/cafe/collabs/col_saffron',
-    '/cafe/collabs/col_saffron/edit', '/cafe/collabs/col_cupping'],
+  staff: ['/business', '/business/collabs', '/business/creators', '/business/collabs/new',
+    '/business/collabs/col_saffron', '/business/collabs/col_saffron/edit', '/business/collabs/col_cupping'],
 };
+
+/** These screens show nothing from the server while they load, so they have no skeleton. */
+const NO_REMOTE_DATA = ['/business/collabs/new', '/profile'];
 
 const browser = await chromium.launch({ channel: 'chrome', headless: true });
 const failures = [];
@@ -29,13 +30,12 @@ for (const [role, routes] of Object.entries(ROUTES)) {
   for (const width of WIDTHS) {
     for (const mode of MODES) {
       const context = await browser.newContext({ viewport: { width, height: 780 } });
-      await context.addInitScript(
-        ({ user, preview }) => {
-          localStorage.setItem('finjan.user', JSON.stringify(user));
-          sessionStorage.setItem('finjan.preview', preview);
-        },
-        { user: USERS[role], preview: mode },
-      );
+      await context.request.post(`${BASE_URL}/api/v1/auth/login`, {
+        data: { username: ACCOUNTS[role], password: DEMO_PASSWORD },
+      });
+      await context.addInitScript((preview) => {
+        sessionStorage.setItem('cb.preview', preview);
+      }, mode);
       const page = await context.newPage();
       page.on('pageerror', (error) => failures.push(`${role} ${mode}: ${error.message}`));
 
@@ -56,7 +56,7 @@ for (const [role, routes] of Object.entries(ROUTES)) {
         checked += 1;
         if (screen.overflow) failures.push(`${label}: scrolls sideways`);
         if (screen.alert && !screen.retry) failures.push(`${label}: error with no way forward`);
-        if (mode === 'slow' && route !== '/cafe/collabs/new' && screen.skeletons === 0) {
+        if (mode === 'slow' && !NO_REMOTE_DATA.includes(route) && screen.skeletons === 0) {
           failures.push(`${label}: no skeleton while loading`);
         }
       }

@@ -2,15 +2,26 @@ import type { CollabDraft } from '../../shared/api';
 import { lastDayOfMonth } from '../../shared/dates';
 import { CollabInput, SPOTS_MAX, SPOTS_MIN } from '../../shared/schemas';
 import type { AiClient } from './aiClient';
+import { generateWithTimeout } from './withTimeout';
 
 /**
  * If an attacker fully controls the model's output, the most they can do is put text in
- * the acting café's own unpublished form, which only staff can read and must then publish
+ * the acting business's own unpublished form, which only staff can read and must then publish
  * themselves. The model has no tools and sees no data but the sentence. That limit comes
  * from this code, not from the prompt: every field is validated, and unknown ones dropped.
  */
 
-export const AI_TIMEOUT_MS = 8000;
+const DRAFT_SCHEMA = {
+  type: 'object',
+  properties: {
+    title: { type: 'string' },
+    offer: { type: 'string' },
+    deliverable: { type: 'string' },
+    spots: { type: 'integer' },
+    endsOn: { type: 'string' },
+  },
+};
+
 const FIELDS = ['title', 'offer', 'deliverable', 'spots', 'endsOn'] as const;
 const NOTHING_USABLE = "The AI couldn't help this time — the form is all yours.";
 
@@ -18,7 +29,7 @@ const THIS_MONTH = /\b(this month|end of (the )?month)\b/i;
 
 function systemPrompt(today: string): string {
   return [
-    "You turn one sentence from a café owner into a draft collab for content creators.",
+    "You turn one sentence from a business owner into a draft collab for content creators.",
     `Today is ${today} in Bahrain.`,
     'Reply with JSON only, using these fields:',
     'title: a short name for the collab, under 80 characters.',
@@ -63,7 +74,8 @@ function cleanEndsOn(value: unknown, sentence: string, today: string): string | 
 
 function cleanText(field: 'title' | 'offer' | 'deliverable', value: unknown): string | undefined {
   const parsed = CollabInput.shape[field].safeParse(value);
-  return parsed.success ? parsed.data : undefined;
+  // A collab is plain words, so anything that looks like markup is the model going astray.
+  return parsed.success && !/[<>]/.test(parsed.data) ? parsed.data : undefined;
 }
 
 function toDraft(output: unknown, sentence: string, today: string): CollabDraft {
@@ -85,26 +97,7 @@ function toDraft(output: unknown, sentence: string, today: string): CollabDraft 
   };
 }
 
-function withTimeout(
-  client: AiClient,
-  system: string,
-  user: string,
-  callerSignal?: AbortSignal,
-): Promise<unknown> {
-  const timeout = new AbortController();
-  const timer = setTimeout(() => timeout.abort(new Error('AI draft timed out')), AI_TIMEOUT_MS);
-  const signal = callerSignal ? AbortSignal.any([timeout.signal, callerSignal]) : timeout.signal;
-
-  // Raced as well as passed on, so a client that ignores the signal still can't hang us.
-  const aborted = new Promise<never>((_, reject) => {
-    signal.addEventListener('abort', () => reject(signal.reason as Error), { once: true });
-  });
-  return Promise.race([client.generate({ system, user, signal }), aborted]).finally(() =>
-    clearTimeout(timer),
-  );
-}
-
-/** Never throws: any failure becomes an empty draft, so the café can't get stuck. */
+/** Never throws: any failure becomes an empty draft, so the business can't get stuck. */
 export async function draftCollab(
   client: AiClient,
   sentence: string,
@@ -112,7 +105,11 @@ export async function draftCollab(
   signal?: AbortSignal,
 ): Promise<CollabDraft> {
   try {
-    const output = await withTimeout(client, systemPrompt(today), sentence, signal);
+    const output = await generateWithTimeout(
+      client,
+      { system: systemPrompt(today), user: sentence, jsonSchema: DRAFT_SCHEMA },
+      signal,
+    );
     return toDraft(output, sentence, today);
   } catch (error) {
     console.error('AI draft failed', error);

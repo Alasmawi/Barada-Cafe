@@ -9,6 +9,8 @@ import {
 } from '../src/shared/dates';
 import { detectPlatform, isHttpsUrl } from '../src/shared/postLink';
 import { nextStep } from '../src/shared/requestSteps';
+import { ringFromTags } from '../src/shared/ring';
+import { isValidTagSet, VIBE_TAGS } from '../src/shared/tags';
 import { collabState } from '../src/shared/status';
 
 describe('bahrainToday', () => {
@@ -77,6 +79,56 @@ describe('collabState', () => {
     ['ended', { endsOn: '2026-10-31', spots: 2, spotsTaken: 2 }],
   ])('is %s for %j', (state, collab) => {
     expect(collabState(collab, today)).toBe(state);
+  });
+});
+
+describe('ringFromTags', () => {
+  it('draws one ring per tag: more tags, more rings', () => {
+    expect(ringFromTags(['Coffee', 'Reels', 'Calm']).layers).toHaveLength(3);
+    expect(ringFromTags(['Coffee', 'Food', 'Film', 'Reels', 'Stories', 'Bold']).layers).toHaveLength(6);
+  });
+
+  it('gives each tag its own colour', () => {
+    const { layers } = ringFromTags(['Coffee', 'Food', 'Reels', 'TikTok', 'Calm']);
+
+    expect(new Set(layers.map(({ color }) => color)).size).toBe(5);
+  });
+
+  it('puts dots only on format rings', () => {
+    const { layers } = ringFromTags(['Coffee', 'Stories', 'Carousels', 'Calm']);
+
+    expect(layers.map(({ dots }) => dots)).toEqual([0, 8, 12, 0]);
+  });
+
+  it('keeps rings concentric, outermost first and evenly spaced', () => {
+    const { layers } = ringFromTags(['Coffee', 'Food', 'Reels', 'Calm']);
+    const gaps = layers.slice(1).map((layer, index) => layers[index]!.radius - layer.radius);
+
+    expect(new Set(gaps).size).toBe(1);
+    expect(gaps[0]).toBeGreaterThan(0);
+  });
+
+  it('draws the same ring for the same tags, whatever order they came in', () => {
+    expect(ringFromTags(['Reels', 'Calm', 'Coffee'])).toEqual(ringFromTags(['Coffee', 'Calm', 'Reels']));
+  });
+
+  it('lets the vibe set the line weight', () => {
+    expect(ringFromTags(['Coffee', 'Reels', 'Bold']).lineWidth).toBe(VIBE_TAGS.Bold.width);
+  });
+
+  it('never draws more rings than the limit', () => {
+    const tags = ['Coffee', 'Food', 'Beauty', 'Fashion', 'Fitness', 'Travel', 'Film', 'Reels', 'Calm'];
+
+    expect(ringFromTags(tags).layers).toHaveLength(6);
+  });
+});
+
+describe('isValidTagSet', () => {
+  it('needs a niche, a format and exactly one vibe', () => {
+    expect(isValidTagSet(['Coffee', 'Reels', 'Calm'])).toBe(true);
+    expect(isValidTagSet(['Reels', 'Calm'])).toBe(false);
+    expect(isValidTagSet(['Coffee', 'Calm'])).toBe(false);
+    expect(isValidTagSet(['Coffee', 'Reels'])).toBe(false);
   });
 });
 

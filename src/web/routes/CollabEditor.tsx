@@ -1,10 +1,10 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useCollab } from '../api/queries';
-import { BackHeader } from '../components/Layout';
+import { NavBar } from '../components/Layout';
 import { ScreenState } from '../components/ScreenState';
+import { MessageState } from '../components/MessageState';
 import { Skeleton } from '../components/Skeleton';
 import { CollabForm } from '../features/collabs/CollabForm';
-import { NotYourCollab } from '../features/collabs/NotYourCollab';
 import { useSession } from '../session';
 
 function EditCollab({ id }: { id: string }) {
@@ -17,15 +17,15 @@ function EditCollab({ id }: { id: string }) {
       query={collab}
       errorTitle="Couldn't open this collab."
       skeleton={<Skeleton className="skeleton--line" count={5} />}
-      notFound={<NotYourCollab />}
-      isEmpty={(data) => data.collab.cafeId !== user?.cafeId}
-      empty={<NotYourCollab />}
+      notFound={<MessageState art="empty" title="This post isn't yours." />}
+      isEmpty={(data) => data.collab.businessId !== user?.businessId}
+      empty={<MessageState art="empty" title="This post isn't yours." />}
     >
-      {({ collab: { title, offer, deliverable, spots, endsOn } }) => (
+      {({ collab: { kind, title, offer, deliverable, spots, endsOn } }) => (
         <CollabForm
           collabId={id}
-          initial={{ title, offer, deliverable, spots, endsOn }}
-          onSaved={() => navigate(`/cafe/collabs/${id}`, { replace: true })}
+          initial={{ kind, title, offer, deliverable, spots, endsOn }}
+          onSaved={() => navigate(`/business/collabs/${id}`, { replace: true })}
         />
       )}
     </ScreenState>
@@ -38,13 +38,15 @@ export function CollabEditor() {
 
   return (
     <>
-      <BackHeader to={id ? `/cafe/collabs/${id}` : '/cafe'} label={id ? 'Inbox' : 'Your collabs'} />
+      <NavBar
+        to={id ? `/business/collabs/${id}` : '/business/collabs'}
+        title={id ? 'Edit post' : 'New post'}
+      />
       <main className="page page--bar">
-        <h1 className="page__title">{id ? 'Edit collab' : 'Post a collab'}</h1>
         {id ? (
           <EditCollab id={id} />
         ) : (
-          <CollabForm onSaved={(newId) => navigate(`/cafe/collabs/${newId}`, { replace: true })} />
+          <CollabForm onSaved={(newId) => navigate(`/business/collabs/${newId}`, { replace: true })} />
         )}
       </main>
     </>

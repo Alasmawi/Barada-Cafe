@@ -2,8 +2,9 @@ import { env } from 'cloudflare:workers';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { CollabDraft } from '../src/shared/api';
 import type { AiClient } from '../src/worker/ai/aiClient';
-import { AI_TIMEOUT_MS, draftCollab } from '../src/worker/ai/draftCollab';
-import { api, errorCode, makeCafe, makeCreators } from './helpers';
+import { draftCollab } from '../src/worker/ai/draftCollab';
+import { AI_TIMEOUT_MS } from '../src/worker/ai/withTimeout';
+import { api, errorCode, makeBusiness, makeCreators } from './helpers';
 
 const TODAY = '2026-11-01';
 const COMPLETE = {
@@ -121,7 +122,7 @@ describe('a failing model', () => {
     expect(received?.aborted).toBe(true);
   });
 
-  it('stops when the café cancels', async () => {
+  it('stops when the business cancels', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
     const cancel = new AbortController();
     const hanging: AiClient = { generate: () => new Promise(() => {}) };
@@ -179,15 +180,25 @@ describe('the end date', () => {
 });
 
 describe('a hostile answer', () => {
+  it('drops a field holding markup', async () => {
+    const { draft, unfilled } = await draftFrom({
+      ...COMPLETE,
+      title: '<img src=x onerror=alert(1)>',
+    });
+
+    expect(draft).not.toHaveProperty('title');
+    expect(unfilled).toEqual(['title']);
+  });
+
   it('keeps only the known fields', async () => {
-    const output = { ...COMPLETE, cafeId: 'caf_other', status: 'done', publish: true };
+    const output = { ...COMPLETE, businessId: 'biz_other', status: 'done', publish: true };
 
     expect(Object.keys((await draftFrom(output)).draft).sort()).toEqual(
       ['deliverable', 'endsOn', 'offer', 'spots', 'title'],
     );
   });
 
-  it('sends only the sentence to the model, with no user or café data', async () => {
+  it('sends only the sentence to the model, with no user or business data', async () => {
     const generate = vi.fn<AiClient['generate']>().mockResolvedValue(COMPLETE);
 
     await draftCollab({ generate }, 'Free lattes', TODAY);
@@ -201,7 +212,7 @@ describe('a hostile answer', () => {
 describe('POST /ai/draft-collab', () => {
   it('always answers 200, even when the model is unavailable', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
-    const { staff } = await makeCafe();
+    const { staff } = await makeBusiness();
 
     const response = await api('/ai/draft-collab', {
       as: staff[0]!,
@@ -216,7 +227,7 @@ describe('POST /ai/draft-collab', () => {
 
   it('never creates a collab', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
-    const { staff } = await makeCafe();
+    const { staff } = await makeBusiness();
     const count = () =>
       env.DB.prepare('SELECT COUNT(*) AS total FROM collabs').first<{ total: number }>();
     const before = await count();
@@ -226,7 +237,7 @@ describe('POST /ai/draft-collab', () => {
     expect(await count()).toEqual(before);
   });
 
-  it('is for café staff only', async () => {
+  it('is for business staff only', async () => {
     const [creator] = await makeCreators(1);
 
     const response = await api('/ai/draft-collab', {
@@ -247,7 +258,7 @@ describe('POST /ai/draft-collab', () => {
     ['blank', '   '],
     ['too long', 'x'.repeat(301)],
   ])('rejects a sentence that is %s', async (_name, sentence) => {
-    const { staff } = await makeCafe();
+    const { staff } = await makeBusiness();
 
     const response = await api('/ai/draft-collab', { as: staff[0]!, body: { sentence } });
 

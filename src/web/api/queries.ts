@@ -1,18 +1,20 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
   Collab,
   CollabDraft,
   CollabRequest,
+  CreatorCard,
   InboxRequest,
   RequestWithCollab,
   User,
 } from '../../shared/api';
-import type { CollabInput } from '../../shared/schemas';
+import type { CollabInput, LoginInput, SignUpInput } from '../../shared/schemas';
 import { api } from './client';
-import { forgetSeen } from '../features/moments/motion';
 import { setPreviewMode } from './preview';
 
-type UsersResponse = { users: User[]; lastResetAt: string | null };
+type AccountsResponse = { accounts: User[]; lastResetAt: string | null };
+type CreatorsResponse = { creators: CreatorCard[] };
+type UserResponse = { user: User };
 type FeedResponse = { collabs: Collab[] };
 type CollabResponse = { collab: Collab; myRequest: CollabRequest | null };
 type MyRequestsResponse = { requests: RequestWithCollab[] };
@@ -21,10 +23,18 @@ type SavedRequestResponse = { request: CollabRequest };
 type InboxResponse = { requests: InboxRequest[] };
 type SavedCollabResponse = { collab: Collab };
 
-export const useUsers = () =>
+export const useDemoAccounts = () =>
   useQuery({
-    queryKey: ['users'],
-    queryFn: () => api.getList<UsersResponse>('/users', 'users'),
+    queryKey: ['accounts'],
+    queryFn: () => api.getList<AccountsResponse>('/demo/accounts', 'accounts'),
+  });
+
+export const useCreators = (search: string) =>
+  useQuery({
+    queryKey: ['creators', search],
+    queryFn: () =>
+      api.getList<CreatorsResponse>(`/creators?q=${encodeURIComponent(search)}`, 'creators'),
+    placeholderData: keepPreviousData,
   });
 
 export const useFeed = () =>
@@ -51,10 +61,10 @@ export const useRequest = (id: string) =>
     queryFn: () => api.get<RequestResponse>(`/requests/${id}`),
   });
 
-export const useCafeCollabs = () =>
+export const useBusinessCollabs = () =>
   useQuery({
     queryKey: ['collabs', 'mine'],
-    queryFn: () => api.getList<FeedResponse>('/cafe/collabs', 'collabs'),
+    queryFn: () => api.getList<FeedResponse>('/business/collabs', 'collabs'),
   });
 
 export const useInbox = (collabId: string) =>
@@ -109,7 +119,7 @@ function withAccepted(collab: CollabResponse): CollabResponse {
 }
 
 /**
- * Moves the cup the moment staff tap Accept, and rolls back if the server says no.
+ * Fills the spot the moment staff tap Accept, and rolls back if the server says no.
  * `onFailed` is a hook option, not a `mutate` one: it must fire for every tap, and it has
  * to report above the card, which has already moved to another tab by then.
  */
@@ -152,13 +162,46 @@ export function useRequestAction(requestId: string, action: 'decline' | 'complet
   });
 }
 
+export function useSummarize(creatorId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.post<{ creator: CreatorCard }>(`/creators/${creatorId}/summary`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['creators'] }),
+  });
+}
+
+export function useInvite(creatorId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (collabId: string) =>
+      api.post<SavedRequestResponse>(`/collabs/${collabId}/invites`, { creatorId }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['collabs'] }),
+  });
+}
+
+export function useAnswerInvite(requestId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (answer: 'accept' | 'decline') =>
+      api.post<SavedRequestResponse>(`/requests/${requestId}/${answer}-invite`),
+    onSettled: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['collabs'] }),
+        queryClient.invalidateQueries({ queryKey: ['requests'] }),
+      ]),
+  });
+}
+
+export const logIn = (input: LoginInput) => api.post<UserResponse>('/auth/login', input);
+export const signUp = (input: SignUpInput) => api.post<UserResponse>('/auth/signup', input);
+export const logOut = () => api.post('/auth/logout');
+
 export function useResetDemo() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => api.post('/demo/reset'),
     onSuccess: () => {
       setPreviewMode('normal');
-      forgetSeen();
       return queryClient.invalidateQueries();
     },
   });

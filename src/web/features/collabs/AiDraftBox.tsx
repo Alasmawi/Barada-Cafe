@@ -4,6 +4,7 @@ import { DraftRequest, SENTENCE_MAX, type CollabInput } from '../../../shared/sc
 import { requestDraft } from '../../api/queries';
 
 const FIELD_NAMES: Record<keyof CollabInput, string> = {
+  kind: 'the type',
   title: 'the title',
   offer: 'the offer',
   deliverable: 'what to post',
@@ -21,7 +22,7 @@ function outcomeMessage({ unfilled }: CollabDraft): string {
 
 type Props = { onDraft: (draft: CollabDraft['draft']) => void };
 
-/** Fills the form and nothing else: publishing stays with the café. It can always be skipped. */
+/** Fills the form and nothing else: publishing stays with the business. It can always be skipped. */
 export function AiDraftBox({ onDraft }: Props) {
   const [sentence, setSentence] = useState('');
   const [reading, setReading] = useState(false);
@@ -68,7 +69,7 @@ export function AiDraftBox({ onDraft }: Props) {
           value={sentence}
           onChange={(event) => setSentence(event.target.value)}
           maxLength={SENTENCE_MAX}
-          placeholder="Three creators get a free brunch this month for one Reel"
+          placeholder="Three creators get a free meal this month for one Reel"
           disabled={reading}
         />
       </label>

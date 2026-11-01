@@ -1,11 +1,17 @@
 import { z } from 'zod';
+import { BUSINESS_TYPES, HOUSE_NAMES } from './houses';
 import { isHttpsUrl } from './postLink';
+import { isValidTagSet } from './tags';
 
 export const SPOTS_MIN = 1;
 export const SPOTS_MAX = 50;
 export const PITCH_MAX = 140;
 
+export const COLLAB_KINDS = ['collab', 'offer'] as const;
+export type CollabKind = (typeof COLLAB_KINDS)[number];
+
 export const CollabInput = z.object({
+  kind: z.enum(COLLAB_KINDS, 'Choose collab or offer').default('collab'),
   title: z.string().trim().min(1, 'Give the collab a title').max(80, 'Keep the title under 80 characters'),
   offer: z.string().trim().min(1, "Say what you're offering").max(200, 'Keep the offer under 200 characters'),
   deliverable: z.string().trim().min(1, 'Say what to post').max(300, 'Keep this under 300 characters'),
@@ -46,6 +52,53 @@ export const DraftRequest = z.object({
     .max(SENTENCE_MAX, `Keep it to ${SENTENCE_MAX} characters`),
 });
 export type DraftRequest = z.infer<typeof DraftRequest>;
+
+const Credentials = {
+  username: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .regex(/^[a-z0-9._]{3,24}$/, 'Use 3 to 24 letters, numbers, dots or underscores'),
+  password: z.string().min(8, 'Use at least 8 characters').max(72, 'Keep it under 72 characters'),
+};
+
+export const LoginInput = z.object({
+  username: z.string().trim().toLowerCase().min(1, 'Enter your username'),
+  password: z.string().min(1, 'Enter your password'),
+});
+export type LoginInput = z.infer<typeof LoginInput>;
+
+export const CreatorSignUp = z.object({
+  ...Credentials,
+  role: z.literal('creator'),
+  name: z.string().trim().min(1, 'Add your name').max(40, 'Keep it under 40 characters'),
+  handle: z
+    .string()
+    .trim()
+    .regex(/^@[a-zA-Z0-9._]{2,30}$/, 'Start with @, like @noor.sips'),
+  signature: z.string().trim().max(60, 'Keep it to one short line').default(''),
+  tags: z.array(z.string()).refine(isValidTagSet, 'Pick what you make, a format and a vibe'),
+});
+export type CreatorSignUp = z.infer<typeof CreatorSignUp>;
+
+export const BusinessSignUp = z.object({
+  ...Credentials,
+  role: z.literal('business'),
+  businessName: z.string().trim().min(1, 'Add your business name').max(40, 'Keep it under 40 characters'),
+  area: z.string().trim().min(1, 'Add your area').max(40, 'Keep it under 40 characters'),
+  businessType: z.enum(BUSINESS_TYPES, 'Choose what kind of business'),
+  house: z.enum(HOUSE_NAMES, 'Choose a house'),
+});
+export type BusinessSignUp = z.infer<typeof BusinessSignUp>;
+
+export const SignUpInput = z.discriminatedUnion('role', [CreatorSignUp, BusinessSignUp]);
+export type SignUpInput = z.infer<typeof SignUpInput>;
+
+export const CreatorSearchQuery = z.object({
+  q: z.string().trim().max(60).default(''),
+});
+
+export const InviteInput = z.object({ creatorId: z.string().min(1) });
 
 export const CollabListQuery = z.object({
   state: z.enum(['open', 'full']).optional(),

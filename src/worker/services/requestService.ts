@@ -5,6 +5,7 @@ import { DomainError, notFound } from '../http/errors';
 import { newId, newPassCode } from '../ids';
 import * as collabsRepo from '../repositories/collabsRepo';
 import * as requestsRepo from '../repositories/requestsRepo';
+import * as usersRepo from '../repositories/usersRepo';
 import { loadCollab } from './collabService';
 import { assertCreator, assertStaffOf } from './permissions';
 
@@ -62,14 +63,18 @@ export async function ask(
   throw collabFull();
 }
 
-export async function accept(db: D1Database, actor: User, id: string): Promise<CollabRequest> {
-  const today = bahrainToday();
-  const request = await loadRequest(db, id);
-  const collab = await loadCollab(db, request.collabId, today);
-  assertStaffOf(actor, collab.cafeId);
-
+/** The spot guard, whoever is doing the accepting. */
+async function acceptGuarded(
+  db: D1Database,
+  actor: User,
+  id: string,
+  from: 'pending' | 'invited',
+  endsOn: string,
+  today: string,
+): Promise<CollabRequest> {
   const accepted = await requestsRepo.acceptIfSpotAvailable(db, {
     id,
+    from,
     decidedAt: new Date().toISOString(),
     decidedBy: actor.id,
     passCode: newPassCode(),
@@ -80,18 +85,82 @@ export async function accept(db: D1Database, actor: User, id: string): Promise<C
   // Refused: re-read, because the row may have changed since the load above.
   const current = await loadRequest(db, id);
   if (current.status === 'accepted') return current;
-  if (current.status !== 'pending') throw invalidTransition();
+  if (current.status !== from) throw invalidTransition();
+  if (today > endsOn) throw collabEnded();
+  throw collabFull();
+}
+
+export async function accept(db: D1Database, actor: User, id: string): Promise<CollabRequest> {
+  const today = bahrainToday();
+  const request = await loadRequest(db, id);
+  const collab = await loadCollab(db, request.collabId, today);
+  assertStaffOf(actor, collab.businessId);
+  return acceptGuarded(db, actor, id, 'pending', collab.endsOn, today);
+}
+
+export async function invite(
+  db: D1Database,
+  actor: User,
+  collabId: string,
+  creatorId: string,
+): Promise<{ request: CollabRequest; created: boolean }> {
+  const today = bahrainToday();
+  const collab = await loadCollab(db, collabId, today);
+  assertStaffOf(actor, collab.businessId);
+  const creator = await usersRepo.findById(db, creatorId);
+  if (creator?.role !== 'creator') throw notFound('This creator has been removed.');
+
+  const id = newId('req');
+  const inserted = await requestsRepo.insertInviteIfCollabOpen(db, {
+    id,
+    collabId,
+    creatorId,
+    invitedBy: actor.id,
+    createdAt: new Date().toISOString(),
+    today,
+  });
+  if (inserted) return { request: await loadRequest(db, id), created: true };
+
+  const existing = await requestsRepo.findByCollabAndCreator(db, collabId, creatorId);
+  if (existing) return { request: existing, created: false };
   if (today > collab.endsOn) throw collabEnded();
   throw collabFull();
+}
+
+async function loadOwnRequest(db: D1Database, actor: User, id: string) {
+  const request = await loadRequest(db, id);
+  if (request.creatorId !== actor.id) {
+    throw new DomainError('FORBIDDEN', 403, 'This request belongs to another creator.');
+  }
+  return request;
+}
+
+export async function acceptInvite(db: D1Database, actor: User, id: string) {
+  const today = bahrainToday();
+  const request = await loadOwnRequest(db, actor, id);
+  const collab = await loadCollab(db, request.collabId, today);
+  return acceptGuarded(db, actor, id, 'invited', collab.endsOn, today);
+}
+
+export async function declineInvite(db: D1Database, actor: User, id: string) {
+  await loadOwnRequest(db, actor, id);
+  const written = await requestsRepo.declineIfOpen(db, {
+    id,
+    from: 'invited',
+    decidedAt: new Date().toISOString(),
+    decidedBy: actor.id,
+  });
+  return settle(db, id, written, 'declined');
 }
 
 export async function decline(db: D1Database, actor: User, id: string): Promise<CollabRequest> {
   const request = await loadRequest(db, id);
   const collab = await loadCollab(db, request.collabId, bahrainToday());
-  assertStaffOf(actor, collab.cafeId);
+  assertStaffOf(actor, collab.businessId);
 
-  const written = await requestsRepo.declineIfPending(db, {
+  const written = await requestsRepo.declineIfOpen(db, {
     id,
+    from: 'pending',
     decidedAt: new Date().toISOString(),
     decidedBy: actor.id,
   });
@@ -104,10 +173,7 @@ export async function submitLink(
   id: string,
   postUrl: string,
 ): Promise<CollabRequest> {
-  const request = await loadRequest(db, id);
-  if (request.creatorId !== actor.id) {
-    throw new DomainError('FORBIDDEN', 403, 'This request belongs to another creator.');
-  }
+  await loadOwnRequest(db, actor, id);
 
   const written = await requestsRepo.submitLinkIfAllowed(db, {
     id,
@@ -121,7 +187,7 @@ export async function submitLink(
 export async function complete(db: D1Database, actor: User, id: string): Promise<CollabRequest> {
   const request = await loadRequest(db, id);
   const collab = await loadCollab(db, request.collabId, bahrainToday());
-  assertStaffOf(actor, collab.cafeId);
+  assertStaffOf(actor, collab.businessId);
 
   const written = await requestsRepo.completeIfSubmitted(db, {
     id,
@@ -130,11 +196,11 @@ export async function complete(db: D1Database, actor: User, id: string): Promise
   return settle(db, id, written, 'done');
 }
 
-/** The visit pass and the café's view of one request. Pass codes stay with these two people. */
+/** The visit pass and the business's view of one request. Pass codes stay with these two people. */
 export async function getOne(db: D1Database, actor: User, id: string): Promise<RequestWithCollab> {
   const request = await loadRequest(db, id);
   const collab = await loadCollab(db, request.collabId, bahrainToday());
-  if (request.creatorId !== actor.id) assertStaffOf(actor, collab.cafeId);
+  if (request.creatorId !== actor.id) assertStaffOf(actor, collab.businessId);
   return { ...request, collab };
 }
 
@@ -144,7 +210,7 @@ export async function listInbox(
   collabId: string,
 ): Promise<InboxRequest[]> {
   const collab = await loadCollab(db, collabId, bahrainToday());
-  assertStaffOf(actor, collab.cafeId);
+  assertStaffOf(actor, collab.businessId);
   return requestsRepo.listInbox(db, collabId);
 }
 

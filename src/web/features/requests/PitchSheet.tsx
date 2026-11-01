@@ -4,19 +4,19 @@ import { ApiError } from '../../api/client';
 import { useAskToJoin } from '../../api/queries';
 import { Sheet } from '../../components/Sheet';
 
-/** The count turns qahwa here, as a warning before the limit. */
+/** The count turns warn here, as a warning before the limit. */
 const PITCH_WARNING_AT = 120;
 
-const STARTERS = ['I film slow pours for', 'My followers ask me about', 'This fits my series on'];
+const STARTERS = ['I create content about', 'My followers love', 'This fits my series on'];
 
 function sendErrorMessage(error: unknown): string {
   if (error instanceof ApiError && error.code === 'COLLAB_FULL') {
-    return 'All spots are taken — this one filled up while you were writing.';
+    return 'All spots were filled while you were writing.';
   }
   if (error instanceof ApiError && error.code === 'COLLAB_ENDED') {
-    return 'This collab ended while you were writing.';
+    return 'This ended while you were writing.';
   }
-  return "Didn't send — your pitch is still here. Try again.";
+  return "Didn't send. Your message is still here. Try again.";
 }
 
 function PitchForm({ collabId, onSent }: { collabId: string; onSent: () => void }) {
@@ -30,7 +30,7 @@ function PitchForm({ collabId, onSent }: { collabId: string; onSent: () => void 
   };
 
   return (
-    <form className="sheet__form" onSubmit={send}>
+    <form className="form" onSubmit={send}>
       <label className="field">
         <span className="field__label">Why you, in one line</span>
         <input
@@ -72,7 +72,7 @@ function PitchForm({ collabId, onSent }: { collabId: string; onSent: () => void 
         type="submit"
         disabled={!valid || ask.isPending}
       >
-        {ask.isPending ? 'Sending…' : 'Send my pitch'}
+        {ask.isPending ? 'Sending…' : 'Send application'}
       </button>
     </form>
   );
@@ -87,7 +87,7 @@ export function PitchSheet({ collabId, open, onClose, onSent }: Props) {
   };
 
   return (
-    <Sheet open={open} onClose={onClose} title="Ask to join">
+    <Sheet open={open} onClose={onClose} title="Apply">
       <PitchForm collabId={collabId} onSent={finish} />
     </Sheet>
   );

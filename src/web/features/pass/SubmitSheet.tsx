@@ -24,7 +24,7 @@ function SubmitForm({ requestId, currentUrl, onSent }: FormProps) {
   };
 
   return (
-    <form className="sheet__form" onSubmit={send} noValidate>
+    <form className="form" onSubmit={send} noValidate>
       <label className="field">
         <span className="field__label">Link to your post</span>
         <input
@@ -71,7 +71,7 @@ type Props = Omit<FormProps, 'onSent'> & { open: boolean; onClose: () => void };
 
 export function SubmitSheet({ open, onClose, ...form }: Props) {
   return (
-    <Sheet open={open} onClose={onClose} title="Add your post">
+    <Sheet open={open} onClose={onClose} title="Add your post link">
       <SubmitForm {...form} onSent={onClose} />
     </Sheet>
   );

@@ -1,13 +1,17 @@
 import type { Collab } from '../../shared/api';
-import type { CollabInput } from '../../shared/schemas';
+import type { BusinessType, House } from '../../shared/houses';
+import type { CollabInput, CollabKind } from '../../shared/schemas';
 import { collabState } from '../../shared/status';
 import { SPOT_HOLDING_SQL } from './sql';
 
 type CollabRow = {
   id: string;
-  cafe_id: string;
-  cafe_name: string;
-  cafe_area: string;
+  kind: CollabKind;
+  business_id: string;
+  business_name: string;
+  business_area: string;
+  business_type: BusinessType;
+  business_house: House;
   title: string;
   offer: string;
   deliverable: string;
@@ -20,23 +24,28 @@ type CollabRow = {
 
 const SELECT_COLLAB = `
   SELECT
-    c.id, c.cafe_id, c.title, c.offer, c.deliverable, c.spots, c.ends_on, c.created_at,
-    cafes.name AS cafe_name,
-    cafes.area AS cafe_area,
+    c.id, c.kind, c.business_id, c.title, c.offer, c.deliverable, c.spots, c.ends_on, c.created_at,
+    businesses.name AS business_name,
+    businesses.area AS business_area,
+    businesses.type AS business_type,
+    businesses.house AS business_house,
     (SELECT COUNT(*) FROM requests r
      WHERE r.collab_id = c.id AND r.status IN (${SPOT_HOLDING_SQL})) AS spots_taken,
     (SELECT COUNT(*) FROM requests r
      WHERE r.collab_id = c.id AND r.status = 'pending') AS pending_count
   FROM collabs c
-  JOIN cafes ON cafes.id = c.cafe_id`;
+  JOIN businesses ON businesses.id = c.business_id`;
 
 function toCollab(row: CollabRow, today: string): Collab {
   const shape = { endsOn: row.ends_on, spots: row.spots, spotsTaken: row.spots_taken };
   return {
     id: row.id,
-    cafeId: row.cafe_id,
-    cafeName: row.cafe_name,
-    cafeArea: row.cafe_area,
+    kind: row.kind,
+    businessId: row.business_id,
+    businessName: row.business_name,
+    businessArea: row.business_area,
+    businessType: row.business_type,
+    businessHouse: row.business_house,
     title: row.title,
     offer: row.offer,
     deliverable: row.deliverable,
@@ -64,14 +73,14 @@ export async function listActive(db: D1Database, today: string): Promise<Collab[
   return results.map((row) => toCollab(row, today));
 }
 
-export async function listForCafe(
+export async function listForBusiness(
   db: D1Database,
-  cafeId: string,
+  businessId: string,
   today: string,
 ): Promise<Collab[]> {
   const { results } = await db
-    .prepare(`${SELECT_COLLAB} WHERE c.cafe_id = ? ORDER BY c.ends_on DESC, c.created_at DESC`)
-    .bind(cafeId)
+    .prepare(`${SELECT_COLLAB} WHERE c.business_id = ? ORDER BY c.ends_on DESC, c.created_at DESC`)
+    .bind(businessId)
     .all<CollabRow>();
   return results.map((row) => toCollab(row, today));
 }
@@ -92,16 +101,17 @@ export async function listForCreator(
 
 export async function insert(
   db: D1Database,
-  collab: CollabInput & { id: string; cafeId: string; createdBy: string; createdAt: string },
+  collab: CollabInput & { id: string; businessId: string; createdBy: string; createdAt: string },
 ): Promise<void> {
   await db
     .prepare(
-      `INSERT INTO collabs (id, cafe_id, title, offer, deliverable, spots, ends_on, created_by, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO collabs (id, kind, business_id, title, offer, deliverable, spots, ends_on, created_by, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .bind(
       collab.id,
-      collab.cafeId,
+      collab.kind,
+      collab.businessId,
       collab.title,
       collab.offer,
       collab.deliverable,
@@ -126,13 +136,13 @@ export async function updateIfSpotsCoverTaken(
   const { meta } = await db
     .prepare(
       `UPDATE collabs
-       SET title = ?1, offer = ?2, deliverable = ?3, spots = ?4, ends_on = ?5
+       SET title = ?1, offer = ?2, deliverable = ?3, spots = ?4, ends_on = ?5, kind = ?7
        WHERE id = ?6
          AND ?4 >= (SELECT COUNT(*) FROM requests
                     WHERE requests.collab_id = collabs.id
                       AND requests.status IN (${SPOT_HOLDING_SQL}))`,
     )
-    .bind(input.title, input.offer, input.deliverable, input.spots, input.endsOn, id)
+    .bind(input.title, input.offer, input.deliverable, input.spots, input.endsOn, id, input.kind)
     .run();
   return meta.changes === 1;
 }

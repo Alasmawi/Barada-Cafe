@@ -6,7 +6,7 @@ import {
   askToJoin,
   errorCode,
   getCollab,
-  makeCafe,
+  makeBusiness,
   makeCollab,
   makeCreators,
   nextWeek,
@@ -23,14 +23,14 @@ const input = (overrides: object = {}) => ({
 });
 
 describe('creating a collab', () => {
-  it('belongs to the acting staff member’s café and starts open', async () => {
-    const { cafeId, staff } = await makeCafe();
+  it('belongs to the acting staff member’s business and starts open', async () => {
+    const { businessId, staff } = await makeBusiness();
 
     const response = await api('/collabs', { as: staff[0]!, body: input() });
 
     expect(response.status).toBe(201);
     const { collab } = await response.json<{ collab: Collab }>();
-    expect(collab).toMatchObject({ cafeId, state: 'open', spotsLeft: 3, spotsTaken: 0 });
+    expect(collab).toMatchObject({ businessId, state: 'open', spotsLeft: 3, spotsTaken: 0 });
   });
 
   it.each([
@@ -41,7 +41,7 @@ describe('creating a collab', () => {
     ['an impossible date', { endsOn: '2026-02-31' }, 'endsOn'],
     ['a past end date', { endsOn: yesterday() }, 'endsOn'],
   ])('rejects %s', async (_name, overrides, field) => {
-    const { staff } = await makeCafe();
+    const { staff } = await makeBusiness();
 
     const response = await api('/collabs', { as: staff[0]!, body: input(overrides) });
 
@@ -52,7 +52,7 @@ describe('creating a collab', () => {
   });
 
   it('rejects a body that is not JSON', async () => {
-    const { staff } = await makeCafe();
+    const { staff } = await makeBusiness();
 
     const response = await api('/collabs', { as: staff[0]!, body: undefined, method: 'POST' });
 
@@ -211,18 +211,18 @@ describe('reading', () => {
   });
 
   it('answers 404 for a missing collab', async () => {
-    const { staff } = await makeCafe();
+    const { staff } = await makeBusiness();
 
     const response = await api('/collabs/col_missing', { as: staff[0]! });
 
     expect(response.status).toBe(404);
   });
 
-  it("lists only the café's own collabs, ended ones included", async () => {
+  it("lists only the business's own collabs, ended ones included", async () => {
     const mine = await makeCollab({ spots: 1, endsOn: yesterday() });
     const theirs = await makeCollab({ spots: 1 });
 
-    const response = await api('/cafe/collabs', { as: mine.staff[0]! });
+    const response = await api('/business/collabs', { as: mine.staff[0]! });
     const { collabs } = await response.json<{ collabs: Collab[] }>();
 
     expect(collabs.map(({ id }) => id)).toEqual([mine.collabId]);
@@ -237,7 +237,7 @@ describe('reading', () => {
     const { requests } = await response.json<{ requests: InboxRequest[] }>();
 
     expect(requests).toHaveLength(2);
-    expect(requests.find(({ id }) => id === requestIds[0])?.passCode).toMatch(/^FJ-/);
+    expect(requests.find(({ id }) => id === requestIds[0])?.passCode).toMatch(/^CB-/);
     expect(requests[0]?.creatorName).toBe('Creator');
   });
 

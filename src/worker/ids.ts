@@ -7,11 +7,15 @@ function randomString(alphabet: string, length: number): string {
   return Array.from(bytes, (byte) => alphabet[byte & 31]).join('');
 }
 
-export function newId(prefix: 'col' | 'req'): string {
+export function newId(prefix: 'col' | 'req' | 'usr' | 'biz'): string {
   return `${prefix}_${randomString(ID_ALPHABET, 12)}`;
+}
+
+export function newToken(): string {
+  return randomString(ID_ALPHABET, 40);
 }
 
 /** Doesn't need to be unique: staff check it against the creator's name in their own inbox. */
 export function newPassCode(): string {
-  return `FJ-${randomString(PASS_ALPHABET, 4)}`;
+  return `CB-${randomString(PASS_ALPHABET, 4)}`;
 }

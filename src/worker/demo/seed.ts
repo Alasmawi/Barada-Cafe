@@ -7,35 +7,47 @@ import type { RequestStatus } from '../../shared/status';
  * collab keeps its foil pattern.
  *
  * Noor is the creator to demo with: they hold a request in every status.
+ * Five businesses of different kinds show that the board isn't only for cafés.
  * Barada has two staff so "two staff accept at once" can be tried on two phones,
  * and col_lastcup has one spot left with several creators waiting.
  */
 
+/** Every demo account uses this password. It's printed in the README, because this is a demo. */
+export const DEMO_PASSWORD = 'demo-password';
+/** Hashed ahead of time: hashing it per user on each reset would overrun the free CPU limit. */
+export const DEMO_PASSWORD_HASH =
+  'pbkdf2$10000$66ed457e62dfeb9c1eb48f8a122c0db8$bafa10f2303e3a6176e8b661dc61a95f5af9d9a5199ddd5ce76270362033063c';
+
 const STAFF = [
-  { id: 'usr_huda', name: 'Huda', cafeId: 'caf_barada' },
-  { id: 'usr_yusuf', name: 'Yusuf', cafeId: 'caf_barada' },
-  { id: 'usr_maryam', name: 'Maryam', cafeId: 'caf_noon' },
-  { id: 'usr_khalid', name: 'Khalid', cafeId: 'caf_sidra' },
+  { id: 'usr_huda', username: 'huda', name: 'Huda', businessId: 'biz_barada' },
+  { id: 'usr_yusuf', username: 'yusuf', name: 'Yusuf', businessId: 'biz_barada' },
+  { id: 'usr_maryam', username: 'maryam', name: 'Maryam', businessId: 'biz_noon' },
+  { id: 'usr_khalid', username: 'khalid', name: 'Khalid', businessId: 'biz_sidra' },
+  { id: 'usr_layla', username: 'layla', name: 'Layla', businessId: 'biz_layali' },
+  { id: 'usr_sami', username: 'sami', name: 'Sami', businessId: 'biz_move' },
 ];
 
 const CREATORS = [
-  { id: 'usr_noor', name: 'Noor', handle: '@noor.sips' },
-  { id: 'usr_salman', name: 'Salman', handle: '@salman.eats' },
-  { id: 'usr_lulwa', name: 'Lulwa', handle: '@lulwa.films' },
-  { id: 'usr_ali', name: 'Ali', handle: '@ali.around.bh' },
-  { id: 'usr_fatima', name: 'Fatima', handle: '@fatima.frames' },
-  { id: 'usr_reem', name: 'Reem', handle: '@reem.reviews' },
+  { id: 'usr_noor', username: 'noor', name: 'Noor', handle: '@noor.sips', tags: 'Coffee,Food,Reels,Calm', signature: 'Slow pours, quiet mornings.' },
+  { id: 'usr_salman', username: 'salman', name: 'Salman', handle: '@salman.eats', tags: 'Food,Beauty,Fashion,TikTok,Playful', signature: 'Loud, honest, hungry.' },
+  { id: 'usr_lulwa', username: 'lulwa', name: 'Lulwa', handle: '@lulwa.films', tags: 'Film,Stories,Bold', signature: 'Every frame on purpose.' },
+  { id: 'usr_ali', username: 'ali', name: 'Ali', handle: '@ali.around.bh', tags: 'Travel,Coffee,Food,Fitness,Carousels,Playful', signature: 'Bahrain, one corner at a time.' },
+  { id: 'usr_fatima', username: 'fatima', name: 'Fatima', handle: '@fatima.frames', tags: 'Fashion,Film,Reels,Calm', signature: 'Quiet colour, clean lines.' },
+  { id: 'usr_reem', username: 'reem', name: 'Reem', handle: '@reem.reviews', tags: 'Beauty,Fashion,Carousels,Stories,Calm', signature: 'Reviews you can trust.' },
 ];
 
-const CAFES = [
-  { id: 'caf_barada', name: 'Barada Café', area: 'Adliya' },
-  { id: 'caf_noon', name: 'Noon Roastery', area: 'Muharraq' },
-  { id: 'caf_sidra', name: 'Sidra Garden', area: 'Budaiya' },
+const BUSINESSES = [
+  { id: 'biz_barada', name: 'Barada Café', area: 'Adliya', type: 'Café', house: 'saffron' },
+  { id: 'biz_noon', name: 'Noon Roastery', area: 'Muharraq', type: 'Café', house: 'gulf' },
+  { id: 'biz_sidra', name: 'Sidra Garden', area: 'Budaiya', type: 'Restaurant', house: 'sage' },
+  { id: 'biz_layali', name: 'Layali Perfumes', area: 'Seef', type: 'Beauty', house: 'oud' },
+  { id: 'biz_move', name: 'Move Studio', area: 'Juffair', type: 'Fitness', house: 'coral' },
 ];
 
 type SeedCollab = {
   id: string;
-  cafeId: string;
+  kind?: 'offer';
+  businessId: string;
   createdBy: string;
   title: string;
   offer: string;
@@ -47,8 +59,29 @@ type SeedCollab = {
 
 const COLLABS: SeedCollab[] = [
   {
+    id: 'col_oud',
+    businessId: 'biz_layali',
+    createdBy: 'usr_layla',
+    title: 'An evening of oud',
+    offer: 'A private fragrance session and a bottle of your own blend',
+    deliverable: 'One Reel of the blending, tagging Layali',
+    spots: 2,
+    endsIn: 3,
+  },
+  {
+    id: 'col_mat',
+    businessId: 'biz_move',
+    createdBy: 'usr_sami',
+    title: 'A month of mat classes',
+    offer: 'Four weeks of mat classes, on the house',
+    deliverable: 'Three Stories showing your first, middle and last class',
+    spots: 2,
+    endsIn: 5,
+  },
+
+  {
     id: 'col_saffron',
-    cafeId: 'caf_barada',
+    businessId: 'biz_barada',
     createdBy: 'usr_huda',
     title: 'Saffron latte first pour',
     offer: 'Two saffron lattes and a kunafa slice on the house',
@@ -58,7 +91,7 @@ const COLLABS: SeedCollab[] = [
   },
   {
     id: 'col_lastcup',
-    cafeId: 'caf_barada',
+    businessId: 'biz_barada',
     createdBy: 'usr_yusuf',
     title: 'Karak tasting flight',
     offer: 'A flight of four karaks with fresh chebab',
@@ -68,7 +101,7 @@ const COLLABS: SeedCollab[] = [
   },
   {
     id: 'col_brunch',
-    cafeId: 'caf_barada',
+    businessId: 'biz_barada',
     createdBy: 'usr_huda',
     title: 'Friday brunch for two',
     offer: 'Brunch for two from the new weekend menu',
@@ -78,7 +111,8 @@ const COLLABS: SeedCollab[] = [
   },
   {
     id: 'col_datecake',
-    cafeId: 'caf_barada',
+    kind: 'offer',
+    businessId: 'biz_barada',
     createdBy: 'usr_huda',
     title: 'Date cake afternoon',
     offer: 'Date cake and gahwa for you and a friend',
@@ -88,7 +122,7 @@ const COLLABS: SeedCollab[] = [
   },
   {
     id: 'col_cupping',
-    cafeId: 'caf_noon',
+    businessId: 'biz_noon',
     createdBy: 'usr_maryam',
     title: 'Roastery tour and cupping',
     offer: 'A private tour and a cupping of three single origins',
@@ -98,7 +132,8 @@ const COLLABS: SeedCollab[] = [
   },
   {
     id: 'col_coldbrew',
-    cafeId: 'caf_noon',
+    kind: 'offer',
+    businessId: 'biz_noon',
     createdBy: 'usr_maryam',
     title: 'Date syrup cold brew',
     offer: 'Your first month of our new cold brew, one a week',
@@ -108,7 +143,7 @@ const COLLABS: SeedCollab[] = [
   },
   {
     id: 'col_sunset',
-    cafeId: 'caf_sidra',
+    businessId: 'biz_sidra',
     createdBy: 'usr_khalid',
     title: 'Sunset majlis dinner',
     offer: 'Dinner for two in the garden majlis',
@@ -118,7 +153,8 @@ const COLLABS: SeedCollab[] = [
   },
   {
     id: 'col_breakfast',
-    cafeId: 'caf_sidra',
+    kind: 'offer',
+    businessId: 'biz_sidra',
     createdBy: 'usr_khalid',
     title: 'Garden breakfast, today only',
     offer: 'Balaleet and eggs under the sidra tree',
@@ -141,6 +177,16 @@ type SeedRequest = {
 };
 
 const REQUESTS: SeedRequest[] = [
+  // Layali invited Noor, which is how a creator sees an invite in the demo.
+  {
+    id: 'req_oud_noor',
+    collabId: 'col_oud',
+    creatorId: 'usr_noor',
+    pitch: '',
+    status: 'invited',
+    askedAgo: 0,
+  },
+
   // Saffron: two cups taken, three more open, a mix in the inbox.
   {
     id: 'req_saffron_noor',
@@ -155,10 +201,10 @@ const REQUESTS: SeedRequest[] = [
     id: 'req_saffron_ali',
     collabId: 'col_saffron',
     creatorId: 'usr_ali',
-    pitch: 'Weekly Adliya cafe guide, this one fits my next episode.',
+    pitch: 'Weekly Adliya business guide, this one fits my next episode.',
     status: 'submitted',
     passCode: 'FJ-M4TZ',
-    postUrl: 'https://www.instagram.com/reel/FinjanDemoAli/',
+    postUrl: 'https://www.instagram.com/reel/DemoPostAli/',
     askedAgo: 4,
   },
   {
@@ -248,7 +294,7 @@ const REQUESTS: SeedRequest[] = [
     pitch: 'New menus are my favourite thing to review honestly.',
     status: 'done',
     passCode: 'FJ-Q6LE',
-    postUrl: 'https://www.instagram.com/p/FinjanDemoReem/',
+    postUrl: 'https://www.instagram.com/p/DemoPostReem/',
     askedAgo: 7,
   },
   {
@@ -268,7 +314,7 @@ const REQUESTS: SeedRequest[] = [
     pitch: 'Date cake is my comfort food and my audience knows it.',
     status: 'done',
     passCode: 'FJ-3BXS',
-    postUrl: 'https://www.instagram.com/p/FinjanDemoNoor/',
+    postUrl: 'https://www.instagram.com/p/DemoPostNoor/',
     askedAgo: 9,
   },
   {
@@ -311,7 +357,7 @@ const REQUESTS: SeedRequest[] = [
 function requestStatement(db: D1Database, request: SeedRequest, now: Date): D1PreparedStatement {
   const askedAt = new Date(now.getTime() - request.askedAgo * 24 * 60 * 60 * 1000).toISOString();
   const collab = COLLABS.find(({ id }) => id === request.collabId);
-  const decided = request.status !== 'pending';
+  const decided = request.status !== 'pending' && request.status !== 'invited';
   const submitted = request.status === 'submitted' || request.status === 'done';
 
   return db
@@ -342,41 +388,51 @@ export async function seed(db: D1Database, now: Date = new Date()): Promise<void
   const nowIso = now.toISOString();
 
   await db.batch([
+    db.prepare('DELETE FROM sessions'),
     db.prepare('DELETE FROM requests'),
     db.prepare('DELETE FROM collabs'),
     db.prepare('DELETE FROM users'),
-    db.prepare('DELETE FROM cafes'),
-    ...CAFES.map((cafe) =>
+    db.prepare('DELETE FROM businesses'),
+    ...BUSINESSES.map((business) =>
       db
-        .prepare('INSERT INTO cafes (id, name, area) VALUES (?, ?, ?)')
-        .bind(cafe.id, cafe.name, cafe.area),
+        .prepare('INSERT INTO businesses (id, name, area, type, house) VALUES (?, ?, ?, ?, ?)')
+        .bind(business.id, business.name, business.area, business.type, business.house),
     ),
     ...STAFF.map((user) =>
       db
         .prepare(
-          `INSERT INTO users (id, name, role, cafe_id, avatar_seed)
-           VALUES (?, ?, 'cafe_staff', ?, ?)`,
+          `INSERT INTO users (id, username, password_hash, name, role, business_id)
+           VALUES (?, ?, ?, ?, 'business', ?)`,
         )
-        .bind(user.id, user.name, user.cafeId, user.id),
+        .bind(user.id, user.username, DEMO_PASSWORD_HASH, user.name, user.businessId),
     ),
     ...CREATORS.map((user) =>
       db
         .prepare(
-          `INSERT INTO users (id, name, role, handle, avatar_seed)
-           VALUES (?, ?, 'creator', ?, ?)`,
+          `INSERT INTO users (id, username, password_hash, name, role, handle, tags, signature)
+           VALUES (?, ?, ?, ?, 'creator', ?, ?, ?)`,
         )
-        .bind(user.id, user.name, user.handle, user.id),
+        .bind(
+          user.id,
+          user.username,
+          DEMO_PASSWORD_HASH,
+          user.name,
+          user.handle,
+          user.tags,
+          user.signature,
+        ),
     ),
     ...COLLABS.map((collab) =>
       db
         .prepare(
-          `INSERT INTO collabs (id, cafe_id, title, offer, deliverable, spots, ends_on,
+          `INSERT INTO collabs (id, kind, business_id, title, offer, deliverable, spots, ends_on,
                                 created_by, created_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         )
         .bind(
           collab.id,
-          collab.cafeId,
+          collab.kind ?? 'collab',
+          collab.businessId,
           collab.title,
           collab.offer,
           collab.deliverable,

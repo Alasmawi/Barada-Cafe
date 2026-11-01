@@ -2,27 +2,46 @@ import { env, exports } from 'cloudflare:workers';
 import type { Collab, CollabRequest, ErrorBody } from '../src/shared/api';
 import { addDays, bahrainToday } from '../src/shared/dates';
 import type { RequestStatus } from '../src/shared/status';
+import { hashToken, SESSION_COOKIE } from '../src/worker/auth/sessions';
 
 /**
- * Every test builds its own café, staff, creators and collab with fresh ids, so tests
+ * Every test builds its own business, staff, creators and collab with fresh ids, so tests
  * don't share rows or depend on order. Requests go over HTTP into the real Worker.
  */
 
 let sequence = 0;
-const nextId = (prefix: string) => `${prefix}_t${++sequence}`;
+const nextId = (prefix: string) => `${prefix}_t${++sequence}_${crypto.randomUUID().slice(0, 8)}`;
 
 export const today = () => bahrainToday();
 export const yesterday = () => addDays(bahrainToday(), -1);
 export const nextWeek = () => addDays(bahrainToday(), 7);
 
-export function api(
+/** Signs a user straight in, so tests only pay for password hashing where it's being tested. */
+async function sessionFor(userId: string): Promise<string> {
+  const token = `test-session-${userId}`;
+  await env.DB.prepare(
+    `INSERT OR REPLACE INTO sessions (token_hash, user_id, created_at)
+     SELECT ?, id, 'now' FROM users WHERE id = ?`,
+  )
+    .bind(await hashToken(token), userId)
+    .run();
+  return token;
+}
+
+export async function api(
   path: string,
-  { as, method, body }: { as?: string; method?: string; body?: unknown } = {},
+  {
+    as,
+    cookie,
+    method,
+    body,
+  }: { as?: string; cookie?: string; method?: string; body?: unknown } = {},
 ): Promise<Response> {
-  return exports.default.fetch(`https://finjan.test/api/v1${path}`, {
+  const session = as ? `${SESSION_COOKIE}=${await sessionFor(as)}` : cookie;
+  return exports.default.fetch(`https://collab.test/api/v1${path}`, {
     method: method ?? (body === undefined ? 'GET' : 'POST'),
     headers: {
-      ...(as ? { 'X-User-Id': as } : {}),
+      ...(session ? { Cookie: session } : {}),
       ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
     },
     body: body === undefined ? undefined : JSON.stringify(body),
@@ -48,23 +67,22 @@ export async function errorCode(response: Response): Promise<string> {
   return error.code;
 }
 
-export async function makeCafe(staffCount = 1): Promise<{ cafeId: string; staff: string[] }> {
-  const cafeId = nextId('caf');
+export async function makeBusiness(staffCount = 1): Promise<{ businessId: string; staff: string[] }> {
+  const businessId = nextId('biz');
   const staff = Array.from({ length: staffCount }, () => nextId('usr'));
   await env.DB.batch([
-    env.DB.prepare('INSERT INTO cafes (id, name, area) VALUES (?, ?, ?)').bind(
-      cafeId,
-      'Test Café',
-      'Adliya',
-    ),
+    env.DB.prepare(
+      `INSERT INTO businesses (id, name, area, type, house)
+       VALUES (?, 'Test Business', 'Adliya', 'Café', 'saffron')`,
+    ).bind(businessId),
     ...staff.map((id) =>
       env.DB.prepare(
-        `INSERT INTO users (id, name, role, cafe_id, avatar_seed)
-         VALUES (?, 'Staff', 'cafe_staff', ?, ?)`,
-      ).bind(id, cafeId, id),
+        `INSERT INTO users (id, username, password_hash, name, role, business_id)
+         VALUES (?, ?, 'unused', 'Staff', 'business', ?)`,
+      ).bind(id, id, businessId),
     ),
   ]);
-  return { cafeId, staff };
+  return { businessId, staff };
 }
 
 export async function makeCreators(count: number): Promise<string[]> {
@@ -72,9 +90,9 @@ export async function makeCreators(count: number): Promise<string[]> {
   await env.DB.batch(
     creators.map((id) =>
       env.DB.prepare(
-        `INSERT INTO users (id, name, role, handle, avatar_seed)
-         VALUES (?, 'Creator', 'creator', ?, ?)`,
-      ).bind(id, `@${id}`, id),
+        `INSERT INTO users (id, username, password_hash, name, role, handle, tags)
+         VALUES (?, ?, 'unused', 'Creator', 'creator', ?, 'Coffee,Reels,Calm')`,
+      ).bind(id, id, `@${id}`),
     ),
   );
   return creators;
@@ -82,8 +100,8 @@ export async function makeCreators(count: number): Promise<string[]> {
 
 type Scenario = {
   collabId: string;
-  cafeId: string;
-  /** Staff of the collab's café. */
+  businessId: string;
+  /** Staff of the collab's business. */
   staff: string[];
   creators: string[];
   /** One pending request per creator, in the same order. */
@@ -102,7 +120,7 @@ export async function makeCollab({
   staffCount?: number;
   endsOn?: string;
 }): Promise<Scenario> {
-  const { cafeId, staff } = await makeCafe(staffCount);
+  const { businessId, staff } = await makeBusiness(staffCount);
   const creators = pending > 0 ? await makeCreators(pending) : [];
   const collabId = nextId('col');
   const requestIds = creators.map(() => nextId('req'));
@@ -110,9 +128,9 @@ export async function makeCollab({
 
   await env.DB.batch([
     env.DB.prepare(
-      `INSERT INTO collabs (id, cafe_id, title, offer, deliverable, spots, ends_on, created_by, created_at)
+      `INSERT INTO collabs (id, business_id, title, offer, deliverable, spots, ends_on, created_by, created_at)
        VALUES (?, ?, 'Test collab', 'A free latte', 'One Reel', ?, ?, ?, ?)`,
-    ).bind(collabId, cafeId, spots, endsOn, staff[0], createdAt),
+    ).bind(collabId, businessId, spots, endsOn, staff[0], createdAt),
     ...creators.map((creatorId, index) =>
       env.DB.prepare(
         `INSERT INTO requests (id, collab_id, creator_id, pitch, created_at)
@@ -120,7 +138,7 @@ export async function makeCollab({
       ).bind(requestIds[index], collabId, creatorId, createdAt),
     ),
   ]);
-  return { collabId, cafeId, staff, creators, requestIds };
+  return { collabId, businessId, staff, creators, requestIds };
 }
 
 /** A scenario with one request already moved to `status` over the API. */

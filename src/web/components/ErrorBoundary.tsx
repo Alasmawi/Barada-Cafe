@@ -15,7 +15,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, { failed: 
       <main className="page">
         <MessageState
           art="error"
-          title="Something spilled."
+          title="Something went wrong."
           body="Reload the page to pick up where you left off."
           action={
             <button className="button" type="button" onClick={() => window.location.reload()}>

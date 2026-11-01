@@ -1,7 +1,7 @@
 export const PREVIEW_MODES = ['normal', 'slow', 'error', 'empty'] as const;
 export type PreviewMode = (typeof PREVIEW_MODES)[number];
 
-const STORAGE_KEY = 'finjan.preview';
+const STORAGE_KEY = 'cb.preview';
 
 /** Lets reviewers trigger each screen state from the demo menu. Client only: the server stays clean. */
 export function getPreviewMode(): PreviewMode {

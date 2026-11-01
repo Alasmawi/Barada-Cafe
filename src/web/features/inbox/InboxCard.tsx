@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { Collab, InboxRequest } from '../../../shared/api';
 import { detectPlatform, PLATFORM_LABELS } from '../../../shared/postLink';
 import { useRequestAction } from '../../api/queries';
-import { CupArt } from '../../components/CupArt';
+import { Ring } from '../rings/Ring';
 
 function PendingActions({
   request,
@@ -19,8 +19,8 @@ function PendingActions({
   if (confirming) {
     return (
       <div className="inbox-card__confirm">
-        <p className="inbox-card__note">Say no to {request.creatorName}? This can't be undone.</p>
-        <div className="inbox-card__actions">
+        <p className="note">Decline {request.creatorName}? This can't be undone.</p>
+        <div className="button-row">
           <button className="button" type="button" onClick={() => setConfirming(false)}>
             Keep it
           </button>
@@ -30,7 +30,7 @@ function PendingActions({
             onClick={() => decline.mutate()}
             disabled={decline.isPending}
           >
-            {decline.isPending ? 'Sending…' : 'Yes, not this time'}
+            {decline.isPending ? 'Declining…' : 'Yes, decline'}
           </button>
         </div>
         {decline.isError && (
@@ -44,11 +44,11 @@ function PendingActions({
 
   return (
     <>
-      {collab.state === 'ended' && <p className="inbox-card__note">Closed — this collab ended.</p>}
-      {collab.state === 'full' && <p className="inbox-card__note">All spots are taken.</p>}
-      <div className="inbox-card__actions">
+      {collab.state === 'ended' && <p className="note">Closed. This post has ended.</p>}
+      {collab.state === 'full' && <p className="note">All spots are filled.</p>}
+      <div className="button-row">
         <button className="button" type="button" onClick={() => setConfirming(true)}>
-          Not this time
+          Decline
         </button>
         {collab.state === 'open' && (
           <button className="button button--primary button--grow" type="button" onClick={onAccept}>
@@ -68,15 +68,15 @@ function PostLink({ url }: { url: string }) {
   );
 }
 
-function SubmittedActions({ request, onServed }: { request: InboxRequest; onServed: () => void }) {
+function SubmittedActions({ request, onCompleted }: { request: InboxRequest; onCompleted: () => void }) {
   const complete = useRequestAction(request.id, 'complete');
   return (
     <>
-      <div className="inbox-card__actions">
+      <div className="button-row">
         <button
           className="button button--primary button--grow"
           type="button"
-          onClick={() => complete.mutate(undefined, { onSuccess: onServed })}
+          onClick={() => complete.mutate(undefined, { onSuccess: onCompleted })}
           disabled={complete.isPending}
         >
           {complete.isPending ? 'Saving…' : 'Mark served'}
@@ -95,16 +95,16 @@ type Props = {
   request: InboxRequest;
   collab: Collab;
   onAccept: (requestId: string) => void;
-  onServed: () => void;
+  onCompleted: () => void;
 };
 
-export function InboxCard({ request, collab, onAccept, onServed }: Props) {
+export function InboxCard({ request, collab, onAccept, onCompleted }: Props) {
   const showsPass = request.status === 'accepted' || request.status === 'submitted';
 
   return (
     <li className="inbox-card">
       <div className="inbox-card__who">
-        <CupArt seed={request.creatorAvatarSeed} size={40} />
+        <Ring tags={request.creatorTags} size={52} name={request.creatorName} />
         <span>
           <span className="inbox-card__name">{request.creatorName}</span>
           {request.creatorHandle && (
@@ -112,7 +112,14 @@ export function InboxCard({ request, collab, onAccept, onServed }: Props) {
           )}
         </span>
       </div>
-      <p className="inbox-card__pitch">{request.pitch}</p>
+      {request.creatorSignature && (
+        <p className="creator-line">{request.creatorSignature}</p>
+      )}
+      {request.status === 'invited' ? (
+        <p className="note">Invited. Waiting for their answer.</p>
+      ) : (
+        <p className="inbox-card__pitch">{request.pitch}</p>
+      )}
 
       {showsPass && request.passCode && (
         <p className="inbox-card__pass">
@@ -121,7 +128,7 @@ export function InboxCard({ request, collab, onAccept, onServed }: Props) {
       )}
       {request.postUrl && <PostLink url={request.postUrl} />}
       {request.status === 'accepted' && (
-        <p className="inbox-card__note">Waiting for their visit and post.</p>
+        <p className="note">Waiting for their post.</p>
       )}
       {request.status === 'pending' && (
         <PendingActions
@@ -131,7 +138,7 @@ export function InboxCard({ request, collab, onAccept, onServed }: Props) {
         />
       )}
       {request.status === 'submitted' && (
-        <SubmittedActions request={request} onServed={onServed} />
+        <SubmittedActions request={request} onCompleted={onCompleted} />
       )}
     </li>
   );

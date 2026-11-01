@@ -1,44 +1,63 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { CupStack } from '../components/CupStack';
 import type { Collab, CollabRequest } from '../../shared/api';
 import { bahrainToday, endsLabel, shortDate } from '../../shared/dates';
 import { nextStep } from '../../shared/requestSteps';
-import { useCollab } from '../api/queries';
-import { BackHeader } from '../components/Layout';
+import { ApiError } from '../api/client';
+import { useAnswerInvite, useCollab } from '../api/queries';
+import { BrandMark } from '../components/BrandMark';
+import { NavBar } from '../components/Layout';
 import { MessageState } from '../components/MessageState';
 import { ScreenState } from '../components/ScreenState';
 import { Skeleton } from '../components/Skeleton';
 import { StatusChip } from '../components/StatusChip';
-import { spotsLabel } from '../features/collabs/CollabShelf';
+import { KindBadge, SpotsBar, spotsLabel } from '../features/collabs/CollabShared';
 import { PitchSheet } from '../features/requests/PitchSheet';
 
-function BrowseLink() {
+function InviteBar({ request, endsOn }: { request: CollabRequest; endsOn: string }) {
+  const answer = useAnswerInvite(request.id);
   return (
-    <Link className="button" to="/">
-      Browse collabs
-    </Link>
+    <div className="action-bar">
+      <p className="note">{nextStep(request.status, endsOn, bahrainToday())}</p>
+      {answer.isError && (
+        <p className="form-error" role="alert">
+          {answer.error instanceof ApiError && answer.error.code === 'COLLAB_FULL'
+            ? 'All spots were filled before you answered.'
+            : "That didn't go through. Try again."}
+        </p>
+      )}
+      <div className="button-row">
+        <button
+          className="button"
+          type="button"
+          onClick={() => answer.mutate('decline')}
+          disabled={answer.isPending}
+        >
+          Decline
+        </button>
+        <button
+          className="button button--primary button--grow"
+          type="button"
+          onClick={() => answer.mutate('accept')}
+          disabled={answer.isPending}
+        >
+          Accept invite
+        </button>
+      </div>
+    </div>
   );
 }
 
-type RequestBarProps = { request: CollabRequest; endsOn: string; justSent: boolean };
-
-function RequestBar({ request, endsOn, justSent }: RequestBarProps) {
+function RequestBar({ request, endsOn }: { request: CollabRequest; endsOn: string }) {
   return (
-    <div className={`action-bar action-bar--split ${justSent ? 'action-bar--arrived' : ''}`}>
+    <div className="action-bar action-bar--split">
       <div className="action-bar__status">
         <StatusChip status={request.status} />
-        <p className="action-bar__note">{nextStep(request.status, endsOn, bahrainToday())}</p>
+        <p className="note">{nextStep(request.status, endsOn, bahrainToday())}</p>
       </div>
       {request.passCode && (
         <Link className="button button--primary" to={`/me/passes/${request.id}`}>
-          See my pass
-        </Link>
-      )}
-      {request.status === 'declined' && <BrowseLink />}
-      {justSent && (
-        <Link className="button" to="/me">
-          My collabs
+          View
         </Link>
       )}
     </div>
@@ -47,11 +66,13 @@ function RequestBar({ request, endsOn, justSent }: RequestBarProps) {
 
 function ActionBar({ collab, request }: { collab: Collab; request: CollabRequest | null }) {
   const [asking, setAsking] = useState(false);
-  const [justSent, setJustSent] = useState(false);
 
   return (
     <>
-      {request && <RequestBar request={request} endsOn={collab.endsOn} justSent={justSent} />}
+      {request?.status === 'invited' && <InviteBar request={request} endsOn={collab.endsOn} />}
+      {request && request.status !== 'invited' && (
+        <RequestBar request={request} endsOn={collab.endsOn} />
+      )}
       {!request && collab.state === 'open' && (
         <div className="action-bar">
           <button
@@ -59,35 +80,27 @@ function ActionBar({ collab, request }: { collab: Collab; request: CollabRequest
             type="button"
             onClick={() => setAsking(true)}
           >
-            Ask to join
+            Apply
           </button>
         </div>
       )}
       {!request && collab.state !== 'open' && (
         <div className="action-bar action-bar--split">
-          <p className="action-bar__note">
-            {collab.state === 'full' ? 'All spots are taken.' : 'This collab has ended.'}
+          <p className="note">
+            {collab.state === 'full' ? 'All spots are filled.' : 'This has ended.'}
           </p>
-          <BrowseLink />
+          <Link className="button" to="/">
+            Browse
+          </Link>
         </div>
       )}
-      {/* Outside the branches above: if the collab fills mid-pitch, the sheet must stay to say so. */}
+      {/* Outside the branches above: if it fills mid-application, the sheet must stay to say so. */}
       <PitchSheet
         collabId={collab.id}
         open={asking}
         onClose={() => setAsking(false)}
-        onSent={() => setJustSent(true)}
+        onSent={() => setAsking(false)}
       />
-    </>
-  );
-}
-
-function DetailSkeleton() {
-  return (
-    <>
-      <Skeleton className="skeleton--heading" />
-      <Skeleton className="skeleton--stack" />
-      <Skeleton className="skeleton--line" count={3} />
     </>
   );
 }
@@ -98,19 +111,19 @@ export function CollabDetail() {
 
   return (
     <>
-      <BackHeader to="/" label="Collabs" />
+      <NavBar to="/" title="Details" />
       <main className="page page--bar">
         <ScreenState
           query={collab}
-          errorTitle="Couldn't load this collab."
-          skeleton={<DetailSkeleton />}
+          errorTitle="Couldn't load this."
+          skeleton={<Skeleton className="skeleton--card" count={2} />}
           notFound={
             <MessageState
               art="empty"
-              title="This collab has been removed."
+              title="This has been removed."
               action={
                 <Link className="button" to="/">
-                  Back to the feed
+                  Back to Browse
                 </Link>
               }
             />
@@ -118,26 +131,36 @@ export function CollabDetail() {
         >
           {({ collab: detail, myRequest }) => (
             <>
-              <p className="detail__cafe">
-                {detail.cafeName} · {detail.cafeArea}
-              </p>
-              <h1 className="detail__offer">{detail.offer}</h1>
-              <p className="detail__title">{detail.title}</p>
-              <div className="detail__tray">
-                <CupStack
-                  spots={detail.spots}
-                  taken={detail.spotsTaken}
-                  seed={detail.id}
-                  width={180}
-                />
-                <p className="detail__spots">{spotsLabel(detail)}</p>
+              <section className={`brand-banner house--${detail.businessHouse}`}>
+                <BrandMark house={detail.businessHouse} size={64} />
+                <div>
+                  <p className="brand-banner__name">{detail.businessName}</p>
+                  <p className="brand-banner__detail">
+                    {detail.businessType} · {detail.businessArea}
+                  </p>
+                </div>
+              </section>
+              <div className="detail-head">
+                <KindBadge kind={detail.kind} />
+                <h1 className="detail-head__title">{detail.title}</h1>
               </div>
-              <dl className="facts">
-                <div className="facts__row">
-                  <dt>What to post</dt>
+              <dl className="group">
+                <div className="info-row">
+                  <dt>You get</dt>
+                  <dd>{detail.offer}</dd>
+                </div>
+                <div className="info-row">
+                  <dt>You post</dt>
                   <dd>{detail.deliverable}</dd>
                 </div>
-                <div className="facts__row">
+                <div className="info-row">
+                  <dt>Spots</dt>
+                  <dd>
+                    {spotsLabel(detail)}
+                    <SpotsBar collab={detail} />
+                  </dd>
+                </div>
+                <div className="info-row">
                   <dt>Last day</dt>
                   <dd>
                     {shortDate(detail.endsOn)} · {endsLabel(detail.endsOn, bahrainToday())}

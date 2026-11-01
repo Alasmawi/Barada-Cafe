@@ -1,5 +1,4 @@
-import type { ErrorBody, ErrorCode } from '../../shared/api';
-import { actingUserId } from '../session';
+import type { ErrorBody, ErrorCode, User } from '../../shared/api';
 import { getPreviewMode } from './preview';
 
 const BASE_URL = '/api/v1';
@@ -16,23 +15,27 @@ export class ApiError extends Error {
   }
 }
 
-type RequestOptions = { method?: string; body?: unknown; signal?: AbortSignal };
+type RequestOptions = {
+  method?: string;
+  body?: unknown;
+  signal?: AbortSignal;
+  /** Who you are isn't a screen, so the preview states leave it alone. */
+  ignorePreview?: boolean;
+};
 
 async function request<T>(
   path: string,
-  { method = 'GET', body, signal }: RequestOptions = {},
+  { method = 'GET', body, signal, ignorePreview }: RequestOptions = {},
 ): Promise<T> {
-  const preview = getPreviewMode();
+  const preview = ignorePreview ? 'normal' : getPreviewMode();
   if (preview === 'slow') await new Promise((resolve) => setTimeout(resolve, SLOW_PREVIEW_MS));
   if (preview === 'error') {
-    throw new ApiError('UNEXPECTED', 500, 'Something spilled on our side. Please try again.');
+    throw new ApiError('UNEXPECTED', 500, 'Something went wrong on our side. Try again.');
   }
 
-  const userId = actingUserId();
   const response = await fetch(`${BASE_URL}${path}`, {
     method,
     headers: {
-      ...(userId ? { 'X-User-Id': userId } : {}),
       ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
     },
     body: body === undefined ? undefined : JSON.stringify(body),
@@ -45,7 +48,7 @@ async function request<T>(
     throw new ApiError(
       error?.code ?? 'UNEXPECTED',
       response.status,
-      error?.message ?? 'Something spilled on our side. Please try again.',
+      error?.message ?? 'Something went wrong on our side. Try again.',
       error?.fields,
     );
   }
@@ -53,6 +56,7 @@ async function request<T>(
 }
 
 export const api = {
+  me: () => request<{ user: User }>('/me', { ignorePreview: true }),
   get: <T>(path: string) => request<T>(path),
   post: <T>(path: string, body?: unknown, signal?: AbortSignal) =>
     request<T>(path, { method: 'POST', body, signal }),
