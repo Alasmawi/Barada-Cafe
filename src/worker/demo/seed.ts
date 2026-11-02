@@ -44,6 +44,10 @@ const BUSINESSES = [
   { id: 'biz_move', name: 'Move Studio', area: 'Juffair', type: 'Fitness', house: 'coral' },
 ];
 
+const quoted = (ids: string[]) => ids.map((id) => `'${id}'`).join(', ');
+const DEMO_USER_IDS = quoted([...STAFF, ...CREATORS].map(({ id }) => id));
+const DEMO_BUSINESS_IDS = quoted(BUSINESSES.map(({ id }) => id));
+
 type SeedCollab = {
   id: string;
   kind?: 'offer';
@@ -400,21 +404,27 @@ export async function seed(db: D1Database, now: Date = new Date()): Promise<void
   const nowIso = now.toISOString();
 
   await db.batch([
-    db.prepare('DELETE FROM sessions'),
+    // Demo accounts keep their rows, so a reset never logs out someone else who's reviewing.
+    db.prepare(`DELETE FROM sessions WHERE user_id NOT IN (${DEMO_USER_IDS})`),
     db.prepare('DELETE FROM requests'),
     db.prepare('DELETE FROM collabs'),
-    db.prepare('DELETE FROM users'),
-    db.prepare('DELETE FROM businesses'),
+    db.prepare(`DELETE FROM users WHERE id NOT IN (${DEMO_USER_IDS})`),
+    db.prepare(`DELETE FROM businesses WHERE id NOT IN (${DEMO_BUSINESS_IDS})`),
     ...BUSINESSES.map((business) =>
       db
-        .prepare('INSERT INTO businesses (id, name, area, type, house) VALUES (?, ?, ?, ?, ?)')
+        .prepare(
+          `INSERT INTO businesses (id, name, area, type, house) VALUES (?, ?, ?, ?, ?)
+           ON CONFLICT (id) DO UPDATE SET
+             name = excluded.name, area = excluded.area, type = excluded.type, house = excluded.house`,
+        )
         .bind(business.id, business.name, business.area, business.type, business.house),
     ),
     ...STAFF.map((user) =>
       db
         .prepare(
           `INSERT INTO users (id, username, password_hash, name, role, business_id)
-           VALUES (?, ?, ?, ?, 'business', ?)`,
+           VALUES (?, ?, ?, ?, 'business', ?)
+           ON CONFLICT (id) DO UPDATE SET password_hash = excluded.password_hash`,
         )
         .bind(user.id, user.username, DEMO_PASSWORD_HASH, user.name, user.businessId),
     ),
@@ -422,7 +432,10 @@ export async function seed(db: D1Database, now: Date = new Date()): Promise<void
       db
         .prepare(
           `INSERT INTO users (id, username, password_hash, name, role, handle, tags, signature, socials)
-           VALUES (?, ?, ?, ?, 'creator', ?, ?, ?, ?)`,
+           VALUES (?, ?, ?, ?, 'creator', ?, ?, ?, ?)
+           ON CONFLICT (id) DO UPDATE SET
+             tags = excluded.tags, signature = excluded.signature, socials = excluded.socials,
+             summary = NULL, summary_key = NULL`,
         )
         .bind(
           user.id,

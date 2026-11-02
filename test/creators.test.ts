@@ -60,17 +60,19 @@ describe('searching for creators', () => {
     expect((await api('/creators')).status).toBe(401);
   });
 
-  it('counts served collabs from the database', async () => {
+  it('counts completed collabs from the database', async () => {
     const [noor] = await search('noor');
 
     expect(noor).toMatchObject({ servedCount: 1, isAiSummary: false });
-    expect(noor?.summary).toContain('Served 1 collab.');
+    expect(noor?.summary).toContain('Completed 1 collab.');
   });
 });
 
 describe('a creator summary', () => {
   it('states only facts when no AI is involved', () => {
-    expect(factSummary(FACTS)).toBe('Noor makes content around Coffee, Reels, Calm. Served 2 collabs.');
+    expect(factSummary(FACTS)).toBe(
+      'Noor makes content around Coffee, Reels, Calm. Completed 2 collabs.',
+    );
     expect(factSummary({ ...FACTS, servedCount: 0 })).toContain('New to Collab Board.');
   });
 

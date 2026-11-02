@@ -1,9 +1,10 @@
-import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import { ApiError } from './api/client';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { BusinessTabs, CreatorTabs, RequireRole } from './components/Layout';
+import { BusinessTabs, CreatorTabs, GuestOnly, RequireRole } from './components/Layout';
+import { PreviewBanner } from './components/PreviewBanner';
+import { TopProgress } from './components/TopProgress';
 import { OfflineBanner } from './components/OfflineBanner';
 import { BusinessCollabs } from './routes/BusinessCollabs';
 import { BusinessCreators } from './routes/BusinessCreators';
@@ -17,23 +18,7 @@ import { Profile } from './routes/Profile';
 import { BusinessSignUpScreen, CreatorSignUpScreen } from './routes/SignUp';
 import { VisitPass } from './routes/VisitPass';
 import { Welcome } from './routes/Welcome';
-import { SessionProvider, useSession } from './session';
-
-function useAppQueryClient() {
-  const { signOut } = useSession();
-  return useState(
-    () =>
-      new QueryClient({
-        queryCache: new QueryCache({
-          onError: (error) => {
-            // A remembered user who no longer exists goes back to the welcome screen.
-            if (error instanceof ApiError && error.code === 'NOT_SIGNED_IN') signOut();
-          },
-        }),
-        defaultOptions: { queries: { retry: false, staleTime: 10_000 } },
-      }),
-  )[0];
-}
+import { queryClient, SessionProvider } from './session';
 
 /** Each screen opens at its top. */
 function ScrollToTop() {
@@ -45,16 +30,19 @@ function ScrollToTop() {
 }
 
 function AppRoutes() {
-  const queryClient = useAppQueryClient();
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <ScrollToTop />
+        <TopProgress />
         <OfflineBanner />
+        <PreviewBanner />
         <Routes>
-          <Route path="/welcome" element={<Welcome />} />
-          <Route path="/signup/creator" element={<CreatorSignUpScreen />} />
-          <Route path="/signup/business" element={<BusinessSignUpScreen />} />
+          <Route element={<GuestOnly />}>
+            <Route path="/welcome" element={<Welcome />} />
+            <Route path="/signup/creator" element={<CreatorSignUpScreen />} />
+            <Route path="/signup/business" element={<BusinessSignUpScreen />} />
+          </Route>
           <Route element={<RequireRole role="creator" />}>
             <Route element={<CreatorTabs />}>
               <Route path="/" element={<Feed />} />

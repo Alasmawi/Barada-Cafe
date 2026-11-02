@@ -4,7 +4,7 @@
 import { chromium } from 'playwright-core';
 
 const BASE_URL = process.env.BASE_URL ?? 'http://localhost:5173';
-const WIDTHS = [360, 390];
+const WIDTHS = [320, 360, 390, 768, 1280];
 const MODES = ['normal', 'slow', 'error', 'empty'];
 
 const ACCOUNTS = { creator: 'noor', staff: 'huda' };

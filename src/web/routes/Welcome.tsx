@@ -1,32 +1,21 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import type { User } from '../../shared/api';
 import { ApiError } from '../api/client';
-import { logIn, useDemoAccounts, useResetDemo } from '../api/queries';
-import { BrandMark } from '../components/BrandMark';
-import { DemoMenu } from '../components/DemoMenu';
+import { logIn } from '../api/queries';
+import { AccountMenu, DEMO_PASSWORD } from '../components/AccountMenu';
 import { Icon } from '../components/Icon';
 import { HOME } from '../components/Layout';
-import { MessageState } from '../components/MessageState';
-import { ScreenState } from '../components/ScreenState';
-import { Skeleton } from '../components/Skeleton';
-import { Ring } from '../features/rings/Ring';
 import { useSession } from '../session';
 
-/** Shown on this screen on purpose: every demo account shares it. */
-const DEMO_PASSWORD = 'demo-password';
+const STEPS = [
+  { title: 'Businesses post', detail: 'Collabs and offers' },
+  { title: 'Creators apply', detail: 'With a short message' },
+  { title: 'Businesses accept', detail: 'Then the creator posts' },
+];
 
-function useEnter() {
+function LoginForm() {
   const { signIn } = useSession();
   const navigate = useNavigate();
-  return (user: User) => {
-    signIn(user);
-    navigate(HOME[user.role], { replace: true });
-  };
-}
-
-function LoginSheetForm() {
-  const enter = useEnter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [failure, setFailure] = useState<string | null>(null);
@@ -37,7 +26,9 @@ function LoginSheetForm() {
     setSending(true);
     setFailure(null);
     try {
-      enter((await logIn({ username, password })).user);
+      const { user } = await logIn({ username, password });
+      signIn(user);
+      navigate(HOME[user.role], { replace: true });
     } catch (error) {
       setFailure(
         error instanceof ApiError && error.code === 'WRONG_LOGIN'
@@ -59,6 +50,7 @@ function LoginSheetForm() {
           onChange={(event) => setUsername(event.target.value)}
           autoComplete="username"
           autoCapitalize="none"
+          autoCorrect="off"
         />
       </label>
       <label className="field">
@@ -79,6 +71,7 @@ function LoginSheetForm() {
       <button
         className="button button--primary button--wide"
         type="submit"
+        aria-busy={sending}
         disabled={sending || !username || !password}
       >
         {sending ? 'Logging in…' : 'Log in'}
@@ -87,116 +80,58 @@ function LoginSheetForm() {
   );
 }
 
-function DemoAccount({ account }: { account: User }) {
-  const enter = useEnter();
-  const open = async () =>
-    enter((await logIn({ username: account.username, password: DEMO_PASSWORD })).user);
-
-  return (
-    <li>
-      <button className="list-row" type="button" onClick={open}>
-        {account.businessHouse ? (
-          <BrandMark house={account.businessHouse} size={40} />
-        ) : (
-          <Ring tags={account.tags} size={40} name={account.name} />
-        )}
-        <span className="list-row__text">
-          <span className="list-row__title">{account.businessName ?? account.name}</span>
-          <span className="list-row__detail">{account.handle ?? `${account.name}, staff`}</span>
-        </span>
-        <Icon name="chevron" size={18} />
-      </button>
-    </li>
-  );
-}
-
-function EmptyDemo() {
-  const reset = useResetDemo();
-  return (
-    <MessageState
-      art="empty"
-      title="No demo accounts yet"
-      body="Reset the demo to bring back the sample businesses and creators."
-      action={
-        <button
-          className="button button--primary"
-          type="button"
-          onClick={() => reset.mutate()}
-          disabled={reset.isPending}
-        >
-          {reset.isPending ? 'Resetting…' : 'Reset demo'}
-        </button>
-      }
-    />
-  );
-}
-
 export function Welcome() {
-  const accounts = useDemoAccounts();
-
   return (
     <main className="page welcome">
-      <div className="welcome__top">
-        <img src="/icon.svg" alt="" width={56} height={56} />
-        <DemoMenu />
-      </div>
-      <h1 className="welcome__title">Collab Board</h1>
-      <p className="welcome__intro">Businesses post collabs and offers. Creators apply.</p>
-
-      <div className="choice-list">
-        <Link className="choice-card" to="/signup/business">
-          <span className="choice-card__mark choice-card__mark--business" />
-          <span className="list-row__text">
-            <span className="list-row__title">I'm a business</span>
-            <span className="list-row__detail">Post collabs and offers, and choose your creators</span>
-          </span>
-          <Icon name="chevron" size={18} />
-        </Link>
-        <Link className="choice-card" to="/signup/creator">
-          <span className="choice-card__mark choice-card__mark--creator" />
-          <span className="list-row__text">
-            <span className="list-row__title">I'm a creator</span>
-            <span className="list-row__detail">Browse collabs and offers, and apply</span>
-          </span>
-          <Icon name="chevron" size={18} />
-        </Link>
-      </div>
-
-      <h2 className="group-label">Already have an account?</h2>
-      <section className="group group--padded">
-        <LoginSheetForm />
+      <section className="welcome__intro-panel">
+        <img src="/icon.svg" alt="" width={60} height={60} />
+        <h1 className="welcome__title">Collab Board</h1>
+        <p className="welcome__intro">
+          Where businesses and creators find each other for collabs and offers.
+        </p>
+        <ol className="how-it-works">
+          {STEPS.map((step, index) => (
+            <li key={step.title} className="how-it-works__step">
+              <span className="how-it-works__number">{index + 1}</span>
+              <span className="list-row__text">
+                <span className="list-row__title">{step.title}</span>
+                <span className="list-row__detail">{step.detail}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
       </section>
 
-      <h2 className="group-label">Try the demo</h2>
-      <p className="note note--inset">Tap an account. The password for all of them is {DEMO_PASSWORD}.</p>
-      <ScreenState
-        query={accounts}
-        errorTitle="Couldn't load the demo accounts."
-        skeleton={<Skeleton className="skeleton--row" count={3} />}
-        isEmpty={(data) => data.accounts.length === 0}
-        empty={<EmptyDemo />}
-      >
-        {(data) => (
-          <>
-            <h3 className="group-label">Businesses</h3>
-            <ul className="group">
-              {data.accounts
-                .filter(({ role }) => role === 'business')
-                .map((account) => (
-                  <DemoAccount key={account.id} account={account} />
-                ))}
-            </ul>
-            <h3 className="group-label">Creators</h3>
-            <ul className="group">
-              {data.accounts
-                .filter(({ role }) => role === 'creator')
-                .map((account) => (
-                  <DemoAccount key={account.id} account={account} />
-                ))}
-            </ul>
-          </>
-        )}
-      </ScreenState>
+      <section className="welcome__actions">
+        <h2 className="welcome__heading">Log in</h2>
+        <div className="group group--padded">
+          <LoginForm />
+        </div>
+
+        <h2 className="welcome__heading">New here? Create an account</h2>
+        <div className="choice-list">
+          <Link className="choice-card" to="/signup/business">
+            <span className="choice-card__mark choice-card__mark--business" />
+            <span className="list-row__text">
+              <span className="list-row__title">I'm a business</span>
+              <span className="list-row__detail">Post collabs and offers</span>
+            </span>
+            <Icon name="chevron" size={18} />
+          </Link>
+          <Link className="choice-card" to="/signup/creator">
+            <span className="choice-card__mark choice-card__mark--creator" />
+            <span className="list-row__text">
+              <span className="list-row__title">I'm a creator</span>
+              <span className="list-row__detail">Browse and apply</span>
+            </span>
+            <Icon name="chevron" size={18} />
+          </Link>
+        </div>
+
+        <h2 className="welcome__heading">Just looking?</h2>
+        <AccountMenu label="Try a demo account" />
+        <p className="note note--centre">Demo password: {DEMO_PASSWORD}</p>
+      </section>
     </main>
   );
 }

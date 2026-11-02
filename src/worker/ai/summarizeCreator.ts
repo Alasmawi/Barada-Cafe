@@ -15,7 +15,7 @@ export function factSummary({ name, tags, servedCount }: CreatorFacts): string {
   const served =
     servedCount === 0
       ? 'New to Collab Board.'
-      : `Served ${servedCount} ${servedCount === 1 ? 'collab' : 'collabs'}.`;
+      : `Completed ${servedCount} ${servedCount === 1 ? 'collab' : 'collabs'}.`;
   return `${name} makes content around ${tags.join(', ')}. ${served}`;
 }
 

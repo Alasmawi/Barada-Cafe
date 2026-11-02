@@ -1,9 +1,8 @@
 import { useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { SocialsInput, type Socials } from '../../shared/socials';
-import { logOut, useMyRequests, useSaveSocials } from '../api/queries';
+import { useMyRequests, useSaveSocials } from '../api/queries';
 import { BrandMark } from '../components/BrandMark';
-import { DemoMenu } from '../components/DemoMenu';
+import { AccountMenu } from '../components/AccountMenu';
 import { LargeTitle } from '../components/Layout';
 import { Sheet } from '../components/Sheet';
 import { SocialFields } from '../features/creators/SocialFields';
@@ -46,7 +45,8 @@ function SocialsForm({ current, onSaved }: { current: Socials; onSaved: () => vo
           Didn't save. Try again.
         </p>
       )}
-      <button className="button button--primary button--wide" type="submit" disabled={save.isPending}>
+      <button className="button button--primary button--wide" type="submit" aria-busy={save.isPending}
+            disabled={save.isPending}>
         {save.isPending ? 'Saving…' : 'Save'}
       </button>
     </form>
@@ -54,23 +54,16 @@ function SocialsForm({ current, onSaved }: { current: Socials; onSaved: () => vo
 }
 
 export function Profile() {
-  const { user, signOut } = useSession();
-  const navigate = useNavigate();
+  const { user } = useSession();
   const requests = useMyRequests();
   const [editing, setEditing] = useState(false);
   const done = requests.data?.requests.filter(({ status }) => status === 'done') ?? [];
-
-  const leave = async () => {
-    await logOut();
-    signOut();
-    navigate('/welcome', { replace: true });
-  };
 
   if (!user) return null;
 
   return (
     <>
-      <LargeTitle action={<DemoMenu />}>Profile</LargeTitle>
+      <LargeTitle action={<AccountMenu />}>Profile</LargeTitle>
       <div className="profile">
         <Ring tags={user.tags} size={200} name={user.name} />
         <h2 className="profile__name">{user.name}</h2>
@@ -113,9 +106,6 @@ export function Profile() {
           ))}
         </ul>
       )}
-      <button className="button button--wide logout" type="button" onClick={leave}>
-        Log out
-      </button>
     </>
   );
 }

@@ -29,6 +29,7 @@ function PendingActions({
             className="button button--grow"
             type="button"
             onClick={() => decline.mutate()}
+            aria-busy={decline.isPending}
             disabled={decline.isPending}
           >
             {decline.isPending ? 'Declining…' : 'Yes, decline'}
@@ -78,9 +79,10 @@ function SubmittedActions({ request, onCompleted }: { request: InboxRequest; onC
           className="button button--primary button--grow"
           type="button"
           onClick={() => complete.mutate(undefined, { onSuccess: onCompleted })}
+          aria-busy={complete.isPending}
           disabled={complete.isPending}
         >
-          {complete.isPending ? 'Saving…' : 'Mark served'}
+          {complete.isPending ? 'Saving…' : 'Mark complete'}
         </button>
       </div>
       {complete.isError && (
@@ -125,7 +127,7 @@ export function InboxCard({ request, collab, onAccept, onCompleted }: Props) {
 
       {showsPass && request.passCode && (
         <p className="inbox-card__pass">
-          Pass <strong>{request.passCode}</strong>
+          Code <strong>{request.passCode}</strong>
         </p>
       )}
       {request.postUrl && <PostLink url={request.postUrl} />}

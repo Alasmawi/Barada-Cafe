@@ -1,7 +1,7 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { logOut, useBusinessCollabs } from '../api/queries';
+import { Link } from 'react-router-dom';
+import { useBusinessCollabs } from '../api/queries';
 import { BrandMark } from '../components/BrandMark';
-import { DemoMenu } from '../components/DemoMenu';
+import { AccountMenu } from '../components/AccountMenu';
 import { Icon } from '../components/Icon';
 import { MessageState } from '../components/MessageState';
 import { ScreenState } from '../components/ScreenState';
@@ -9,16 +9,9 @@ import { Skeleton } from '../components/Skeleton';
 import { useSession } from '../session';
 
 export function BusinessHome() {
-  const { user, signOut } = useSession();
-  const navigate = useNavigate();
+  const { user } = useSession();
   const collabs = useBusinessCollabs();
   const house = user?.businessHouse ?? 'saffron';
-
-  const leave = async () => {
-    await logOut();
-    signOut();
-    navigate('/welcome', { replace: true });
-  };
 
   return (
     <>
@@ -28,7 +21,7 @@ export function BusinessHome() {
           <h1 className="brand-banner__name">{user?.businessName}</h1>
           <p className="brand-banner__detail">{user?.businessType} · Business account</p>
         </div>
-        <DemoMenu />
+        <AccountMenu />
       </section>
 
       <Link className="button button--primary button--wide" to="/business/collabs/new">
@@ -81,9 +74,6 @@ export function BusinessHome() {
           );
         }}
       </ScreenState>
-      <button className="button button--wide logout" type="button" onClick={leave}>
-        Log out
-      </button>
     </>
   );
 }

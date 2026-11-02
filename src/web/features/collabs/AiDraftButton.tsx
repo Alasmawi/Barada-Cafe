@@ -100,6 +100,7 @@ export function AiDraftButton({ onDraft }: Props) {
           <button
             className="button button--primary button--wide"
             type="submit"
+            aria-busy={reading}
             disabled={reading || !DraftRequest.safeParse({ sentence }).success}
           >
             <Icon name="sparkle" size={20} /> Fill the form

@@ -40,7 +40,8 @@ function InviteList({ creator, onSent }: { creator: CreatorCard; onSent: () => v
               className="invite-list__option"
               type="button"
               onClick={() => send(collab.id)}
-              disabled={invite.isPending}
+              aria-busy={invite.isPending}
+            disabled={invite.isPending}
             >
               <span>{collab.title}</span>
               <span className="invite-list__spots">

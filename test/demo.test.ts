@@ -2,6 +2,7 @@ import { env } from 'cloudflare:workers';
 import { describe, expect, it } from 'vitest';
 import type { Collab, RequestWithCollab, User } from '../src/shared/api';
 import { REQUEST_STATUSES } from '../src/shared/status';
+import { DEMO_PASSWORD } from '../src/worker/demo/seed';
 import { accept, api, countHeldSpots, errorCode } from './helpers';
 
 type AccountsBody = { accounts: User[]; lastResetAt: string | null };
@@ -88,6 +89,62 @@ describe('demo data', () => {
     const response = await api('/collabs/col_saffron', { as: 'usr_huda' });
     const { collab } = await response.json<{ collab: Collab }>();
     expect(collab).toMatchObject({ state: 'open', spotsTaken: 2 });
+  });
+});
+
+describe('resetting the demo', () => {
+  it('leaves other people logged in', async () => {
+    await api('/demo/reset', { method: 'POST' });
+    const login = await api('/auth/login', { body: { username: 'noor', password: DEMO_PASSWORD } });
+    const cookie = (login.headers.get('Set-Cookie') ?? '').split(';')[0]!;
+
+    await api('/demo/reset', { method: 'POST' });
+
+    expect((await api('/me', { cookie })).status).toBe(200);
+  });
+
+  it('removes people who signed up, and their business', async () => {
+    await api('/demo/reset', { method: 'POST' });
+    const signUp = await api('/auth/signup', {
+      body: {
+        role: 'business',
+        username: 'temporary',
+        password: 'correct horse',
+        businessName: 'Temporary',
+        area: 'Seef',
+        businessType: 'Retail',
+        house: 'coral',
+      },
+    });
+    const cookie = (signUp.headers.get('Set-Cookie') ?? '').split(';')[0]!;
+
+    await api('/demo/reset', { method: 'POST' });
+
+    expect((await api('/me', { cookie })).status).toBe(401);
+    const row = await env.DB.prepare('SELECT COUNT(*) AS n FROM businesses WHERE name = ?')
+      .bind('Temporary')
+      .first<{ n: number }>();
+    expect(row?.n).toBe(0);
+  });
+
+  it('puts demo creators back as they were', async () => {
+    await api('/demo/reset', { method: 'POST' });
+    await api('/me/socials', { as: 'usr_noor', method: 'PUT', body: { instagram: 'changed' } });
+
+    await api('/demo/reset', { method: 'POST' });
+
+    const me = await api('/me', { as: 'usr_noor' });
+    const { user } = await me.json<{ user: User }>();
+    expect(user.socials.instagram).toBe('noor.sips');
+  });
+});
+
+describe('security headers', () => {
+  it('are sent with every API response', async () => {
+    const response = await api('/health');
+
+    expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
+    expect(response.headers.get('X-Frame-Options')).toBe('SAMEORIGIN');
   });
 });
 

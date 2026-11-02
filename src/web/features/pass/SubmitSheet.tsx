@@ -59,7 +59,8 @@ function SubmitForm({ requestId, currentUrl, onSent }: FormProps) {
       <button
         className="button button--primary button--wide"
         type="submit"
-        disabled={submit.isPending}
+        aria-busy={submit.isPending}
+            disabled={submit.isPending}
       >
         {submit.isPending ? 'Sending…' : 'Send link'}
       </button>

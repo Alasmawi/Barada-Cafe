@@ -31,7 +31,8 @@ function InviteBar({ request, endsOn }: { request: CollabRequest; endsOn: string
           className="button"
           type="button"
           onClick={() => answer.mutate('decline')}
-          disabled={answer.isPending}
+          aria-busy={answer.isPending}
+            disabled={answer.isPending}
         >
           Decline
         </button>
@@ -39,7 +40,8 @@ function InviteBar({ request, endsOn }: { request: CollabRequest; endsOn: string
           className="button button--primary button--grow"
           type="button"
           onClick={() => answer.mutate('accept')}
-          disabled={answer.isPending}
+          aria-busy={answer.isPending}
+            disabled={answer.isPending}
         >
           Accept invite
         </button>

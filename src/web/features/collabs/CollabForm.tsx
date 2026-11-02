@@ -5,6 +5,7 @@ import { addDays, bahrainToday } from '../../../shared/dates';
 import { COLLAB_KINDS, CollabInput, SPOTS_MAX, SPOTS_MIN } from '../../../shared/schemas';
 import { ApiError } from '../../api/client';
 import { useSaveCollab } from '../../api/queries';
+import { revealFirstError } from '../../design/revealFirstError';
 import { AiDraftButton } from './AiDraftButton';
 import { KIND_LABELS } from './CollabShared';
 
@@ -92,6 +93,7 @@ export function CollabForm({ collabId, initial, onSaved }: Props) {
   };
 
   const showServerError = (error: unknown) => {
+    revealFirstError();
     if (error instanceof ApiError && error.code === 'SPOTS_BELOW_TAKEN') {
       setErrors({ spots: error.message });
     } else if (error instanceof ApiError && error.fields) {
@@ -107,6 +109,7 @@ export function CollabForm({ collabId, initial, onSaved }: Props) {
     const parsed = CollabInput.safeParse({ ...draft, spots: Number(draft.spots) });
     if (!parsed.success) {
       setErrors(fieldErrors(parsed.error));
+      revealFirstError();
       return;
     }
     setErrors({});
@@ -248,6 +251,7 @@ export function CollabForm({ collabId, initial, onSaved }: Props) {
           <button
             className="button button--primary button--grow"
             type="submit"
+            aria-busy={save.isPending}
             disabled={save.isPending}
           >
             {save.isPending ? 'Saving…' : idleLabel}

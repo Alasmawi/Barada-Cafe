@@ -11,11 +11,15 @@ A mobile-first board where businesses post collabs and offers, and creators appl
 Businesses are always square logos, and creators are always round rings.
 
 [DECISIONS.md](DECISIONS.md) records what changed along the way and the open questions.
+[AUDIT.md](AUDIT.md) compares the app with every requirement, with a view for each department.
 [PLAN.md](PLAN.md) is the original plan, under the earlier name Finjan.
 
 ## Two-minute demo
 
-Every demo account uses the password `demo-password`, and the welcome screen lists them.
+Tap **Try a demo account** on the welcome screen and pick one. Every demo account uses the password
+`demo-password`. Once you're in, the account button at the top of a home or Profile screen switches
+accounts with one tap, opens the preview states, resets the demo and logs you out. Resetting keeps
+you logged in.
 
 **As a creator (`noor`)**
 
@@ -70,8 +74,9 @@ npm run check
 That runs the type checker, ESLint and the tests. The tests run in the real Workers runtime against
 real D1 (SQLite), so nothing is mocked and no Cloudflare account is needed.
 
-With `npm run dev` running, this checks every screen at 360 and 390px in every preview state. It
-drives your installed Chrome, and it's run by hand, not in CI.
+With `npm run dev` running, this checks every screen at 320, 360, 390, 768 and 1280px in every
+preview state. It drives your installed Chrome, and it's run by hand, not in CI. It resets the demo
+data, so don't point it at a site where real people have signed up.
 
 ```bash
 npm run test:ui
@@ -95,7 +100,7 @@ src/worker     routes (HTTP) → services (rules) → repositories (SQL)
 src/web        the React app
 migrations     schema only; demo data lives in src/worker/demo/seed.ts
 test           runs over HTTP against the real Worker
-public         app icons and the install manifest
+public         app icons, the install manifest and security headers
 ```
 
 In the code, a `collab` has a `kind` of `collab` or `offer`, and a `request` is an application or an

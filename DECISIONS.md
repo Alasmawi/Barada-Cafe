@@ -175,6 +175,23 @@ From PLAN §2.3. The defaults in brackets are what's built.
 - **Vague sentences can still get a guessed spot count,** as the model filled in 1 when none was
   given. The business reviews every field before publishing.
 
+## Audit pass
+
+- **Changing user clears the app's cached data,** so one person's screens can't appear for the next.
+- **Reset demo keeps demo accounts logged in.** It only removes sessions and accounts that signed up,
+  so one reviewer's reset doesn't log out the others.
+- **Accounts live in one sheet.** Switching, preview states, reset and logout replaced the old demo
+  menu, and a switch that fails says so.
+- **Signed-in people skip the login and sign-up screens.**
+- **Preview states show a banner,** so a simulated failure can't pass for a real one.
+- **Security headers are set twice:** by Hono for the API and by `public/_headers` for static files.
+- **Tablets get a wider column and desktops get a side rail,** so neither is a stretched phone.
+- **Old wording came out late.** `Mark served`, `Pass` and `Served 2 collabs` survived the rename
+  because no check reached them. The code still says `servedCount` and `passCode`, as these aren't
+  shown to anyone.
+
+[AUDIT.md](AUDIT.md) has the full comparison with the requirements.
+
 ## Next steps
 
 - Say what an offer means in practice, if it should differ from a collab. It might skip applying

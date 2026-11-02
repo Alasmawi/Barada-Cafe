@@ -45,6 +45,7 @@ export function CreatorResult({ creator }: { creator: CreatorCard }) {
             type="button"
             aria-label={summarize.isPending ? 'Writing AI summary' : 'Write an AI summary'}
             onClick={() => summarize.mutate()}
+            aria-busy={summarize.isPending}
             disabled={summarize.isPending}
           >
             <Icon name="sparkle" />

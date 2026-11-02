@@ -1,6 +1,18 @@
+import { QueryCache, QueryClient } from '@tanstack/react-query';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { User } from '../shared/api';
-import { api } from './api/client';
+import { api, ApiError } from './api/client';
+
+let onSessionLost = () => {};
+
+export const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: (error) => {
+      if (error instanceof ApiError && error.code === 'NOT_SIGNED_IN') onSessionLost();
+    },
+  }),
+  defaultOptions: { queries: { retry: false, staleTime: 10_000 } },
+});
 
 type Session = {
   user: User | null;
@@ -25,8 +37,19 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       .finally(() => setLoading(false));
   }, []);
 
-  const signIn = useCallback((next: User) => setUser(next), []);
-  const signOut = useCallback(() => setUser(null), []);
+  // Clearing first means one person's data can never show on the next person's screen.
+  const signIn = useCallback((next: User) => {
+    queryClient.clear();
+    setUser(next);
+  }, []);
+  const signOut = useCallback(() => {
+    queryClient.clear();
+    setUser(null);
+  }, []);
+
+  useEffect(() => {
+    onSessionLost = signOut;
+  }, [signOut]);
 
   const session = useMemo(() => ({ user, loading, signIn, signOut }), [user, loading, signIn, signOut]);
   return <SessionContext.Provider value={session}>{children}</SessionContext.Provider>;

@@ -11,6 +11,7 @@ import { HOME, NavBar } from '../components/Layout';
 import { BrandMark } from '../components/BrandMark';
 import { SocialFields } from '../features/creators/SocialFields';
 import { Ring } from '../features/rings/Ring';
+import { revealFirstError } from '../design/revealFirstError';
 import { useSession } from '../session';
 
 type Errors = Record<string, string | undefined>;
@@ -57,6 +58,7 @@ function useSignUp() {
       const next: Errors = {};
       for (const issue of parsed.error.issues) next[String(issue.path[0])] ??= issue.message;
       setErrors(next);
+      revealFirstError();
       return;
     }
     setErrors({});
@@ -64,6 +66,7 @@ function useSignUp() {
     try {
       enter((await signUp(parsed.data)).user);
     } catch (error) {
+      revealFirstError();
       if (error instanceof ApiError && error.fields) setErrors(error.fields);
       else setFailure("Couldn't create your account. Check your connection, then try again.");
     } finally {
@@ -119,7 +122,7 @@ function CreatorForm() {
   const [handle, setHandle] = useState('@');
   const [signature, setSignature] = useState('');
   const [socials, setSocials] = useState<Socials>({});
-  const [tags, setTags] = useState<string[]>(['Coffee', 'Reels']);
+  const [tags, setTags] = useState<string[]>(['Food', 'Reels']);
   const [vibe, setVibe] = useState<VibeTag>('Calm');
   const allTags = [...tags, vibe];
 
@@ -215,7 +218,7 @@ function CreatorForm() {
           {failure}
         </p>
       )}
-      <button className="button button--primary button--wide" type="submit" disabled={sending}>
+      <button className="button button--primary button--wide" type="submit" aria-busy={sending} disabled={sending}>
         {sending ? 'Creating…' : 'Create creator account'}
       </button>
     </form>
@@ -301,7 +304,7 @@ function BusinessForm() {
           {failure}
         </p>
       )}
-      <button className="button button--primary button--wide" type="submit" disabled={sending}>
+      <button className="button button--primary button--wide" type="submit" aria-busy={sending} disabled={sending}>
         {sending ? 'Creating…' : 'Create business account'}
       </button>
     </form>

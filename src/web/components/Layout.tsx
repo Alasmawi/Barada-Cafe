@@ -4,15 +4,33 @@ import type { Role } from '../../shared/api';
 import { useMyRequests } from '../api/queries';
 import { useSession } from '../session';
 import { Icon, type IconName } from './Icon';
+import { PullToRefresh } from './PullToRefresh';
 
 export const HOME: Record<Role, string> = { creator: '/', business: '/business' };
 
 /** Sends visitors to the welcome screen, and each role to its own side of the app. */
 export function RequireRole({ role }: { role: Role }) {
   const { user, loading } = useSession();
-  if (loading) return <main className="page" aria-busy="true" />;
+  if (loading) return <Splash />;
   if (!user) return <Navigate to="/welcome" replace />;
   if (user.role !== role) return <Navigate to={HOME[user.role]} replace />;
+  return <Outlet />;
+}
+
+/** While a session is being checked, so there's never a blank screen. */
+export function Splash() {
+  return (
+    <main className="splash" role="status" aria-label="Loading">
+      <img src="/icon.svg" alt="" width={72} height={72} />
+    </main>
+  );
+}
+
+/** Someone logged in has no use for the login page, so they go to their home. */
+export function GuestOnly() {
+  const { user, loading } = useSession();
+  if (loading) return <Splash />;
+  if (user) return <Navigate to={HOME[user.role]} replace />;
   return <Outlet />;
 }
 
@@ -56,6 +74,7 @@ function TabPage() {
   const { pathname } = useLocation();
   return (
     <main key={pathname} className="page page--tabs">
+      <PullToRefresh />
       <Outlet />
     </main>
   );

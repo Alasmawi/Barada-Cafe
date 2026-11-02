@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { secureHeaders } from 'hono/secure-headers';
 import type { AppEnv } from './env';
 import { actingUser } from './http/actingUser';
 import { handleError, notFound } from './http/errors';
@@ -11,6 +12,7 @@ import { requestRoutes } from './routes/requests';
 
 const app = new Hono<AppEnv>().basePath('/api/v1');
 
+app.use(secureHeaders());
 app.onError(handleError);
 app.notFound(() => {
   throw notFound("There's nothing here.");
