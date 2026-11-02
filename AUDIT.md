@@ -18,7 +18,7 @@ How Collab Board compares with everything it was asked to do, as of 2 Nov 2026.
 | B8 | Creator submits the link to their post | Met | https links only; Instagram and TikTok recognised |
 | B9 | Business marks it done | Met | Mark complete on the Posted tab |
 | R1 | Runs on Cloudflare’s free tier | Met | Workers, D1 and Workers AI only; limits checked on 1 Nov 2026 |
-| R2 | Works on the live link, on reviewers’ own phones | Partial | Live, but the site runs the version before this audit until it’s deployed. Not yet tried on a real phone |
+| R2 | Works on the live link, on reviewers’ own phones | Partial | Deployed on 2 Nov 2026; login, feed and account switching checked on the live site. Not yet tried on a real phone |
 | R3 | Mobile first, feels good on an iPhone at 360px | Partial | 300 screen checks with no sideways scroll. Real iPhone still needed |
 | R4 | Login can be faked | Exceeded | Real accounts replaced the fake login |
 | R5 | Never more creators than spots, with a test | Met | One-statement guard; tests fail when the guard is deliberately broken |
@@ -120,7 +120,6 @@ Is it fit to hold people’s details?
 
 ### Must do before review
 
-- Deploy this version. The live site doesn’t have the audit’s fixes yet.
 - Try it on a real iPhone and an Android phone. Nothing has been tested on a physical device.
 - Push to GitHub so CI runs for the first time. Until then, automated checks have only run on one Mac.
 - Decide what an offer is. Today it differs from a collab only by its label.
