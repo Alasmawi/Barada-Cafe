@@ -21,10 +21,10 @@ function EditCollab({ id }: { id: string }) {
       isEmpty={(data) => data.collab.businessId !== user?.businessId}
       empty={<MessageState art="empty" title="This post isn't yours." />}
     >
-      {({ collab: { kind, title, offer, deliverable, details, requirements, location, spots, endsOn } }) => (
+      {({ collab: { title, offer, deliverable, details, requirements, location, spots, endsOn } }) => (
         <CollabForm
           collabId={id}
-          initial={{ kind, title, offer, deliverable, details, requirements, location, spots, endsOn }}
+          initial={{ title, offer, deliverable, details, requirements, location, spots, endsOn }}
           onSaved={() => navigate(`/business/collabs/${id}`, { replace: true })}
         />
       )}

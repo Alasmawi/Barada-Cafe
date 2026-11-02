@@ -5,7 +5,7 @@ import type { RequestStatus } from '../src/shared/status';
 import { hashToken, SESSION_COOKIE } from '../src/worker/auth/sessions';
 
 /**
- * Every test builds its own business, staff, creators and collab with fresh ids, so tests
+ * Every test builds its own business, creators and collab with fresh ids, so tests
  * don't share rows or depend on order. Requests go over HTTP into the real Worker.
  */
 
@@ -67,22 +67,20 @@ export async function errorCode(response: Response): Promise<string> {
   return error.code;
 }
 
-export async function makeBusiness(staffCount = 1): Promise<{ businessId: string; staff: string[] }> {
+export async function makeBusiness(): Promise<{ businessId: string; owner: string }> {
   const businessId = nextId('biz');
-  const staff = Array.from({ length: staffCount }, () => nextId('usr'));
+  const owner = nextId('usr');
   await env.DB.batch([
     env.DB.prepare(
       `INSERT INTO businesses (id, name, area, type, house)
        VALUES (?, 'Test Business', 'Adliya', 'Café', 'saffron')`,
     ).bind(businessId),
-    ...staff.map((id) =>
-      env.DB.prepare(
-        `INSERT INTO users (id, username, password_hash, name, role, business_id)
-         VALUES (?, ?, 'unused', 'Staff', 'business', ?)`,
-      ).bind(id, id, businessId),
-    ),
+    env.DB.prepare(
+      `INSERT INTO users (id, username, password_hash, name, role, business_id)
+       VALUES (?, ?, 'unused', 'Test Business', 'business', ?)`,
+    ).bind(owner, owner, businessId),
   ]);
-  return { businessId, staff };
+  return { businessId, owner };
 }
 
 export async function makeCreators(count: number): Promise<string[]> {
@@ -101,8 +99,8 @@ export async function makeCreators(count: number): Promise<string[]> {
 type Scenario = {
   collabId: string;
   businessId: string;
-  /** Staff of the collab's business. */
-  staff: string[];
+  /** The account of the collab's business. */
+  owner: string;
   creators: string[];
   /** One pending request per creator, in the same order. */
   requestIds: string[];
@@ -112,15 +110,13 @@ type Scenario = {
 export async function makeCollab({
   spots,
   pending = 0,
-  staffCount = 1,
   endsOn = nextWeek(),
 }: {
   spots: number;
   pending?: number;
-  staffCount?: number;
   endsOn?: string;
 }): Promise<Scenario> {
-  const { businessId, staff } = await makeBusiness(staffCount);
+  const { businessId, owner } = await makeBusiness();
   const creators = pending > 0 ? await makeCreators(pending) : [];
   const collabId = nextId('col');
   const requestIds = creators.map(() => nextId('req'));
@@ -130,7 +126,7 @@ export async function makeCollab({
     env.DB.prepare(
       `INSERT INTO collabs (id, business_id, title, offer, deliverable, spots, ends_on, created_by, created_at)
        VALUES (?, ?, 'Test collab', 'A free latte', 'One Reel', ?, ?, ?, ?)`,
-    ).bind(collabId, businessId, spots, endsOn, staff[0], createdAt),
+    ).bind(collabId, businessId, spots, endsOn, owner, createdAt),
     ...creators.map((creatorId, index) =>
       env.DB.prepare(
         `INSERT INTO requests (id, collab_id, creator_id, pitch, created_at)
@@ -138,26 +134,26 @@ export async function makeCollab({
       ).bind(requestIds[index], collabId, creatorId, createdAt),
     ),
   ]);
-  return { collabId, businessId, staff, creators, requestIds };
+  return { collabId, businessId, owner, creators, requestIds };
 }
 
 /** A scenario with one request already moved to `status` over the API. */
 export async function makeRequestIn(status: RequestStatus) {
   const scenario = await makeCollab({ spots: 2, pending: 1 });
-  const [staffId, creatorId, requestId] = [
-    scenario.staff[0]!,
+  const [ownerId, creatorId, requestId] = [
+    scenario.owner,
     scenario.creators[0]!,
     scenario.requestIds[0]!,
   ];
 
-  if (status === 'declined') await decline(requestId, staffId);
+  if (status === 'declined') await decline(requestId, ownerId);
   if (status === 'accepted' || status === 'submitted' || status === 'done') {
-    await accept(requestId, staffId);
+    await accept(requestId, ownerId);
   }
   if (status === 'submitted' || status === 'done') await submitLink(requestId, creatorId);
-  if (status === 'done') await complete(requestId, staffId);
+  if (status === 'done') await complete(requestId, ownerId);
 
-  return { ...scenario, staffId, creatorId, requestId };
+  return { ...scenario, ownerId, creatorId, requestId };
 }
 
 export async function getCollab(collabId: string, as: string): Promise<Collab> {

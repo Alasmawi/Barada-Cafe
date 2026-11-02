@@ -6,7 +6,7 @@ import { DomainError, notFound } from '../http/errors';
 import { newId } from '../ids';
 import * as collabsRepo from '../repositories/collabsRepo';
 import * as requestsRepo from '../repositories/requestsRepo';
-import { assertStaff, assertStaffOf } from './permissions';
+import { assertBusiness, assertOwnerOf } from './permissions';
 
 function assertEndDateNotPast(endsOn: string, today: string): void {
   if (endsOn < today) {
@@ -49,12 +49,12 @@ export async function getDetail(
 }
 
 export async function listForBusiness(db: D1Database, actor: User): Promise<Collab[]> {
-  assertStaff(actor);
+  assertBusiness(actor);
   return collabsRepo.listForBusiness(db, actor.businessId, bahrainToday());
 }
 
 export async function create(db: D1Database, actor: User, input: CollabInput): Promise<Collab> {
-  assertStaff(actor);
+  assertBusiness(actor);
   const today = bahrainToday();
   assertEndDateNotPast(input.endsOn, today);
 
@@ -77,7 +77,7 @@ export async function update(
 ): Promise<Collab> {
   const today = bahrainToday();
   const collab = await loadCollab(db, id, today);
-  assertStaffOf(actor, collab.businessId);
+  assertOwnerOf(actor, collab.businessId);
   // An ended collab can have its copy fixed without having to invent a new date.
   if (input.endsOn !== collab.endsOn) assertEndDateNotPast(input.endsOn, today);
 

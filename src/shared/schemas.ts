@@ -13,11 +13,8 @@ export const DETAILS_MAX = 1000;
 export const REQUIREMENTS_MAX = 500;
 export const LOCATION_MAX = 80;
 
-export const COLLAB_KINDS = ['collab', 'offer'] as const;
-export type CollabKind = (typeof COLLAB_KINDS)[number];
 
 export const CollabInput = z.object({
-  kind: z.enum(COLLAB_KINDS, 'Choose collab or offer').default('collab'),
   title: z.string().trim().min(1, 'Give the collab a title').max(80, 'Keep the title under 80 characters'),
   offer: z.string().trim().min(1, "Say what you're offering").max(OFFER_MAX, `Keep this under ${OFFER_MAX} characters`),
   deliverable: z.string().trim().min(1, 'Say what to post').max(DELIVERABLE_MAX, `Keep this under ${DELIVERABLE_MAX} characters`),

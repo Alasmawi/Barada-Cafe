@@ -1,14 +1,15 @@
 # Collab Board
 
-A mobile-first board where businesses post collabs and offers, and creators apply.
+A mobile-first board where businesses post collabs and creators apply.
 
 **Live link:** https://collab-board.alasmawi.workers.dev
 
-- **Businesses** (cafés, shops, gyms and so on) post collabs and offers, review applicants, accept
+- **Businesses** (cafés, shops, gyms and so on) post collabs, review applicants, accept
   them, and can search for creators and invite them.
-- **Creators** browse collabs and offers, apply, and post once they're accepted.
+- **Creators** browse collabs, apply, and post once they're accepted.
 
-Businesses are always square logos, and creators are always round rings.
+Businesses are always square logos, and creators are always round rings. A business has one
+account, with the business name on it.
 
 [DECISIONS.md](DECISIONS.md) records what changed along the way and the open questions.
 [AUDIT.md](AUDIT.md) compares the app with every requirement, with a view for each department.
@@ -23,14 +24,14 @@ you logged in.
 
 **As a creator (`noor`)**
 
-1. Browse collabs and offers, and filter between them.
+1. Browse the collabs.
 2. Open one you haven't applied to, tap **Apply** and send a line about why you fit.
 3. In **Applications**, open Layali's invite and tap **Accept invite**.
 4. Open an accepted application to see its code, then add your post link.
 5. Open **Profile** to see your ring and edit your socials. The ring has one circle per tag, and
    dots mark your formats.
 
-**As a business (`huda`)**
+**As a business (`barada`)**
 
 1. **Overview** shows new applicants and what needs a decision.
 2. In **Creators**, search for *food*. Tap the sparkle icon for an AI summary, or **Invite** to offer
@@ -39,9 +40,9 @@ you logged in.
 4. Tap the plus button, then the sparkle icon, type a sentence and tap **Fill the form**. Edit it,
    then publish.
 
-**The rule that matters:** open *Karak tasting flight* as `huda` on one phone and `yusuf` on another.
+**The rule that matters:** open *Karak tasting flight* as `barada` on two phones.
 It has one spot left and three creators waiting. Tap Accept on different applicants at the same
-moment: one gets the spot, the other sees that a teammate took it. Invites follow the same rule.
+moment: one gets the spot, the other sees that it was just taken. Invites follow the same rule.
 
 ## Run it
 
@@ -84,7 +85,7 @@ npm run test:ui
 
 ## The rule that matters most
 
-A post never accepts more creators than it has spots, even with a double tap or two staff accepting
+A post never accepts more creators than it has spots, even with a double tap or two phones accepting
 at once. The guard is one SQL statement in
 [`requestsRepo.acceptIfSpotAvailable`](src/worker/repositories/requestsRepo.ts). It counts spots and
 updates the row in one step, so no other request can get between them. Accepting invites, applying
@@ -103,8 +104,7 @@ test           runs over HTTP against the real Worker
 public         app icons, the install manifest and security headers
 ```
 
-In the code, a `collab` has a `kind` of `collab` or `offer`, and a `request` is an application or an
-invite.
+In the code, a `request` is an application or an invite.
 
 ## The free tier
 

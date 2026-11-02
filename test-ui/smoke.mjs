@@ -7,13 +7,13 @@ const BASE_URL = process.env.BASE_URL ?? 'http://localhost:5173';
 const WIDTHS = [320, 360, 390, 768, 1280];
 const MODES = ['normal', 'slow', 'error', 'empty'];
 
-const ACCOUNTS = { creator: 'noor', staff: 'huda' };
+const ACCOUNTS = { creator: 'noor', business: 'barada' };
 const DEMO_PASSWORD = 'demo-password';
 
 const ROUTES = {
   creator: ['/', '/collabs/col_saffron', '/collabs/col_oud', '/collabs/col_missing', '/me', '/profile',
     '/me/passes/req_brunch_noor', '/me/passes/req_lastcup_noor'],
-  staff: ['/business', '/business/collabs', '/business/creators', '/business/collabs/new',
+  business: ['/business', '/business/collabs', '/business/creators', '/business/collabs/new',
     '/business/collabs/col_saffron', '/business/collabs/col_saffron/edit', '/business/collabs/col_cupping'],
 };
 

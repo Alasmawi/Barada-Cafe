@@ -96,11 +96,11 @@ describe('a creator', () => {
   });
 });
 
-describe('staff of another business', () => {
+describe('another business', () => {
   it('cannot see requests, accept, decline, complete or edit', async () => {
     const { collabId, requestId } = await makeRequestIn('pending');
-    const { staff } = await makeBusiness();
-    const outsider = staff[0]!;
+    const { owner } = await makeBusiness();
+    const outsider = owner;
 
     await expectForbidden(await api(`/collabs/${collabId}/requests`, { as: outsider }));
     await expectForbidden(await api(`/requests/${requestId}`, { as: outsider }));
@@ -114,16 +114,16 @@ describe('staff of another business', () => {
   });
 });
 
-describe('staff', () => {
+describe('a business', () => {
   it('cannot ask to join a collab', async () => {
-    const { collabId, staff } = await makeCollab({ spots: 1 });
+    const { collabId, owner } = await makeCollab({ spots: 1 });
 
-    await expectForbidden(await askToJoin(collabId, staff[0]!));
+    await expectForbidden(await askToJoin(collabId, owner));
   });
 
   it("cannot submit a creator's link", async () => {
-    const { requestId, staffId } = await makeRequestIn('accepted');
+    const { requestId, ownerId } = await makeRequestIn('accepted');
 
-    await expectForbidden(await submitLink(requestId, staffId));
+    await expectForbidden(await submitLink(requestId, ownerId));
   });
 });

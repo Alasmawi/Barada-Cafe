@@ -7,7 +7,7 @@ import * as collabsRepo from '../repositories/collabsRepo';
 import * as requestsRepo from '../repositories/requestsRepo';
 import * as usersRepo from '../repositories/usersRepo';
 import { loadCollab } from './collabService';
-import { assertCreator, assertStaffOf } from './permissions';
+import { assertCreator, assertOwnerOf } from './permissions';
 
 const invalidTransition = () =>
   new DomainError('INVALID_TRANSITION', 409, "This request has moved on, so that can't be done now.");
@@ -94,7 +94,7 @@ export async function accept(db: D1Database, actor: User, id: string): Promise<C
   const today = bahrainToday();
   const request = await loadRequest(db, id);
   const collab = await loadCollab(db, request.collabId, today);
-  assertStaffOf(actor, collab.businessId);
+  assertOwnerOf(actor, collab.businessId);
   return acceptGuarded(db, actor, id, 'pending', collab.endsOn, today);
 }
 
@@ -106,7 +106,7 @@ export async function invite(
 ): Promise<{ request: CollabRequest; created: boolean }> {
   const today = bahrainToday();
   const collab = await loadCollab(db, collabId, today);
-  assertStaffOf(actor, collab.businessId);
+  assertOwnerOf(actor, collab.businessId);
   const creator = await usersRepo.findById(db, creatorId);
   if (creator?.role !== 'creator') throw notFound('This creator has been removed.');
 
@@ -156,7 +156,7 @@ export async function declineInvite(db: D1Database, actor: User, id: string) {
 export async function decline(db: D1Database, actor: User, id: string): Promise<CollabRequest> {
   const request = await loadRequest(db, id);
   const collab = await loadCollab(db, request.collabId, bahrainToday());
-  assertStaffOf(actor, collab.businessId);
+  assertOwnerOf(actor, collab.businessId);
 
   const written = await requestsRepo.declineIfOpen(db, {
     id,
@@ -187,7 +187,7 @@ export async function submitLink(
 export async function complete(db: D1Database, actor: User, id: string): Promise<CollabRequest> {
   const request = await loadRequest(db, id);
   const collab = await loadCollab(db, request.collabId, bahrainToday());
-  assertStaffOf(actor, collab.businessId);
+  assertOwnerOf(actor, collab.businessId);
 
   const written = await requestsRepo.completeIfSubmitted(db, {
     id,
@@ -200,7 +200,7 @@ export async function complete(db: D1Database, actor: User, id: string): Promise
 export async function getOne(db: D1Database, actor: User, id: string): Promise<RequestWithCollab> {
   const request = await loadRequest(db, id);
   const collab = await loadCollab(db, request.collabId, bahrainToday());
-  if (request.creatorId !== actor.id) assertStaffOf(actor, collab.businessId);
+  if (request.creatorId !== actor.id) assertOwnerOf(actor, collab.businessId);
   return { ...request, collab };
 }
 
@@ -210,7 +210,7 @@ export async function listInbox(
   collabId: string,
 ): Promise<InboxRequest[]> {
   const collab = await loadCollab(db, collabId, bahrainToday());
-  assertStaffOf(actor, collab.businessId);
+  assertOwnerOf(actor, collab.businessId);
   return requestsRepo.listInbox(db, collabId);
 }
 

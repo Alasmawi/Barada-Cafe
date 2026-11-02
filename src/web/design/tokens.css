@@ -1,4 +1,4 @@
-/* Cream and red, set in Plus Jakarta Sans. */
+/* Cream and red. Titles are Ultra, everything else is Archivo, and codes are JetBrains Mono. */
 :root {
   color-scheme: light;
 
@@ -14,7 +14,9 @@
   --green: #2f6b3f;
   --green-soft: #e2efe2;
 
-  --font: 'Plus Jakarta Sans Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font: 'Archivo Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-title: 'Ultra', Georgia, 'Times New Roman', serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
 
   --text-xs: 0.8125rem;
   --text-sm: 0.9375rem;

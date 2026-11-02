@@ -23,10 +23,10 @@ const input = (overrides: object = {}) => ({
 });
 
 describe('creating a collab', () => {
-  it('belongs to the acting staff member’s business and starts open', async () => {
-    const { businessId, staff } = await makeBusiness();
+  it('belongs to the acting business and starts open', async () => {
+    const { businessId, owner } = await makeBusiness();
 
-    const response = await api('/collabs', { as: staff[0]!, body: input() });
+    const response = await api('/collabs', { as: owner, body: input() });
 
     expect(response.status).toBe(201);
     const { collab } = await response.json<{ collab: Collab }>();
@@ -41,9 +41,9 @@ describe('creating a collab', () => {
     ['an impossible date', { endsOn: '2026-02-31' }, 'endsOn'],
     ['a past end date', { endsOn: yesterday() }, 'endsOn'],
   ])('rejects %s', async (_name, overrides, field) => {
-    const { staff } = await makeBusiness();
+    const { owner } = await makeBusiness();
 
-    const response = await api('/collabs', { as: staff[0]!, body: input(overrides) });
+    const response = await api('/collabs', { as: owner, body: input(overrides) });
 
     expect(response.status).toBe(422);
     const { error } = await response.json<ErrorBody>();
@@ -52,9 +52,9 @@ describe('creating a collab', () => {
   });
 
   it('rejects a body that is not JSON', async () => {
-    const { staff } = await makeBusiness();
+    const { owner } = await makeBusiness();
 
-    const response = await api('/collabs', { as: staff[0]!, body: undefined, method: 'POST' });
+    const response = await api('/collabs', { as: owner, body: undefined, method: 'POST' });
 
     expect(response.status).toBe(422);
   });
@@ -62,25 +62,25 @@ describe('creating a collab', () => {
 
 describe('editing a collab', () => {
   it('saves new details', async () => {
-    const { collabId, staff } = await makeCollab({ spots: 2 });
+    const { collabId, owner } = await makeCollab({ spots: 2 });
 
     const response = await api(`/collabs/${collabId}`, {
-      as: staff[0]!,
+      as: owner,
       method: 'PUT',
       body: input({ title: 'Renamed' }),
     });
 
     expect(response.status).toBe(200);
-    expect((await getCollab(collabId, staff[0]!)).title).toBe('Renamed');
+    expect((await getCollab(collabId, owner)).title).toBe('Renamed');
   });
 
   it('refuses to reduce spots below the spots taken, naming the number', async () => {
-    const { collabId, staff, requestIds } = await makeCollab({ spots: 3, pending: 2 });
-    await accept(requestIds[0]!, staff[0]!);
-    await accept(requestIds[1]!, staff[0]!);
+    const { collabId, owner, requestIds } = await makeCollab({ spots: 3, pending: 2 });
+    await accept(requestIds[0]!, owner);
+    await accept(requestIds[1]!, owner);
 
     const response = await api(`/collabs/${collabId}`, {
-      as: staff[0]!,
+      as: owner,
       method: 'PUT',
       body: input({ spots: 1 }),
     });
@@ -89,29 +89,29 @@ describe('editing a collab', () => {
     const { error } = await response.json<ErrorBody>();
     expect(error.code).toBe('SPOTS_BELOW_TAKEN');
     expect(error.message).toBe("2 creators are already accepted — spots can't go below 2.");
-    expect((await getCollab(collabId, staff[0]!)).spots).toBe(3);
+    expect((await getCollab(collabId, owner)).spots).toBe(3);
   });
 
   it('allows spots to drop exactly to the spots taken', async () => {
-    const { collabId, staff, requestIds } = await makeCollab({ spots: 3, pending: 1 });
-    await accept(requestIds[0]!, staff[0]!);
+    const { collabId, owner, requestIds } = await makeCollab({ spots: 3, pending: 1 });
+    await accept(requestIds[0]!, owner);
 
     const response = await api(`/collabs/${collabId}`, {
-      as: staff[0]!,
+      as: owner,
       method: 'PUT',
       body: input({ spots: 1 }),
     });
 
     expect(response.status).toBe(200);
-    expect((await getCollab(collabId, staff[0]!)).state).toBe('full');
+    expect((await getCollab(collabId, owner)).state).toBe('full');
   });
 
   it('lets an ended collab fix its copy without moving the date', async () => {
     const endsOn = yesterday();
-    const { collabId, staff } = await makeCollab({ spots: 1, endsOn });
+    const { collabId, owner } = await makeCollab({ spots: 1, endsOn });
 
     const response = await api(`/collabs/${collabId}`, {
-      as: staff[0]!,
+      as: owner,
       method: 'PUT',
       body: input({ endsOn }),
     });
@@ -178,11 +178,11 @@ describe('asking to join', () => {
 describe('reading', () => {
   it('lists open collabs before full ones, and leaves ended ones out', async () => {
     const full = await makeCollab({ spots: 1, pending: 1, endsOn: nextWeek() });
-    await accept(full.requestIds[0]!, full.staff[0]!);
+    await accept(full.requestIds[0]!, full.owner);
     const open = await makeCollab({ spots: 1 });
     const ended = await makeCollab({ spots: 1, endsOn: yesterday() });
 
-    const response = await api('/collabs', { as: open.staff[0]! });
+    const response = await api('/collabs', { as: open.owner });
     const { collabs } = await response.json<{ collabs: Collab[] }>();
     const ids = collabs.map(({ id }) => id);
 
@@ -193,9 +193,9 @@ describe('reading', () => {
 
   it('filters the feed by state', async () => {
     const full = await makeCollab({ spots: 1, pending: 1 });
-    await accept(full.requestIds[0]!, full.staff[0]!);
+    await accept(full.requestIds[0]!, full.owner);
 
-    const response = await api('/collabs?state=open', { as: full.staff[0]! });
+    const response = await api('/collabs?state=open', { as: full.owner });
     const { collabs } = await response.json<{ collabs: Collab[] }>();
 
     expect(collabs.map(({ id }) => id)).not.toContain(full.collabId);
@@ -211,9 +211,9 @@ describe('reading', () => {
   });
 
   it('answers 404 for a missing collab', async () => {
-    const { staff } = await makeBusiness();
+    const { owner } = await makeBusiness();
 
-    const response = await api('/collabs/col_missing', { as: staff[0]! });
+    const response = await api('/collabs/col_missing', { as: owner });
 
     expect(response.status).toBe(404);
   });
@@ -222,7 +222,7 @@ describe('reading', () => {
     const mine = await makeCollab({ spots: 1, endsOn: yesterday() });
     const theirs = await makeCollab({ spots: 1 });
 
-    const response = await api('/business/collabs', { as: mine.staff[0]! });
+    const response = await api('/business/collabs', { as: mine.owner });
     const { collabs } = await response.json<{ collabs: Collab[] }>();
 
     expect(collabs.map(({ id }) => id)).toEqual([mine.collabId]);
@@ -230,10 +230,10 @@ describe('reading', () => {
   });
 
   it('gives the inbox creator names and pass codes', async () => {
-    const { collabId, staff, requestIds } = await makeCollab({ spots: 2, pending: 2 });
-    await accept(requestIds[0]!, staff[0]!);
+    const { collabId, owner, requestIds } = await makeCollab({ spots: 2, pending: 2 });
+    await accept(requestIds[0]!, owner);
 
-    const response = await api(`/collabs/${collabId}/requests`, { as: staff[0]! });
+    const response = await api(`/collabs/${collabId}/requests`, { as: owner });
     const { requests } = await response.json<{ requests: InboxRequest[] }>();
 
     expect(requests).toHaveLength(2);
@@ -241,13 +241,13 @@ describe('reading', () => {
     expect(requests[0]?.creatorName).toBe('Creator');
   });
 
-  it("gives a creator their requests with each collab, and refuses staff", async () => {
-    const { collabId, staff, creators } = await makeCollab({ spots: 1, pending: 1 });
+  it("gives a creator their requests with each collab, and refuses businesses", async () => {
+    const { collabId, owner, creators } = await makeCollab({ spots: 1, pending: 1 });
 
     const response = await api('/me/requests', { as: creators[0]! });
     const { requests } = await response.json<{ requests: RequestWithCollab[] }>();
 
     expect(requests.map(({ collab }) => collab.id)).toEqual([collabId]);
-    expect((await api('/me/requests', { as: staff[0]! })).status).toBe(403);
+    expect((await api('/me/requests', { as: owner })).status).toBe(403);
   });
 });

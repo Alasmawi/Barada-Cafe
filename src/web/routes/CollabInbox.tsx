@@ -10,7 +10,7 @@ import { MessageState } from '../components/MessageState';
 import { ScreenState } from '../components/ScreenState';
 import { Skeleton } from '../components/Skeleton';
 import { Toast } from '../components/Toast';
-import { KindBadge, SpotsBar, spotsLabel } from '../features/collabs/CollabShared';
+import { SpotsBar, spotsLabel } from '../features/collabs/CollabShared';
 import { InboxCard } from '../features/inbox/InboxCard';
 
 const TAB_ORDER: RequestStatus[] = ['pending', 'invited', 'accepted', 'submitted', 'done', 'declined'];
@@ -19,13 +19,13 @@ const TAB_LABELS: Record<RequestStatus, string> = { ...STATUS_LABELS, pending: '
 
 function acceptErrorMessage(error: Error): string {
   if (error instanceof ApiError && error.code === 'COLLAB_FULL') {
-    return 'That last spot was just taken by a teammate.';
+    return 'That last spot was just taken.';
   }
   if (error instanceof ApiError && error.code === 'COLLAB_ENDED') {
     return 'This post has ended, so no more creators can join.';
   }
   if (error instanceof ApiError && error.code === 'INVALID_TRANSITION') {
-    return 'A teammate already answered this application.';
+    return 'This application was already answered.';
   }
   return "That didn't go through. Try again.";
 }
@@ -46,7 +46,7 @@ function NotYours() {
 
 function Requests({ collab }: { collab: Collab }) {
   const inbox = useInbox(collab.id);
-  // Null until staff choose or act, so the inbox opens where the work is.
+  // Null until the business chooses or acts, so the inbox opens where the work is.
   const [chosenTab, setChosenTab] = useState<RequestStatus | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -138,7 +138,7 @@ export function CollabInbox() {
           </Link>
         }
       />
-      <main className="page page--plain">
+      <main className="page page--plain page--wide">
         <ScreenState
           query={collab}
           errorTitle="Couldn't load this post."
@@ -148,7 +148,6 @@ export function CollabInbox() {
           {({ collab: detail }) => (
             <>
               <section className="group group--padded inbox-summary">
-                <KindBadge kind={detail.kind} />
                 <h1 className="inbox-summary__title">{detail.title}</h1>
                 <p className="note">
                   {spotsLabel(detail)} · {endsLabel(detail.endsOn, bahrainToday())}

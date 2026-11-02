@@ -59,22 +59,24 @@ export function MyWork() {
           />
         }
       >
-        {(data) =>
-          SECTION_ORDER.map((status) => {
-            const matching = data.requests.filter((request) => request.status === status);
-            if (matching.length === 0) return null;
-            return (
-              <section key={status}>
-                <h2 className="group-label">{STATUS_LABELS[status]}</h2>
-                <ul className="group">
-                  {matching.map((request) => (
-                    <RequestRow key={request.id} request={request} />
-                  ))}
-                </ul>
-              </section>
-            );
-          })
-        }
+        {(data) => (
+          <div className="two-up">
+            {SECTION_ORDER.map((status) => {
+              const matching = data.requests.filter((request) => request.status === status);
+              if (matching.length === 0) return null;
+              return (
+                <section key={status}>
+                  <h2 className="group-label">{STATUS_LABELS[status]}</h2>
+                  <ul className="group">
+                    {matching.map((request) => (
+                      <RequestRow key={request.id} request={request} />
+                    ))}
+                  </ul>
+                </section>
+              );
+            })}
+          </div>
+        )}
       </ScreenState>
     </>
   );

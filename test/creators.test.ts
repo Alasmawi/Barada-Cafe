@@ -9,7 +9,7 @@ const answering = (output: unknown): AiClient => ({ generate: () => Promise.reso
 
 async function search(query = ''): Promise<CreatorCard[]> {
   await api('/demo/reset', { method: 'POST' });
-  const response = await api(`/creators?q=${encodeURIComponent(query)}`, { as: 'usr_huda' });
+  const response = await api(`/creators?q=${encodeURIComponent(query)}`, { as: 'usr_barada' });
   return (await response.json<{ creators: CreatorCard[] }>()).creators;
 }
 
@@ -40,7 +40,7 @@ describe('searching for creators', () => {
   it('never exposes passwords or usernames', async () => {
     await api('/demo/reset', { method: 'POST' });
 
-    const response = await api('/creators', { as: 'usr_huda' });
+    const response = await api('/creators', { as: 'usr_barada' });
     const body = await response.text();
 
     expect(body).not.toContain('pbkdf2');
@@ -111,7 +111,7 @@ describe('a creator summary', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
     await api('/demo/reset', { method: 'POST' });
 
-    const response = await api('/creators/usr_noor/summary', { as: 'usr_huda', method: 'POST' });
+    const response = await api('/creators/usr_noor/summary', { as: 'usr_barada', method: 'POST' });
 
     expect(response.status).toBe(200);
     const { creator } = await response.json<{ creator: CreatorCard }>();

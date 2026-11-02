@@ -13,7 +13,7 @@ import {
 
 /**
  * The rule from the collab: a collab never accepts more creators than it has spots, even
- * with a double tap or two staff accepting at the same moment.
+ * with a double tap or two phones accepting at the same moment.
  *
  * Each race fires real HTTP requests at the Worker in parallel. The final assertion reads
  * the database directly, so a wrong API response can't hide an overbooked collab.
@@ -28,20 +28,19 @@ import {
 const statuses = (responses: Response[]) => responses.map(({ status }) => status).sort();
 
 async function makePacer(): Promise<() => Promise<Response>> {
-  const { staff, requestIds } = await makeCollab({ spots: 1, pending: 1 });
-  return () => accept(requestIds[0]!, staff[0]!);
+  const { owner, requestIds } = await makeCollab({ spots: 1, pending: 1 });
+  return () => accept(requestIds[0]!, owner);
 }
 
 describe('the spot invariant', () => {
-  it('accepts exactly 2 of 5 when 5 staff accept at once on a 2-spot collab', async () => {
-    const { collabId, staff, requestIds } = await makeCollab({
+  it('accepts exactly 2 of 5 when 5 phones accept at once on a 2-spot collab', async () => {
+    const { collabId, owner, requestIds } = await makeCollab({
       spots: 2,
       pending: 5,
-      staffCount: 5,
     });
 
     const responses = await Promise.all(
-      requestIds.map((requestId, index) => accept(requestId, staff[index]!)),
+      requestIds.map((requestId) => accept(requestId, owner)),
     );
 
     expect(statuses(responses)).toEqual([200, 200, 409, 409, 409]);
@@ -51,12 +50,12 @@ describe('the spot invariant', () => {
   });
 
   it('treats a double tap on accept as one acceptance and answers both taps with 200', async () => {
-    const { collabId, staff, requestIds } = await makeCollab({ spots: 2, pending: 2 });
-    const [staffId, requestId] = [staff[0]!, requestIds[0]!];
+    const { collabId, owner, requestIds } = await makeCollab({ spots: 2, pending: 2 });
+    const [ownerId, requestId] = [owner, requestIds[0]!];
 
     const [first, second] = await Promise.all([
-      accept(requestId, staffId),
-      accept(requestId, staffId),
+      accept(requestId, ownerId),
+      accept(requestId, ownerId),
     ]);
 
     expect([first.status, second.status]).toEqual([200, 200]);
@@ -69,19 +68,18 @@ describe('the spot invariant', () => {
     expect(await countHeldSpots(collabId)).toBe(1);
   });
 
-  it('lets only one of two staff take the last spot', async () => {
+  it('lets only one of two phones take the last spot', async () => {
     for (let round = 0; round < 20; round += 1) {
-      const { collabId, staff, requestIds } = await makeCollab({
+      const { collabId, owner, requestIds } = await makeCollab({
         spots: 1,
         pending: 2,
-        staffCount: 2,
       });
       const pacer = await makePacer();
 
       const [, ...responses] = await Promise.all([
         pacer(),
-        accept(requestIds[0]!, staff[0]!),
-        accept(requestIds[1]!, staff[1]!),
+        accept(requestIds[0]!, owner),
+        accept(requestIds[1]!, owner),
       ]);
 
       expect(statuses(responses)).toEqual([200, 409]);
@@ -91,13 +89,12 @@ describe('the spot invariant', () => {
 
   it('keeps the spot count correct across 20 repeated races', async () => {
     for (let round = 0; round < 20; round += 1) {
-      const { collabId, staff, requestIds } = await makeCollab({
+      const { collabId, owner, requestIds } = await makeCollab({
         spots: 2,
         pending: 5,
-        staffCount: 5,
       });
 
-      await Promise.all(requestIds.map((requestId, index) => accept(requestId, staff[index]!)));
+      await Promise.all(requestIds.map((requestId) => accept(requestId, owner)));
 
       expect(await countHeldSpots(collabId)).toBe(2);
     }
@@ -105,20 +102,20 @@ describe('the spot invariant', () => {
 
   it('never lets a spots reduction and an accept together exceed spots', async () => {
     for (let round = 0; round < 20; round += 1) {
-      const { collabId, staff, requestIds } = await makeCollab({ spots: 3, pending: 3 });
-      const [staffId, first, second, third] = [
-        staff[0]!,
+      const { collabId, owner, requestIds } = await makeCollab({ spots: 3, pending: 3 });
+      const [ownerId, first, second, third] = [
+        owner,
         requestIds[0]!,
         requestIds[1]!,
         requestIds[2]!,
       ];
-      await accept(first, staffId);
+      await accept(first, ownerId);
       const pacer = await makePacer();
 
       await Promise.all([
         pacer(),
         api(`/collabs/${collabId}`, {
-          as: staffId,
+          as: ownerId,
           method: 'PUT',
           body: {
             title: 'Test collab',
@@ -128,20 +125,20 @@ describe('the spot invariant', () => {
             endsOn: nextWeek(),
           },
         }),
-        accept(second, staffId),
-        accept(third, staffId),
+        accept(second, ownerId),
+        accept(third, ownerId),
       ]);
 
       // Either side may win. What matters is that the stored numbers still agree.
-      const { spots } = await getCollab(collabId, staffId);
+      const { spots } = await getCollab(collabId, ownerId);
       expect(await countHeldSpots(collabId)).toBeLessThanOrEqual(spots);
     }
   });
 
   it('stops new requests once a collab is full', async () => {
-    const { collabId, staff, requestIds } = await makeCollab({ spots: 1, pending: 1 });
+    const { collabId, owner, requestIds } = await makeCollab({ spots: 1, pending: 1 });
     const [late] = await makeCreators(1);
-    await accept(requestIds[0]!, staff[0]!);
+    await accept(requestIds[0]!, owner);
 
     const response = await askToJoin(collabId, late!);
 

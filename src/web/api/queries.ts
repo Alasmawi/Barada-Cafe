@@ -120,7 +120,7 @@ function withAccepted(collab: CollabResponse): CollabResponse {
 }
 
 /**
- * Fills the spot the moment staff tap Accept, and rolls back if the server says no.
+ * Fills the spot the moment the business taps Accept, and rolls back if the server says no.
  * `onFailed` is a hook option, not a `mutate` one: it must fire for every tap, and it has
  * to report above the card, which has already moved to another tab by then.
  */

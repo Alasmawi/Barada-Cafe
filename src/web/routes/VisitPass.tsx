@@ -51,55 +51,65 @@ function Application({ request }: { request: RequestWithCollab }) {
 
   return (
     <>
-      <section className={`brand-banner house--${collab.businessHouse}`}>
-        <BrandMark house={collab.businessHouse} size={64} />
-        <div>
-          <p className="brand-banner__name">{collab.businessName}</p>
-          <p className="brand-banner__detail">{collab.title}</p>
+      <div className="split">
+        <div className="split__side">
+          <section className={`brand-banner house--${collab.businessHouse}`}>
+            <BrandMark house={collab.businessHouse} size={64} />
+            <div>
+              <p className="brand-banner__name">{collab.businessName}</p>
+              <p className="brand-banner__detail">{collab.title}</p>
+            </div>
+          </section>
+          <Journey status={request.status} />
+          <p className="note note--centre">
+            {nextStep(request.status, collab.endsOn, bahrainToday())}
+          </p>
+          {visiting && (
+            <section className="code-card">
+              <p className="note">Show this code at {collab.businessName}</p>
+              <p className="code-card__code">{request.passCode}</p>
+            </section>
+          )}
         </div>
-      </section>
-      <Journey status={request.status} />
-      <p className="note note--centre">
-        {nextStep(request.status, collab.endsOn, bahrainToday())}
-      </p>
-      {visiting && (
-        <section className="code-card">
-          <p className="note">Show this code at {collab.businessName}</p>
-          <p className="code-card__code">{request.passCode}</p>
-        </section>
-      )}
-      <dl className="group">
-        <div className="info-row">
-          <dt>You get</dt>
-          <dd>{collab.offer}</dd>
-        </div>
-        <div className="info-row">
-          <dt>You post</dt>
-          <dd>{collab.deliverable}</dd>
-        </div>
-        {collab.location && (
+        <dl className="group">
           <div className="info-row">
-            <dt>Location</dt>
-            <dd>{collab.location}</dd>
+            <dt>You get</dt>
+            <dd>{collab.offer}</dd>
           </div>
-        )}
-        {visiting && (
           <div className="info-row">
-            <dt>Visit by</dt>
-            <dd>{shortDate(collab.endsOn)}</dd>
+            <dt>You post</dt>
+            <dd>{collab.deliverable}</dd>
           </div>
-        )}
-        {request.postUrl && (
-          <div className="info-row">
-            <dt>Your link</dt>
-            <dd>
-              <a href={request.postUrl} target="_blank" rel="noreferrer">
-                {PLATFORM_LABELS[detectPlatform(request.postUrl)]}
-              </a>
-            </dd>
-          </div>
-        )}
-      </dl>
+          {collab.details && (
+            <div className="info-row">
+              <dt>About this post</dt>
+              <dd className="info-row__long">{collab.details}</dd>
+            </div>
+          )}
+          {collab.location && (
+            <div className="info-row">
+              <dt>Location</dt>
+              <dd>{collab.location}</dd>
+            </div>
+          )}
+          {visiting && (
+            <div className="info-row">
+              <dt>Visit by</dt>
+              <dd>{shortDate(collab.endsOn)}</dd>
+            </div>
+          )}
+          {request.postUrl && (
+            <div className="info-row">
+              <dt>Your link</dt>
+              <dd>
+                <a href={request.postUrl} target="_blank" rel="noreferrer">
+                  {PLATFORM_LABELS[detectPlatform(request.postUrl)]}
+                </a>
+              </dd>
+            </div>
+          )}
+        </dl>
+      </div>
       <PassActions request={request} />
     </>
   );
@@ -117,7 +127,7 @@ export function VisitPass() {
   return (
     <>
       <NavBar to="/me" title="Application" />
-      <main className="page page--bar">
+      <main className="page page--bar page--wide">
         <ScreenState
           query={request}
           errorTitle="Couldn't load this application."

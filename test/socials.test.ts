@@ -62,9 +62,9 @@ describe('creator socials', () => {
   });
 
   it('are for creators only', async () => {
-    const { staff } = await makeBusiness();
+    const { owner } = await makeBusiness();
 
-    expect((await save(staff[0]!, { instagram: 'mine' })).status).toBe(403);
+    expect((await save(owner, { instagram: 'mine' })).status).toBe(403);
   });
 
   it('need a signed-in user', async () => {
@@ -74,11 +74,11 @@ describe('creator socials', () => {
   it('are shown to businesses in search and in the inbox', async () => {
     await api('/demo/reset', { method: 'POST' });
 
-    const search = await api('/creators?q=noor', { as: 'usr_huda' });
+    const search = await api('/creators?q=noor', { as: 'usr_barada' });
     const { creators } = await search.json<{ creators: CreatorCard[] }>();
     expect(creators[0]?.socials.instagram).toBe('noor.sips');
 
-    const inbox = await api('/collabs/col_lastcup/requests', { as: 'usr_huda' });
+    const inbox = await api('/collabs/col_lastcup/requests', { as: 'usr_barada' });
     const { requests } = await inbox.json<{ requests: InboxRequest[] }>();
     const noor = requests.find(({ creatorId }) => creatorId === 'usr_noor');
     expect(noor?.creatorSocials.instagram).toBe('noor.sips');
@@ -111,10 +111,10 @@ describe('post details', () => {
   });
 
   it('saves the extra details', async () => {
-    const { staff } = await makeBusiness();
+    const { owner } = await makeBusiness();
 
     const response = await api('/collabs', {
-      as: staff[0]!,
+      as: owner,
       body: body({
         details: 'A longer story about the launch.',
         requirements: 'Food creators in Bahrain.',
@@ -131,9 +131,9 @@ describe('post details', () => {
   });
 
   it('leaves them optional', async () => {
-    const { staff } = await makeBusiness();
+    const { owner } = await makeBusiness();
 
-    const response = await api('/collabs', { as: staff[0]!, body: body() });
+    const response = await api('/collabs', { as: owner, body: body() });
 
     expect(response.status).toBe(201);
     const { collab } = await response.json<{ collab: Collab }>();
@@ -141,15 +141,15 @@ describe('post details', () => {
   });
 
   it('can be edited', async () => {
-    const { collabId, staff } = await makeCollab({ spots: 2 });
+    const { collabId, owner } = await makeCollab({ spots: 2 });
 
     await api(`/collabs/${collabId}`, {
-      as: staff[0]!,
+      as: owner,
       method: 'PUT',
       body: body({ details: 'Updated', location: 'Seef' }),
     });
 
-    const response = await api(`/collabs/${collabId}`, { as: staff[0]! });
+    const response = await api(`/collabs/${collabId}`, { as: owner });
     const { collab } = await response.json<{ collab: Collab }>();
     expect(collab).toMatchObject({ details: 'Updated', location: 'Seef' });
   });
@@ -161,9 +161,9 @@ describe('post details', () => {
     ['offer', { offer: 'x'.repeat(401) }],
     ['deliverable', { deliverable: 'x'.repeat(501) }],
   ])('limits %s', async (field, overrides) => {
-    const { staff } = await makeBusiness();
+    const { owner } = await makeBusiness();
 
-    const response = await api('/collabs', { as: staff[0]!, body: body(overrides) });
+    const response = await api('/collabs', { as: owner, body: body(overrides) });
 
     expect(response.status).toBe(422);
     const { error } = await response.json<ErrorBody>();
@@ -171,10 +171,10 @@ describe('post details', () => {
   });
 
   it('accepts a long description up to the limit', async () => {
-    const { staff } = await makeBusiness();
+    const { owner } = await makeBusiness();
 
     const response = await api('/collabs', {
-      as: staff[0]!,
+      as: owner,
       body: body({ details: 'x'.repeat(1000) }),
     });
 

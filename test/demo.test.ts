@@ -24,17 +24,14 @@ describe('demo data', () => {
     expect(lastResetAt).not.toBeNull();
   });
 
-  it('gives Barada two staff and leaves a neighbour to show the cross-business rule', async () => {
+  it('gives each business one account, and more than one business', async () => {
     await resetDemo();
 
     const { accounts } = await (await api('/demo/accounts')).json<AccountsBody>();
-    const staffByBusiness = Object.groupBy(
-      accounts.filter(({ role }) => role === 'business'),
-      ({ businessId }) => businessId!,
-    );
+    const businessIds = accounts.flatMap(({ businessId }) => businessId ?? []);
 
-    expect(staffByBusiness['biz_barada']).toHaveLength(2);
-    expect(Object.keys(staffByBusiness).length).toBeGreaterThan(1);
+    expect(new Set(businessIds).size).toBe(businessIds.length);
+    expect(businessIds.length).toBeGreaterThan(1);
   });
 
   it('gives Noor a request in every status', async () => {
@@ -59,7 +56,7 @@ describe('demo data', () => {
 
     const feed = await api('/collabs', { as: 'usr_noor' });
     const { collabs } = await feed.json<{ collabs: Collab[] }>();
-    const mine = await api('/business/collabs', { as: 'usr_huda' });
+    const mine = await api('/business/collabs', { as: 'usr_barada' });
     const barada = (await mine.json<{ collabs: Collab[] }>()).collabs;
 
     expect(collabs.map(({ state }) => state)).toContain('open');
@@ -67,12 +64,12 @@ describe('demo data', () => {
     expect(barada.map(({ state }) => state)).toContain('ended');
   });
 
-  it('has a last-cup collab ready for the two-staff race', async () => {
+  it('has a last-cup collab ready for the two-phone race', async () => {
     await resetDemo();
 
     const responses = await Promise.all([
-      accept('req_lastcup_noor', 'usr_huda'),
-      accept('req_lastcup_salman', 'usr_yusuf'),
+      accept('req_lastcup_noor', 'usr_barada'),
+      accept('req_lastcup_salman', 'usr_barada'),
     ]);
 
     expect(responses.map(({ status }) => status).sort()).toEqual([200, 409]);
@@ -81,12 +78,12 @@ describe('demo data', () => {
 
   it('puts everything back on reset, with fresh dates', async () => {
     await resetDemo();
-    await accept('req_saffron_salman', 'usr_huda');
+    await accept('req_saffron_salman', 'usr_barada');
     await env.DB.prepare(`UPDATE collabs SET ends_on = '2000-01-01'`).run();
 
     await resetDemo();
 
-    const response = await api('/collabs/col_saffron', { as: 'usr_huda' });
+    const response = await api('/collabs/col_saffron', { as: 'usr_barada' });
     const { collab } = await response.json<{ collab: Collab }>();
     expect(collab).toMatchObject({ state: 'open', spotsTaken: 2 });
   });
@@ -153,13 +150,13 @@ describe('health', () => {
     const response = await api('/health');
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ ok: true, schema: '0002_socials_and_post_details.sql' });
+    expect(await response.json()).toEqual({ ok: true, schema: '0003_one_account_per_business_no_offers.sql' });
   });
 });
 
 describe('errors', () => {
   it('uses the error envelope for an unknown route', async () => {
-    const response = await api('/nope', { as: 'usr_huda' });
+    const response = await api('/nope', { as: 'usr_barada' });
 
     expect(response.status).toBe(404);
     expect(await errorCode(response)).toBe('NOT_FOUND');

@@ -15,7 +15,7 @@ export function newToken(): string {
   return randomString(ID_ALPHABET, 40);
 }
 
-/** Doesn't need to be unique: staff check it against the creator's name in their own inbox. */
+/** Doesn't need to be unique: the business checks it against the creator's name in their own inbox. */
 export function newPassCode(): string {
   return `CB-${randomString(PASS_ALPHABET, 4)}`;
 }

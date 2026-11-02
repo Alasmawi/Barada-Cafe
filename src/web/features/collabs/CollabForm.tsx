@@ -2,12 +2,11 @@ import { useState, type FormEvent, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { CollabDraft } from '../../../shared/api';
 import { addDays, bahrainToday } from '../../../shared/dates';
-import { COLLAB_KINDS, CollabInput, SPOTS_MAX, SPOTS_MIN } from '../../../shared/schemas';
+import { CollabInput, SPOTS_MAX, SPOTS_MIN } from '../../../shared/schemas';
 import { ApiError } from '../../api/client';
 import { useSaveCollab } from '../../api/queries';
 import { revealFirstError } from '../../design/revealFirstError';
 import { AiDraftButton } from './AiDraftButton';
-import { KIND_LABELS } from './CollabShared';
 
 const DEFAULT_RUN_DAYS = 7;
 
@@ -15,7 +14,6 @@ type Draft = Omit<CollabInput, 'spots'> & { spots: string };
 type FieldErrors = Partial<Record<keyof CollabInput, string>>;
 
 const blankDraft = (): Draft => ({
-  kind: 'collab',
   title: '',
   offer: '',
   deliverable: '',
@@ -124,23 +122,11 @@ export function CollabForm({ collabId, initial, onSaved }: Props) {
   return (
     <>
       {/* Outside the form: the AI sheet holds a form of its own, and forms can't nest. */}
-      <div className="form__top">
-        <div className="segmented segmented--two" role="radiogroup" aria-label="What are you posting?">
-          {COLLAB_KINDS.map((kind) => (
-            <button
-              key={kind}
-              className="segmented__option"
-              type="button"
-              role="radio"
-              aria-checked={draft.kind === kind}
-              onClick={() => update('kind', kind)}
-            >
-              {KIND_LABELS[kind]}
-            </button>
-          ))}
+      {!collabId && (
+        <div className="form__top">
+          <AiDraftButton onDraft={applyDraft} />
         </div>
-          {!collabId && <AiDraftButton onDraft={applyDraft} />}
-        </div>
+      )}
       <form className="form" onSubmit={submit} noValidate>
         <Field label="Title" error={errors.title}>
           <input

@@ -1,12 +1,11 @@
 import type { Collab } from '../../shared/api';
 import type { BusinessType, House } from '../../shared/houses';
-import type { CollabInput, CollabKind } from '../../shared/schemas';
+import type { CollabInput } from '../../shared/schemas';
 import { collabState } from '../../shared/status';
 import { SPOT_HOLDING_SQL } from './sql';
 
 type CollabRow = {
   id: string;
-  kind: CollabKind;
   business_id: string;
   business_name: string;
   business_area: string;
@@ -27,7 +26,7 @@ type CollabRow = {
 
 const SELECT_COLLAB = `
   SELECT
-    c.id, c.kind, c.business_id, c.title, c.offer, c.deliverable, c.details, c.requirements, c.location, c.spots, c.ends_on, c.created_at,
+    c.id, c.business_id, c.title, c.offer, c.deliverable, c.details, c.requirements, c.location, c.spots, c.ends_on, c.created_at,
     businesses.name AS business_name,
     businesses.area AS business_area,
     businesses.type AS business_type,
@@ -43,7 +42,6 @@ function toCollab(row: CollabRow, today: string): Collab {
   const shape = { endsOn: row.ends_on, spots: row.spots, spotsTaken: row.spots_taken };
   return {
     id: row.id,
-    kind: row.kind,
     businessId: row.business_id,
     businessName: row.business_name,
     businessArea: row.business_area,
@@ -111,13 +109,12 @@ export async function insert(
 ): Promise<void> {
   await db
     .prepare(
-      `INSERT INTO collabs (id, kind, business_id, title, offer, deliverable, details, requirements,
+      `INSERT INTO collabs (id, business_id, title, offer, deliverable, details, requirements,
                             location, spots, ends_on, created_by, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .bind(
       collab.id,
-      collab.kind,
       collab.businessId,
       collab.title,
       collab.offer,
@@ -146,8 +143,8 @@ export async function updateIfSpotsCoverTaken(
   const { meta } = await db
     .prepare(
       `UPDATE collabs
-       SET title = ?1, offer = ?2, deliverable = ?3, spots = ?4, ends_on = ?5, kind = ?7,
-           details = ?8, requirements = ?9, location = ?10
+       SET title = ?1, offer = ?2, deliverable = ?3, spots = ?4, ends_on = ?5,
+           details = ?7, requirements = ?8, location = ?9
        WHERE id = ?6
          AND ?4 >= (SELECT COUNT(*) FROM requests
                     WHERE requests.collab_id = collabs.id
@@ -160,7 +157,6 @@ export async function updateIfSpotsCoverTaken(
       input.spots,
       input.endsOn,
       id,
-      input.kind,
       input.details,
       input.requirements,
       input.location,

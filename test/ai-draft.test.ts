@@ -212,10 +212,10 @@ describe('a hostile answer', () => {
 describe('POST /ai/draft-collab', () => {
   it('always answers 200, even when the model is unavailable', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
-    const { staff } = await makeBusiness();
+    const { owner } = await makeBusiness();
 
     const response = await api('/ai/draft-collab', {
-      as: staff[0]!,
+      as: owner,
       body: { sentence: 'Free lattes for three creators' },
     });
 
@@ -227,17 +227,17 @@ describe('POST /ai/draft-collab', () => {
 
   it('never creates a collab', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
-    const { staff } = await makeBusiness();
+    const { owner } = await makeBusiness();
     const count = () =>
       env.DB.prepare('SELECT COUNT(*) AS total FROM collabs').first<{ total: number }>();
     const before = await count();
 
-    await api('/ai/draft-collab', { as: staff[0]!, body: { sentence: 'Free lattes' } });
+    await api('/ai/draft-collab', { as: owner, body: { sentence: 'Free lattes' } });
 
     expect(await count()).toEqual(before);
   });
 
-  it('is for business staff only', async () => {
+  it('is for businesses only', async () => {
     const [creator] = await makeCreators(1);
 
     const response = await api('/ai/draft-collab', {
@@ -258,9 +258,9 @@ describe('POST /ai/draft-collab', () => {
     ['blank', '   '],
     ['too long', 'x'.repeat(301)],
   ])('rejects a sentence that is %s', async (_name, sentence) => {
-    const { staff } = await makeBusiness();
+    const { owner } = await makeBusiness();
 
-    const response = await api('/ai/draft-collab', { as: staff[0]!, body: { sentence } });
+    const response = await api('/ai/draft-collab', { as: owner, body: { sentence } });
 
     expect(response.status).toBe(422);
     expect(await errorCode(response)).toBe('VALIDATION_FAILED');

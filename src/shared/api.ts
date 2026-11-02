@@ -1,5 +1,5 @@
 import type { BusinessType, House } from './houses';
-import type { CollabInput, CollabKind } from './schemas';
+import type { CollabInput } from './schemas';
 import type { Socials } from './socials';
 import type { CollabState, RequestStatus } from './status';
 
@@ -38,7 +38,6 @@ export type CreatorCard = {
 
 export type Collab = {
   id: string;
-  kind: CollabKind;
   businessId: string;
   businessName: string;
   businessArea: string;

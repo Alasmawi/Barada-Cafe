@@ -4,9 +4,9 @@ import { bahrainToday, endsLabel } from '../../../shared/dates';
 import type { RequestStatus } from '../../../shared/status';
 import { BrandMark } from '../../components/BrandMark';
 import { StatusChip } from '../../components/StatusChip';
-import { KindBadge, spotsLabel } from './CollabShared';
+import { spotsLabel } from './CollabShared';
 
-/** A collab or offer as a creator sees it, led by the business behind it. */
+/** A collab as a creator sees it, led by the business behind it. */
 export function CollabCard({ collab, myStatus }: { collab: Collab; myStatus?: RequestStatus }) {
   return (
     <li>
@@ -19,7 +19,6 @@ export function CollabCard({ collab, myStatus }: { collab: Collab; myStatus?: Re
               {collab.businessType} · {collab.businessArea}
             </span>
           </div>
-          <KindBadge kind={collab.kind} />
         </div>
         <h3 className="post-card__title">{collab.title}</h3>
         <p className="post-card__offer">{collab.offer}</p>

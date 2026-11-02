@@ -7,18 +7,17 @@ import { LargeTitle } from '../components/Layout';
 import { MessageState } from '../components/MessageState';
 import { ScreenState } from '../components/ScreenState';
 import { Skeleton } from '../components/Skeleton';
-import { KindBadge, SpotsBar, spotsLabel } from '../features/collabs/CollabShared';
+import { SpotsBar, spotsLabel } from '../features/collabs/CollabShared';
 
 function PostRow({ collab }: { collab: Collab }) {
   return (
     <li>
       <Link className="list-row list-row--stack" to={`/business/collabs/${collab.id}`}>
-        <span className="list-row__head">
-          <KindBadge kind={collab.kind} />
-          {collab.pendingCount > 0 && (
+        {collab.pendingCount > 0 && collab.state !== 'ended' && (
+          <span className="list-row__head">
             <span className="count-badge">{collab.pendingCount} new</span>
-          )}
-        </span>
+          </span>
+        )}
         <span className="list-row__title">{collab.title}</span>
         <span className="list-row__detail">
           {spotsLabel(collab)} · {endsLabel(collab.endsOn, bahrainToday())}
@@ -49,7 +48,7 @@ export function BusinessCollabs() {
           <MessageState
             art="empty"
             title="No posts yet"
-            body="Post a collab or an offer and creators can apply."
+            body="Post a collab and creators can apply."
             action={
               <Link className="button button--primary" to="/business/collabs/new">
                 Post your first
@@ -62,23 +61,31 @@ export function BusinessCollabs() {
           const live = data.collabs.filter(({ state }) => state !== 'ended');
           const ended = data.collabs.filter(({ state }) => state === 'ended');
           return (
-            <>
-              <ul className="group">
-                {live.map((collab) => (
-                  <PostRow key={collab.id} collab={collab} />
-                ))}
-              </ul>
+            <div className="two-up">
+              <section>
+                <h2 className="group-label">Live</h2>
+                <ul className="group">
+                  {live.map((collab) => (
+                    <PostRow key={collab.id} collab={collab} />
+                  ))}
+                  <li>
+                    <Link className="list-row list-row--add" to="/business/collabs/new">
+                      <Icon name="plus" size={20} /> Post another collab
+                    </Link>
+                  </li>
+                </ul>
+              </section>
               {ended.length > 0 && (
-                <>
+                <section>
                   <h2 className="group-label">Ended</h2>
                   <ul className="group">
                     {ended.map((collab) => (
                       <PostRow key={collab.id} collab={collab} />
                     ))}
                   </ul>
-                </>
+                </section>
               )}
-            </>
+            </div>
           );
         }}
       </ScreenState>

@@ -6,12 +6,12 @@ This replaces the Finjan theme described in the older sections below.
 
 - **Finjan is gone.** The name, cups, coffee wording, gold on night, animations and brand assets are
   all removed. It's now Collab Board, in cream and red.
-- **Native on a phone.** Plus Jakarta Sans, bundled so it needs no network, with large titles, grouped lists, a tab bar with icons, sheets with
+- **Native on a phone.** Ultra for titles, Archivo for text and JetBrains Mono for codes, bundled so they need no network, with large titles, grouped lists, a tab bar with icons, sheets with
   a grabber, and installable to the home screen. No tilt, handwriting or decorative motion.
 - **Squares are businesses, circles are creators.** That rule runs through every screen, so the two
   sides can't be confused. Each also has its own sign-up path, tabs and vocabulary.
-- **Collabs and offers.** A post has a kind, and both follow the same flow: creators apply, and the
-  business accepts. What separates them is only the label and the Browse filter, so far.
+- **Collabs only.** Offers were removed, because they behaved exactly like collabs and the two labels
+  only confused people. The `offer` field on a collab is still what the creator gets.
 - **Word changes.** Collabs replaced briefs again, in the code too. Statuses are plain: Applied,
   Accepted, Posted, Completed and Declined.
 - **Business identity is a colour and a mark.** Five curated pairs, picked at sign-up. Per-brand
@@ -192,10 +192,16 @@ From PLAN §2.3. The defaults in brackets are what's built.
 
 [AUDIT.md](AUDIT.md) has the full comparison with the requirements.
 
-## Next steps
+## One account per business
 
-- Say what an offer means in practice, if it should differ from a collab. It might skip applying
-  or need no post in return.
+- **A business has one account, named after it.** A unique index enforces this, and migration 0003
+  hands anything a second account did to the first. Demo logins are now `barada`, `noon` and so on.
+- **The spot rule is unchanged.** Two phones on one account race exactly as two people did, so the
+  concurrency tests keep their scenarios.
+- **The screens use the space.** Overview gained Ending soon and Creators to invite, Profile gained
+  stats, and wide screens use two columns. The AI icon sits on the Title line of the post form.
+
+## Next steps
 
 - Per-device demo spaces (⚑4) if global reset gets in the way of several reviewers at once.
 - A per-user limit on the AI draft, if the free daily allowance runs out during reviews.

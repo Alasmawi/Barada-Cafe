@@ -8,7 +8,7 @@ import { HOME } from '../components/Layout';
 import { useSession } from '../session';
 
 const STEPS = [
-  { title: 'Businesses post', detail: 'Collabs and offers' },
+  { title: 'Businesses post', detail: 'Free stays, meals and products' },
   { title: 'Creators apply', detail: 'With a short message' },
   { title: 'Businesses accept', detail: 'Then the creator posts' },
 ];
@@ -87,7 +87,7 @@ export function Welcome() {
         <img src="/icon.svg" alt="" width={60} height={60} />
         <h1 className="welcome__title">Collab Board</h1>
         <p className="welcome__intro">
-          Where businesses and creators find each other for collabs and offers.
+          Where businesses and creators find each other to collab.
         </p>
         <ol className="how-it-works">
           {STEPS.map((step, index) => (
@@ -108,13 +108,13 @@ export function Welcome() {
           <LoginForm />
         </div>
 
-        <h2 className="welcome__heading">New here? Create an account</h2>
+        <h2 className="welcome__heading">New here?</h2>
         <div className="choice-list">
           <Link className="choice-card" to="/signup/business">
             <span className="choice-card__mark choice-card__mark--business" />
             <span className="list-row__text">
               <span className="list-row__title">I'm a business</span>
-              <span className="list-row__detail">Post collabs and offers</span>
+              <span className="list-row__detail">Post collabs</span>
             </span>
             <Icon name="chevron" size={18} />
           </Link>

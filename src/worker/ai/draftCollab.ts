@@ -6,7 +6,7 @@ import { generateWithTimeout } from './withTimeout';
 
 /**
  * If an attacker fully controls the model's output, the most they can do is put text in
- * the acting business's own unpublished form, which only staff can read and must then publish
+ * the acting business's own unpublished form, which only that business can read and must then publish
  * themselves. The model has no tools and sees no data but the sentence. That limit comes
  * from this code, not from the prompt: every field is validated, and unknown ones dropped.
  */

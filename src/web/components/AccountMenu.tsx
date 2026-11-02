@@ -35,7 +35,7 @@ function AccountMark({ account, size }: { account: User; size: number }) {
 
 const accountTitle = (account: User) => account.businessName ?? account.name;
 const accountDetail = (account: User) =>
-  account.role === 'business' ? `Business · ${account.name}` : `Creator · ${account.handle}`;
+  account.role === 'business' ? `Business · ${account.username}` : `Creator · ${account.handle}`;
 
 /** Moves to another account in one tap, without passing through the login page. */
 function AccountList({ onDone }: { onDone: () => void }) {

@@ -8,8 +8,8 @@ import type { RequestStatus } from '../../shared/status';
  *
  * Noor is the creator to demo with: they hold a request in every status.
  * Five businesses of different kinds show that the board isn't only for cafés.
- * Barada has two staff so "two staff accept at once" can be tried on two phones,
- * and col_lastcup has one spot left with several creators waiting.
+ * Each business has one account. Logging in as Barada on two phones shows the spot rule,
+ * as col_lastcup has one spot left with several creators waiting.
  */
 
 /** Every demo account uses this password. It's printed in the README, because this is a demo. */
@@ -18,13 +18,12 @@ export const DEMO_PASSWORD = 'demo-password';
 export const DEMO_PASSWORD_HASH =
   'pbkdf2$10000$66ed457e62dfeb9c1eb48f8a122c0db8$bafa10f2303e3a6176e8b661dc61a95f5af9d9a5199ddd5ce76270362033063c';
 
-const STAFF = [
-  { id: 'usr_huda', username: 'huda', name: 'Huda', businessId: 'biz_barada' },
-  { id: 'usr_yusuf', username: 'yusuf', name: 'Yusuf', businessId: 'biz_barada' },
-  { id: 'usr_maryam', username: 'maryam', name: 'Maryam', businessId: 'biz_noon' },
-  { id: 'usr_khalid', username: 'khalid', name: 'Khalid', businessId: 'biz_sidra' },
-  { id: 'usr_layla', username: 'layla', name: 'Layla', businessId: 'biz_layali' },
-  { id: 'usr_sami', username: 'sami', name: 'Sami', businessId: 'biz_move' },
+const BUSINESS_ACCOUNTS = [
+  { id: 'usr_barada', username: 'barada', name: 'Barada Café', businessId: 'biz_barada' },
+  { id: 'usr_noon', username: 'noon', name: 'Noon Roastery', businessId: 'biz_noon' },
+  { id: 'usr_sidra', username: 'sidra', name: 'Sidra Garden', businessId: 'biz_sidra' },
+  { id: 'usr_layali', username: 'layali', name: 'Layali Perfumes', businessId: 'biz_layali' },
+  { id: 'usr_move', username: 'move', name: 'Move Studio', businessId: 'biz_move' },
 ];
 
 const CREATORS = [
@@ -45,12 +44,11 @@ const BUSINESSES = [
 ];
 
 const quoted = (ids: string[]) => ids.map((id) => `'${id}'`).join(', ');
-const DEMO_USER_IDS = quoted([...STAFF, ...CREATORS].map(({ id }) => id));
+const DEMO_USER_IDS = quoted([...BUSINESS_ACCOUNTS, ...CREATORS].map(({ id }) => id));
 const DEMO_BUSINESS_IDS = quoted(BUSINESSES.map(({ id }) => id));
 
 type SeedCollab = {
   id: string;
-  kind?: 'offer';
   details?: string;
   requirements?: string;
   location?: string;
@@ -71,7 +69,7 @@ const COLLABS: SeedCollab[] = [
     requirements: "Beauty or lifestyle creators who like slow, detailed content.",
     location: "Layali Perfumes, Seef",
     businessId: 'biz_layali',
-    createdBy: 'usr_layla',
+    createdBy: 'usr_layali',
     title: 'An evening of oud',
     offer: 'A private fragrance session and a bottle of your own blend',
     deliverable: 'One Reel of the blending, tagging Layali',
@@ -84,7 +82,7 @@ const COLLABS: SeedCollab[] = [
     requirements: "Anyone curious about starting mat classes. Beginners are welcome.",
     location: "Move Studio, Juffair",
     businessId: 'biz_move',
-    createdBy: 'usr_sami',
+    createdBy: 'usr_move',
     title: 'A month of mat classes',
     offer: 'Four weeks of mat classes, on the house',
     deliverable: 'Three Stories showing your first, middle and last class',
@@ -98,7 +96,7 @@ const COLLABS: SeedCollab[] = [
     requirements: "Food or coffee creators in Bahrain, comfortable filming in a busy café.",
     location: "Barada Café, Adliya",
     businessId: 'biz_barada',
-    createdBy: 'usr_huda',
+    createdBy: 'usr_barada',
     title: 'Saffron latte first pour',
     offer: 'Two saffron lattes and a kunafa slice on the house',
     deliverable: 'One Reel of the pour, tagging Barada Café',
@@ -108,7 +106,7 @@ const COLLABS: SeedCollab[] = [
   {
     id: 'col_lastcup',
     businessId: 'biz_barada',
-    createdBy: 'usr_yusuf',
+    createdBy: 'usr_barada',
     title: 'Karak tasting flight',
     offer: 'A flight of four karaks with fresh chebab',
     deliverable: 'A TikTok ranking the four, with the café tagged',
@@ -118,7 +116,7 @@ const COLLABS: SeedCollab[] = [
   {
     id: 'col_brunch',
     businessId: 'biz_barada',
-    createdBy: 'usr_huda',
+    createdBy: 'usr_barada',
     title: 'Friday brunch for two',
     offer: 'Brunch for two from the new weekend menu',
     deliverable: 'A carousel of at least three photos',
@@ -127,9 +125,8 @@ const COLLABS: SeedCollab[] = [
   },
   {
     id: 'col_datecake',
-    kind: 'offer',
     businessId: 'biz_barada',
-    createdBy: 'usr_huda',
+    createdBy: 'usr_barada',
     title: 'Date cake afternoon',
     offer: 'Date cake and gahwa for you and a friend',
     deliverable: 'One Story and one feed post',
@@ -139,7 +136,7 @@ const COLLABS: SeedCollab[] = [
   {
     id: 'col_cupping',
     businessId: 'biz_noon',
-    createdBy: 'usr_maryam',
+    createdBy: 'usr_noon',
     title: 'Roastery tour and cupping',
     offer: 'A private tour and a cupping of three single origins',
     deliverable: 'A Reel from the roasting floor',
@@ -148,9 +145,8 @@ const COLLABS: SeedCollab[] = [
   },
   {
     id: 'col_coldbrew',
-    kind: 'offer',
     businessId: 'biz_noon',
-    createdBy: 'usr_maryam',
+    createdBy: 'usr_noon',
     title: 'Date syrup cold brew',
     offer: 'Your first month of our new cold brew, one a week',
     deliverable: 'One honest review, in any format you like',
@@ -160,7 +156,7 @@ const COLLABS: SeedCollab[] = [
   {
     id: 'col_sunset',
     businessId: 'biz_sidra',
-    createdBy: 'usr_khalid',
+    createdBy: 'usr_sidra',
     title: 'Sunset majlis dinner',
     offer: 'Dinner for two in the garden majlis',
     deliverable: 'A golden-hour Reel from the garden',
@@ -169,9 +165,8 @@ const COLLABS: SeedCollab[] = [
   },
   {
     id: 'col_breakfast',
-    kind: 'offer',
     businessId: 'biz_sidra',
-    createdBy: 'usr_khalid',
+    createdBy: 'usr_sidra',
     title: 'Garden breakfast, today only',
     offer: 'Balaleet and eggs under the sidra tree',
     deliverable: 'A Story with the location tagged',
@@ -248,7 +243,7 @@ const REQUESTS: SeedRequest[] = [
     askedAgo: 2,
   },
 
-  // Karak: one cup left and three creators waiting, for the two-staff race.
+  // Karak: one cup left and three creators waiting, for the two-phone race.
   {
     id: 'req_lastcup_reem',
     collabId: 'col_lastcup',
@@ -419,7 +414,7 @@ export async function seed(db: D1Database, now: Date = new Date()): Promise<void
         )
         .bind(business.id, business.name, business.area, business.type, business.house),
     ),
-    ...STAFF.map((user) =>
+    ...BUSINESS_ACCOUNTS.map((user) =>
       db
         .prepare(
           `INSERT INTO users (id, username, password_hash, name, role, business_id)
@@ -451,13 +446,12 @@ export async function seed(db: D1Database, now: Date = new Date()): Promise<void
     ...COLLABS.map((collab) =>
       db
         .prepare(
-          `INSERT INTO collabs (id, kind, business_id, title, offer, deliverable, details,
+          `INSERT INTO collabs (id, business_id, title, offer, deliverable, details,
                                 requirements, location, spots, ends_on, created_by, created_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         )
         .bind(
           collab.id,
-          collab.kind ?? 'collab',
           collab.businessId,
           collab.title,
           collab.offer,

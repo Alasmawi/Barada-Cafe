@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { ErrorBody, User } from '../src/shared/api';
 import { DEMO_PASSWORD } from '../src/worker/demo/seed';
 import { hashToken, SESSION_COOKIE } from '../src/worker/auth/sessions';
-import { api, errorCode } from './helpers';
+import { api, errorCode, makeBusiness } from './helpers';
 
 const creator = (overrides: object = {}) => ({
   role: 'creator',
@@ -42,6 +42,17 @@ describe('signing up', () => {
 
     const me = await api('/me', { cookie: cookieFrom(response) });
     expect(me.status).toBe(200);
+  });
+
+  it('keeps a business to one account', async () => {
+    const { businessId } = await makeBusiness();
+
+    const second = env.DB.prepare(
+      `INSERT INTO users (id, username, password_hash, name, role, business_id)
+       VALUES ('usr_second', 'second', 'unused', 'Second', 'business', ?)`,
+    ).bind(businessId);
+
+    await expect(second.run()).rejects.toThrow(/UNIQUE/);
   });
 
   it('creates a business of any kind with its owner, who can post a collab', async () => {

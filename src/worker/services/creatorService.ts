@@ -4,7 +4,7 @@ import type { AiClient } from '../ai/aiClient';
 import { factsKey, factSummary, summarizeCreator } from '../ai/summarizeCreator';
 import { notFound } from '../http/errors';
 import * as usersRepo from '../repositories/usersRepo';
-import { assertCreator, assertStaff } from './permissions';
+import { assertCreator, assertBusiness } from './permissions';
 
 const RESULT_LIMIT = 30;
 
@@ -25,7 +25,7 @@ function toCard(creator: usersRepo.StoredCreator): CreatorCard {
 }
 
 export async function search(db: D1Database, actor: User, query: string): Promise<CreatorCard[]> {
-  assertStaff(actor);
+  assertBusiness(actor);
   const creators = await usersRepo.searchCreators(db, query, RESULT_LIMIT);
   return creators.map(toCard);
 }
@@ -37,7 +37,7 @@ export async function summarize(
   actor: User,
   id: string,
 ): Promise<CreatorCard> {
-  assertStaff(actor);
+  assertBusiness(actor);
   const creator = await usersRepo.findCreator(db, id);
   if (!creator) throw notFound('This creator has been removed.');
 

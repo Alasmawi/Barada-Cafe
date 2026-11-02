@@ -11,7 +11,7 @@ import { MessageState } from '../components/MessageState';
 import { ScreenState } from '../components/ScreenState';
 import { Skeleton } from '../components/Skeleton';
 import { StatusChip } from '../components/StatusChip';
-import { KindBadge, SpotsBar, spotsLabel } from '../features/collabs/CollabShared';
+import { SpotsBar, spotsLabel } from '../features/collabs/CollabShared';
 import { PitchSheet } from '../features/requests/PitchSheet';
 
 function InviteBar({ request, endsOn }: { request: CollabRequest; endsOn: string }) {
@@ -114,7 +114,7 @@ export function CollabDetail() {
   return (
     <>
       <NavBar to="/" title="Details" />
-      <main className="page page--bar">
+      <main className="page page--bar page--wide">
         <ScreenState
           query={collab}
           errorTitle="Couldn't load this."
@@ -133,60 +133,63 @@ export function CollabDetail() {
         >
           {({ collab: detail, myRequest }) => (
             <>
-              <section className={`brand-banner house--${detail.businessHouse}`}>
-                <BrandMark house={detail.businessHouse} size={64} />
-                <div>
-                  <p className="brand-banner__name">{detail.businessName}</p>
-                  <p className="brand-banner__detail">
-                    {detail.businessType} · {detail.businessArea}
-                  </p>
+              <div className="split">
+                <div className="split__side">
+                  <section className={`brand-banner house--${detail.businessHouse}`}>
+                    <BrandMark house={detail.businessHouse} size={64} />
+                    <div>
+                      <p className="brand-banner__name">{detail.businessName}</p>
+                      <p className="brand-banner__detail">
+                        {detail.businessType} · {detail.businessArea}
+                      </p>
+                    </div>
+                  </section>
+                  <div className="detail-head">
+                    <h1 className="detail-head__title">{detail.title}</h1>
+                  </div>
                 </div>
-              </section>
-              <div className="detail-head">
-                <KindBadge kind={detail.kind} />
-                <h1 className="detail-head__title">{detail.title}</h1>
+                <dl className="group">
+                  <div className="info-row">
+                    <dt>You get</dt>
+                    <dd>{detail.offer}</dd>
+                  </div>
+                  <div className="info-row">
+                    <dt>You post</dt>
+                    <dd>{detail.deliverable}</dd>
+                  </div>
+                  {detail.details && (
+                    <div className="info-row">
+                      <dt>About this post</dt>
+                      <dd className="info-row__long">{detail.details}</dd>
+                    </div>
+                  )}
+                  {detail.requirements && (
+                    <div className="info-row">
+                      <dt>Who they're looking for</dt>
+                      <dd className="info-row__long">{detail.requirements}</dd>
+                    </div>
+                  )}
+                  {detail.location && (
+                    <div className="info-row">
+                      <dt>Location</dt>
+                      <dd>{detail.location}</dd>
+                    </div>
+                  )}
+                  <div className="info-row">
+                    <dt>Spots</dt>
+                    <dd>
+                      {spotsLabel(detail)}
+                      <SpotsBar collab={detail} />
+                    </dd>
+                  </div>
+                  <div className="info-row">
+                    <dt>Last day</dt>
+                    <dd>
+                      {shortDate(detail.endsOn)} · {endsLabel(detail.endsOn, bahrainToday())}
+                    </dd>
+                  </div>
+                </dl>
               </div>
-              <dl className="group">
-                <div className="info-row">
-                  <dt>You get</dt>
-                  <dd>{detail.offer}</dd>
-                </div>
-                <div className="info-row">
-                  <dt>You post</dt>
-                  <dd>{detail.deliverable}</dd>
-                </div>
-                {detail.details && (
-                  <div className="info-row">
-                    <dt>About this post</dt>
-                    <dd className="info-row__long">{detail.details}</dd>
-                  </div>
-                )}
-                {detail.requirements && (
-                  <div className="info-row">
-                    <dt>Who they're looking for</dt>
-                    <dd className="info-row__long">{detail.requirements}</dd>
-                  </div>
-                )}
-                {detail.location && (
-                  <div className="info-row">
-                    <dt>Location</dt>
-                    <dd>{detail.location}</dd>
-                  </div>
-                )}
-                <div className="info-row">
-                  <dt>Spots</dt>
-                  <dd>
-                    {spotsLabel(detail)}
-                    <SpotsBar collab={detail} />
-                  </dd>
-                </div>
-                <div className="info-row">
-                  <dt>Last day</dt>
-                  <dd>
-                    {shortDate(detail.endsOn)} · {endsLabel(detail.endsOn, bahrainToday())}
-                  </dd>
-                </div>
-              </dl>
               <ActionBar collab={detail} request={myRequest} />
             </>
           )}

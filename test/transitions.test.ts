@@ -21,18 +21,18 @@ type Action = 'accept' | 'decline' | 'submit' | 'complete';
 type Scenario = Awaited<ReturnType<typeof makeRequestIn>>;
 
 const perform: Record<Action, (scenario: Scenario) => Promise<Response>> = {
-  accept: ({ requestId, staffId }) => accept(requestId, staffId),
-  decline: ({ requestId, staffId }) => decline(requestId, staffId),
+  accept: ({ requestId, ownerId }) => accept(requestId, ownerId),
+  decline: ({ requestId, ownerId }) => decline(requestId, ownerId),
   submit: ({ requestId, creatorId }) => submitLink(requestId, creatorId),
-  complete: ({ requestId, staffId }) => complete(requestId, staffId),
+  complete: ({ requestId, ownerId }) => complete(requestId, ownerId),
 };
 
 describe('request status machine', () => {
   it('walks the happy path from pending to done', async () => {
     const scenario = await makeRequestIn('pending');
-    const { requestId, staffId, creatorId } = scenario;
+    const { requestId, ownerId, creatorId } = scenario;
 
-    const accepted = await accept(requestId, staffId);
+    const accepted = await accept(requestId, ownerId);
     const { request } = await accepted.json<{ request: CollabRequest }>();
     expect(request.status).toBe('accepted');
     expect(request.passCode).toMatch(/^CB-[A-HJ-NP-Z2-9]{4}$/);
@@ -40,7 +40,7 @@ describe('request status machine', () => {
     await submitLink(requestId, creatorId);
     expect((await getRequest(requestId)).status).toBe('submitted');
 
-    await complete(requestId, staffId);
+    await complete(requestId, ownerId);
     expect((await getRequest(requestId)).status).toBe('done');
   });
 
@@ -88,17 +88,17 @@ describe('request status machine', () => {
 
 describe('the end date', () => {
   it('still accepts on the last day, which is inclusive', async () => {
-    const { staff, requestIds } = await makeCollab({ spots: 1, pending: 1, endsOn: today() });
+    const { owner, requestIds } = await makeCollab({ spots: 1, pending: 1, endsOn: today() });
 
-    const response = await accept(requestIds[0]!, staff[0]!);
+    const response = await accept(requestIds[0]!, owner);
 
     expect(response.status).toBe(200);
   });
 
   it('refuses an accept after the end date', async () => {
-    const { staff, requestIds } = await makeCollab({ spots: 1, pending: 1, endsOn: yesterday() });
+    const { owner, requestIds } = await makeCollab({ spots: 1, pending: 1, endsOn: yesterday() });
 
-    const response = await accept(requestIds[0]!, staff[0]!);
+    const response = await accept(requestIds[0]!, owner);
 
     expect(response.status).toBe(409);
     expect(await errorCode(response)).toBe('COLLAB_ENDED');
@@ -115,16 +115,16 @@ describe('the end date', () => {
   });
 
   it('still lets a pending request be declined after the end date', async () => {
-    const { staff, requestIds } = await makeCollab({ spots: 1, pending: 1, endsOn: yesterday() });
+    const { owner, requestIds } = await makeCollab({ spots: 1, pending: 1, endsOn: yesterday() });
 
-    const response = await decline(requestIds[0]!, staff[0]!);
+    const response = await decline(requestIds[0]!, owner);
 
     expect(response.status).toBe(200);
   });
 
   it('lets an accepted creator submit after the end date', async () => {
-    const { collabId, staff, creators, requestIds } = await makeCollab({ spots: 1, pending: 1 });
-    await accept(requestIds[0]!, staff[0]!);
+    const { collabId, owner, creators, requestIds } = await makeCollab({ spots: 1, pending: 1 });
+    await accept(requestIds[0]!, owner);
     await env.DB.prepare('UPDATE collabs SET ends_on = ? WHERE id = ?')
       .bind(yesterday(), collabId)
       .run();
