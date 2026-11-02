@@ -11,7 +11,6 @@ import type {
 import type { CollabInput, LoginInput, SignUpInput } from '../../shared/schemas';
 import type { Socials } from '../../shared/socials';
 import { api } from './client';
-import { setPreviewMode } from './preview';
 
 type AccountsResponse = { accounts: User[]; lastResetAt: string | null };
 type CreatorsResponse = { creators: CreatorCard[] };
@@ -202,14 +201,3 @@ export function useSaveSocials() {
 export const logIn = (input: LoginInput) => api.post<UserResponse>('/auth/login', input);
 export const signUp = (input: SignUpInput) => api.post<UserResponse>('/auth/signup', input);
 export const logOut = () => api.post('/auth/logout');
-
-export function useResetDemo() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: () => api.post('/demo/reset'),
-    onSuccess: () => {
-      setPreviewMode('normal');
-      return queryClient.invalidateQueries();
-    },
-  });
-}

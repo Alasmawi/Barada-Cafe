@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { ErrorBody, User } from '../src/shared/api';
 import { DEMO_PASSWORD } from '../src/worker/demo/seed';
 import { hashToken, SESSION_COOKIE } from '../src/worker/auth/sessions';
-import { api, errorCode, makeBusiness } from './helpers';
+import { api, errorCode, makeBusiness, resetDemo } from './helpers';
 
 const creator = (overrides: object = {}) => ({
   role: 'creator',
@@ -21,8 +21,6 @@ const business = (overrides: object = {}) => ({
   username: `layla${crypto.randomUUID().slice(0, 6)}`,
   password: 'correct horse',
   businessName: 'New Studio',
-  area: 'Seef',
-  businessType: 'Fitness',
   house: 'coral',
   ...overrides,
 });
@@ -63,7 +61,6 @@ describe('signing up', () => {
     expect(user).toMatchObject({
       role: 'business',
       businessName: 'New Studio',
-      businessType: 'Fitness',
       businessHouse: 'coral',
     });
 
@@ -174,7 +171,7 @@ describe('signing up', () => {
 describe('the public demo list', () => {
   it('never shows people who signed up', async () => {
     const input = creator();
-    await api('/demo/reset', { method: 'POST' });
+    await resetDemo();
     await api('/auth/signup', { body: input });
 
     const response = await api('/demo/accounts');
@@ -200,7 +197,7 @@ describe('logging in', () => {
   });
 
   it('works for a demo account after a reset', async () => {
-    await api('/demo/reset', { method: 'POST' });
+    await resetDemo();
 
     const response = await api('/auth/login', {
       body: { username: 'noor', password: DEMO_PASSWORD },
@@ -246,7 +243,7 @@ describe('a session', () => {
   });
 
   it('cannot be faked with the old X-User-Id header', async () => {
-    await api('/demo/reset', { method: 'POST' });
+    await resetDemo();
 
     const response = await exports.default.fetch('https://collab.test/api/v1/me', {
       headers: { 'X-User-Id': 'usr_noor' },

@@ -12,15 +12,15 @@ Businesses are always square logos, and creators are always round rings. A busin
 account, with the business name on it.
 
 [DECISIONS.md](DECISIONS.md) records what changed along the way and the open questions.
-[AUDIT.md](AUDIT.md) compares the app with every requirement, with a view for each department.
-[PLAN.md](PLAN.md) is the original plan, under the earlier name Finjan.
+[AUDIT.md](AUDIT.md) compares the app with every requirement, with a view for each department, and lists
+what's missing and what could be removed. [ARCHITECTURE.md](ARCHITECTURE.md) covers the stack, the layers
+and how people move through the app.
 
 ## Two-minute demo
 
 Tap **Try a demo account** on the welcome screen and pick one. Every demo account uses the password
 `demo-password`. Once you're in, the account button at the top of a home or Profile screen switches
-accounts with one tap, opens the preview states, resets the demo and logs you out. Resetting keeps
-you logged in.
+accounts with one tap, opens the preview states and logs you out.
 
 **As a creator (`noor`)**
 
@@ -79,6 +79,17 @@ With `npm run dev` running, this checks every screen at 320, 360, 390, 768 and 1
 preview state. It drives your installed Chrome, and it's run by hand, not in CI. It resets the demo
 data, so don't point it at a site where real people have signed up.
 
+## Reset the demo
+
+Resetting restores the sample data and removes everyone who signed up, so it isn't on any screen. It
+needs the secret `DEMO_RESET_TOKEN`: in `.dev.vars` locally (create it with any long random value), and
+set with `npx wrangler secret put DEMO_RESET_TOKEN` on Cloudflare. Without the secret the endpoint
+answers 404.
+
+```bash
+curl -X POST -H "X-Reset-Token: $DEMO_RESET_TOKEN" http://localhost:5173/api/v1/demo/reset
+```
+
 ```bash
 npm run test:ui
 ```
@@ -120,16 +131,17 @@ When the AI allowance runs out the app keeps working: summaries stay as plain fa
 filled in by hand.
 
 **Accounts are for a demo.** Passwords use 10,000 rounds of PBKDF2 to fit the CPU limit, far below
-what real accounts need. There's no email, recovery or login rate limit, and Reset demo wipes anyone
-who signed up. Change these first before real use.
+what real accounts need. There's no email, recovery or login rate limit, and anyone holding the reset
+secret can wipe everyone who signed up. Change these first before real use.
 
 ## Deploy
 
 One-time setup, from a machine logged in with `npx wrangler login`:
 
 1. Register a `workers.dev` subdomain in the Cloudflare dashboard.
-2. Run `npx wrangler d1 create finjan` and put the id in `wrangler.jsonc`.
-3. Run `npm run deploy`.
+2. Run `npx wrangler d1 create collab-board` and put its name and id in `wrangler.jsonc`.
+3. Set the reset secret with `npx wrangler secret put DEMO_RESET_TOKEN`.
+4. Run `npm run deploy`.
 
 To deploy from GitHub Actions instead, add the secret `CLOUDFLARE_API_TOKEN` and the variable
 `CLOUDFLARE_ACCOUNT_ID`. CI then deploys every push to `main`, once that branch exists.

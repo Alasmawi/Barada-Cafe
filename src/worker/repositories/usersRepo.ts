@@ -1,5 +1,5 @@
 import type { CreatorCard, Role, User } from '../../shared/api';
-import type { BusinessType, House } from '../../shared/houses';
+import type { House } from '../../shared/houses';
 import { parseSocials, type Socials } from '../../shared/socials';
 
 type UserRow = {
@@ -9,7 +9,6 @@ type UserRow = {
   role: Role;
   business_id: string | null;
   business_name: string | null;
-  business_type: BusinessType | null;
   business_house: House | null;
   handle: string | null;
   tags: string;
@@ -33,7 +32,6 @@ function toUser(row: UserRow): User {
     role: row.role,
     businessId: row.business_id,
     businessName: row.business_name,
-    businessType: row.business_type,
     businessHouse: row.business_house,
     handle: row.handle,
     tags: toTags(row.tags),
@@ -46,7 +44,6 @@ const SELECT_USER = `
   SELECT users.id, users.username, users.name, users.role, users.business_id, users.handle,
          users.tags, users.signature, users.socials,
          businesses.name AS business_name,
-         businesses.type AS business_type,
          businesses.house AS business_house
   FROM users
   LEFT JOIN businesses ON businesses.id = users.business_id`;
@@ -112,7 +109,7 @@ function toCreatorCard(row: CreatorRow): StoredCreator {
 }
 
 const SELECT_CREATOR = `
-  SELECT users.*, NULL AS business_name, NULL AS business_type, NULL AS business_house,
+  SELECT users.*, NULL AS business_name, NULL AS business_house,
          ${SERVED_COUNT}
   FROM users
   WHERE users.role = 'creator'`;
@@ -201,12 +198,12 @@ export async function insertCreator(db: D1Database, user: NewUser): Promise<void
 export async function insertBusinessOwner(
   db: D1Database,
   user: NewUser,
-  business: { id: string; name: string; area: string; type: BusinessType; house: House },
+  business: { id: string; name: string; house: House },
 ): Promise<void> {
   await db.batch([
     db
-      .prepare('INSERT INTO businesses (id, name, area, type, house) VALUES (?, ?, ?, ?, ?)')
-      .bind(business.id, business.name, business.area, business.type, business.house),
+      .prepare('INSERT INTO businesses (id, name, house) VALUES (?, ?, ?)')
+      .bind(business.id, business.name, business.house),
     insertUserStatement(db, user, 'business', business.id),
   ]);
 }

@@ -1,9 +1,9 @@
 import { useState, type FormEvent } from 'react';
 import { SocialsInput, type Socials } from '../../shared/socials';
 import { useMyRequests, useSaveSocials } from '../api/queries';
-import { BrandMark } from '../components/BrandMark';
 import { AccountMenu } from '../components/AccountMenu';
 import { LargeTitle } from '../components/Layout';
+import { StatusStamp, tiltStyle } from '../components/Stamp';
 import { Stat } from '../components/Stat';
 import { Sheet } from '../components/Sheet';
 import { SocialFields } from '../features/creators/SocialFields';
@@ -90,6 +90,19 @@ export function Profile() {
           </div>
         </div>
         <div className="split__main">
+          <h2 className="group-label">Your wall</h2>
+          <ul className="wall">
+            {done.map(({ id, collab }) => (
+              <li key={id} className={`wall__card house--${collab.businessHouse}`} style={tiltStyle(id)}>
+                <span className="wall__title">{collab.title}</span>
+                <span className="wall__business">{collab.businessName}</span>
+                <StatusStamp status="done" />
+              </li>
+            ))}
+            <li className="wall__slot" style={tiltStyle(`slot${done.length}`)}>
+              {done.length === 0 ? 'Completed collabs are pinned here' : 'Your next one goes here'}
+            </li>
+          </ul>
           <h2 className="group-label">Socials</h2>
           <section className="group group--padded profile__socials">
             <SocialLinks socials={user.socials} />
@@ -103,22 +116,6 @@ export function Profile() {
           <Sheet open={editing} onClose={() => setEditing(false)} title="Your socials">
             <SocialsForm current={user.socials} onSaved={() => setEditing(false)} />
           </Sheet>
-          <h2 className="group-label">Worked with</h2>
-          {done.length === 0 ? (
-            <p className="note note--inset">Completed collabs appear here.</p>
-          ) : (
-            <ul className="group">
-              {done.map(({ id, collab }) => (
-                <li key={id} className="list-row">
-                  <BrandMark house={collab.businessHouse} size={40} />
-                  <span className="list-row__text">
-                    <span className="list-row__title">{collab.businessName}</span>
-                    <span className="list-row__detail">{collab.title}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
         </div>
       </div>
     </>

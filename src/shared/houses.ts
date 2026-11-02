@@ -9,6 +9,3 @@ export const HOUSES = {
 
 export type House = keyof typeof HOUSES;
 export const HOUSE_NAMES = Object.keys(HOUSES) as House[];
-
-export const BUSINESS_TYPES = ['Café', 'Restaurant', 'Beauty', 'Fitness', 'Retail', 'Hotel'] as const;
-export type BusinessType = (typeof BUSINESS_TYPES)[number];

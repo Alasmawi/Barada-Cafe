@@ -36,11 +36,11 @@ const CREATORS = [
 ];
 
 const BUSINESSES = [
-  { id: 'biz_barada', name: 'Barada Café', area: 'Adliya', type: 'Café', house: 'saffron' },
-  { id: 'biz_noon', name: 'Noon Roastery', area: 'Muharraq', type: 'Café', house: 'gulf' },
-  { id: 'biz_sidra', name: 'Sidra Garden', area: 'Budaiya', type: 'Restaurant', house: 'sage' },
-  { id: 'biz_layali', name: 'Layali Perfumes', area: 'Seef', type: 'Beauty', house: 'oud' },
-  { id: 'biz_move', name: 'Move Studio', area: 'Juffair', type: 'Fitness', house: 'coral' },
+  { id: 'biz_barada', name: 'Barada Café', house: 'saffron' },
+  { id: 'biz_noon', name: 'Noon Roastery', house: 'gulf' },
+  { id: 'biz_sidra', name: 'Sidra Garden', house: 'sage' },
+  { id: 'biz_layali', name: 'Layali Perfumes', house: 'oud' },
+  { id: 'biz_move', name: 'Move Studio', house: 'coral' },
 ];
 
 const quoted = (ids: string[]) => ids.map((id) => `'${id}'`).join(', ');
@@ -205,7 +205,7 @@ const REQUESTS: SeedRequest[] = [
     creatorId: 'usr_noor',
     pitch: 'I film slow pours for 12k coffee lovers in Manama.',
     status: 'accepted',
-    passCode: 'FJ-7K3Q',
+    passCode: 'CB-7K3Q',
     askedAgo: 3,
   },
   {
@@ -214,7 +214,7 @@ const REQUESTS: SeedRequest[] = [
     creatorId: 'usr_ali',
     pitch: 'Weekly Adliya business guide, this one fits my next episode.',
     status: 'submitted',
-    passCode: 'FJ-M4TZ',
+    passCode: 'CB-M4TZ',
     postUrl: 'https://www.instagram.com/reel/DemoPostAli/',
     askedAgo: 4,
   },
@@ -250,7 +250,7 @@ const REQUESTS: SeedRequest[] = [
     creatorId: 'usr_reem',
     pitch: 'I rank everything. Karak has been waiting its turn.',
     status: 'accepted',
-    passCode: 'FJ-H9WP',
+    passCode: 'CB-H9WP',
     askedAgo: 3,
   },
   {
@@ -259,7 +259,7 @@ const REQUESTS: SeedRequest[] = [
     creatorId: 'usr_fatima',
     pitch: 'My followers ask me for the best karak every single week.',
     status: 'accepted',
-    passCode: 'FJ-C2RD',
+    passCode: 'CB-C2RD',
     askedAgo: 2,
   },
   {
@@ -294,7 +294,7 @@ const REQUESTS: SeedRequest[] = [
     creatorId: 'usr_noor',
     pitch: 'Weekend brunch carousels are my top posts every month.',
     status: 'submitted',
-    passCode: 'FJ-8VNA',
+    passCode: 'CB-8VNA',
     postUrl: 'https://www.tiktok.com/@noor.sips/video/7400000000000000000',
     askedAgo: 6,
   },
@@ -304,7 +304,7 @@ const REQUESTS: SeedRequest[] = [
     creatorId: 'usr_reem',
     pitch: 'New menus are my favourite thing to review honestly.',
     status: 'done',
-    passCode: 'FJ-Q6LE',
+    passCode: 'CB-Q6LE',
     postUrl: 'https://www.instagram.com/p/DemoPostReem/',
     askedAgo: 7,
   },
@@ -324,7 +324,7 @@ const REQUESTS: SeedRequest[] = [
     creatorId: 'usr_noor',
     pitch: 'Date cake is my comfort food and my audience knows it.',
     status: 'done',
-    passCode: 'FJ-3BXS',
+    passCode: 'CB-3BXS',
     postUrl: 'https://www.instagram.com/p/DemoPostNoor/',
     askedAgo: 9,
   },
@@ -334,7 +334,7 @@ const REQUESTS: SeedRequest[] = [
     creatorId: 'usr_lulwa',
     pitch: 'I would love to film this with my grandmother.',
     status: 'accepted',
-    passCode: 'FJ-Y5GK',
+    passCode: 'CB-Y5GK',
     askedAgo: 8,
   },
   {
@@ -408,11 +408,10 @@ export async function seed(db: D1Database, now: Date = new Date()): Promise<void
     ...BUSINESSES.map((business) =>
       db
         .prepare(
-          `INSERT INTO businesses (id, name, area, type, house) VALUES (?, ?, ?, ?, ?)
-           ON CONFLICT (id) DO UPDATE SET
-             name = excluded.name, area = excluded.area, type = excluded.type, house = excluded.house`,
+          `INSERT INTO businesses (id, name, house) VALUES (?, ?, ?)
+           ON CONFLICT (id) DO UPDATE SET name = excluded.name, house = excluded.house`,
         )
-        .bind(business.id, business.name, business.area, business.type, business.house),
+        .bind(business.id, business.name, business.house),
     ),
     ...BUSINESS_ACCOUNTS.map((user) =>
       db

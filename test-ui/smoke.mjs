@@ -1,9 +1,14 @@
-// Every route at phone widths in every preview state (PLAN §8). Needs a running app:
+// Every route at phone widths in every preview state. Needs a running app:
 //   npm run dev, then npm run test:ui
 // Asserts no horizontal scroll, and that each failed screen offers a way forward.
+import { readFileSync } from 'node:fs';
 import { chromium } from 'playwright-core';
 
 const BASE_URL = process.env.BASE_URL ?? 'http://localhost:5173';
+/** Reset needs the secret: from the environment, or from .dev.vars when running locally. */
+const RESET_TOKEN =
+  process.env.DEMO_RESET_TOKEN ??
+  readFileSync(new URL('../.dev.vars', import.meta.url), 'utf8').match(/^DEMO_RESET_TOKEN=(.+)$/m)?.[1];
 const WIDTHS = [320, 360, 390, 768, 1280];
 const MODES = ['normal', 'slow', 'error', 'empty'];
 
@@ -24,7 +29,11 @@ const browser = await chromium.launch({ channel: 'chrome', headless: true });
 const failures = [];
 let checked = 0;
 
-await fetch(`${BASE_URL}/api/v1/demo/reset`, { method: 'POST' });
+const reset = await fetch(`${BASE_URL}/api/v1/demo/reset`, {
+  method: 'POST',
+  headers: { 'X-Reset-Token': RESET_TOKEN ?? '' },
+});
+if (!reset.ok) throw new Error(`Demo reset failed with ${reset.status}. Is DEMO_RESET_TOKEN set?`);
 
 for (const [role, routes] of Object.entries(ROUTES)) {
   for (const width of WIDTHS) {

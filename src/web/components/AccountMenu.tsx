@@ -3,7 +3,7 @@ import { useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Role, User } from '../../shared/api';
 import { getPreviewMode, PREVIEW_MODES, setPreviewMode, type PreviewMode } from '../api/preview';
-import { logIn, logOut, useDemoAccounts, useResetDemo } from '../api/queries';
+import { logIn, logOut, useDemoAccounts } from '../api/queries';
 import { Ring } from '../features/rings/Ring';
 import { useSession } from '../session';
 import { BrandMark } from './BrandMark';
@@ -140,46 +140,6 @@ function PreviewStates() {
   );
 }
 
-function ResetDemo() {
-  const reset = useResetDemo();
-  const [confirming, setConfirming] = useState(false);
-
-  if (!confirming) {
-    return (
-      <button className="button button--wide" type="button" onClick={() => setConfirming(true)}>
-        Reset demo data
-      </button>
-    );
-  }
-
-  return (
-    <>
-      <p className="note">
-        This restores the sample data and removes anyone who signed up. Demo accounts stay logged in.
-      </p>
-      <div className="button-row">
-        <button className="button" type="button" onClick={() => setConfirming(false)}>
-          Keep it
-        </button>
-        <button
-          className="button button--primary button--grow"
-          type="button"
-          onClick={() => reset.mutate(undefined, { onSuccess: () => setConfirming(false) })}
-          aria-busy={reset.isPending}
-          disabled={reset.isPending}
-        >
-          {reset.isPending ? 'Resetting…' : 'Yes, reset'}
-        </button>
-      </div>
-      {reset.isError && (
-        <p className="form-error" role="alert">
-          Reset didn't finish. Try again.
-        </p>
-      )}
-    </>
-  );
-}
-
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="sheet__section">
@@ -218,9 +178,6 @@ function AccountSheet({ open, onClose }: { open: boolean; onClose: () => void })
       </Section>
       <Section title="Preview a screen state">
         <PreviewStates />
-      </Section>
-      <Section title="Demo data">
-        <ResetDemo />
       </Section>
       {user && (
         <button className="button button--wide" type="button" onClick={() => void leave()}>

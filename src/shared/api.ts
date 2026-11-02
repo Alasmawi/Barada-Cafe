@@ -1,4 +1,4 @@
-import type { BusinessType, House } from './houses';
+import type { House } from './houses';
 import type { CollabInput } from './schemas';
 import type { Socials } from './socials';
 import type { CollabState, RequestStatus } from './status';
@@ -14,7 +14,6 @@ export type User = {
   role: Role;
   businessId: string | null;
   businessName: string | null;
-  businessType: BusinessType | null;
   businessHouse: House | null;
   handle: string | null;
   tags: string[];
@@ -40,8 +39,6 @@ export type Collab = {
   id: string;
   businessId: string;
   businessName: string;
-  businessArea: string;
-  businessType: BusinessType;
   businessHouse: House;
   title: string;
   offer: string;

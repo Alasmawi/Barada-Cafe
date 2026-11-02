@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { BUSINESS_TYPES, HOUSE_NAMES } from './houses';
+import { HOUSE_NAMES } from './houses';
 import { isHttpsUrl } from './postLink';
 import { SocialsInput } from './socials';
 import { isValidTagSet } from './tags';
@@ -92,8 +92,6 @@ export const BusinessSignUp = z.object({
   ...Credentials,
   role: z.literal('business'),
   businessName: z.string().trim().min(1, 'Add your business name').max(40, 'Keep it under 40 characters'),
-  area: z.string().trim().min(1, 'Add your area').max(40, 'Keep it under 40 characters'),
-  businessType: z.enum(BUSINESS_TYPES, 'Choose what kind of business'),
   house: z.enum(HOUSE_NAMES, 'Choose a house'),
 });
 export type BusinessSignUp = z.infer<typeof BusinessSignUp>;

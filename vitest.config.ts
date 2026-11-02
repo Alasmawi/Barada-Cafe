@@ -1,5 +1,6 @@
 import { cloudflareTest, readD1Migrations } from '@cloudflare/vitest-plugin';
 import { defineConfig } from 'vitest/config';
+import { RESET_TOKEN } from './test/resetToken';
 
 export default defineConfig(async () => {
   const migrations = await readD1Migrations('migrations');
@@ -10,7 +11,7 @@ export default defineConfig(async () => {
         wrangler: { configPath: './wrangler.jsonc' },
         // Tests never call the real model: ai-draft.test.ts passes in fixture clients.
         remoteBindings: false,
-        miniflare: { bindings: { TEST_MIGRATIONS: migrations } },
+        miniflare: { bindings: { TEST_MIGRATIONS: migrations, DEMO_RESET_TOKEN: RESET_TOKEN } },
       }),
     ],
     test: {

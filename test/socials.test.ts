@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Collab, CreatorCard, ErrorBody, InboxRequest, User } from '../src/shared/api';
 import { parseSocials, SOCIAL_NAMES, SOCIAL_PLATFORMS, SocialsInput } from '../src/shared/socials';
-import { api, makeBusiness, makeCollab, makeCreators, nextWeek } from './helpers';
+import { api, makeBusiness, makeCollab, makeCreators, nextWeek, resetDemo } from './helpers';
 
 const signUpCreator = (socials: object) =>
   api('/auth/signup', {
@@ -72,7 +72,7 @@ describe('creator socials', () => {
   });
 
   it('are shown to businesses in search and in the inbox', async () => {
-    await api('/demo/reset', { method: 'POST' });
+    await resetDemo();
 
     const search = await api('/creators?q=noor', { as: 'usr_barada' });
     const { creators } = await search.json<{ creators: CreatorCard[] }>();

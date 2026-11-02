@@ -25,7 +25,7 @@ export function BusinessHome() {
         <BrandMark house={house} size={64} />
         <div className="brand-banner__text">
           <h1 className="brand-banner__name">{user?.businessName}</h1>
-          <p className="brand-banner__detail">{user?.businessType} · Business account</p>
+          <p className="brand-banner__detail">Business account</p>
         </div>
         <AccountMenu />
       </section>

@@ -1,15 +1,26 @@
-import { env } from 'cloudflare:workers';
+import { env, exports } from 'cloudflare:workers';
 import { describe, expect, it } from 'vitest';
 import type { Collab, RequestWithCollab, User } from '../src/shared/api';
 import { REQUEST_STATUSES } from '../src/shared/status';
 import { DEMO_PASSWORD } from '../src/worker/demo/seed';
-import { accept, api, countHeldSpots, errorCode } from './helpers';
+import { accept, api, countHeldSpots, errorCode, resetDemo } from './helpers';
 
 type AccountsBody = { accounts: User[]; lastResetAt: string | null };
 
-const resetDemo = () => api('/demo/reset', { method: 'POST' });
-
 describe('demo data', () => {
+  it('only resets for someone holding the secret', async () => {
+    const noToken = await api('/demo/reset', { method: 'POST' });
+    expect(noToken.status).toBe(404);
+
+    const wrongToken = await exports.default.fetch('https://collab.test/api/v1/demo/reset', {
+      method: 'POST',
+      headers: { 'X-Reset-Token': 'not-the-secret' },
+    });
+    expect(wrongToken.status).toBe(404);
+
+    expect((await resetDemo()).status).toBe(200);
+  });
+
   it('seeds itself on first boot when the database is empty', async () => {
     await env.DB.batch(
       ['requests', 'collabs', 'users', 'businesses'].map((table) =>
@@ -91,31 +102,29 @@ describe('demo data', () => {
 
 describe('resetting the demo', () => {
   it('leaves other people logged in', async () => {
-    await api('/demo/reset', { method: 'POST' });
+    await resetDemo();
     const login = await api('/auth/login', { body: { username: 'noor', password: DEMO_PASSWORD } });
     const cookie = (login.headers.get('Set-Cookie') ?? '').split(';')[0]!;
 
-    await api('/demo/reset', { method: 'POST' });
+    await resetDemo();
 
     expect((await api('/me', { cookie })).status).toBe(200);
   });
 
   it('removes people who signed up, and their business', async () => {
-    await api('/demo/reset', { method: 'POST' });
+    await resetDemo();
     const signUp = await api('/auth/signup', {
       body: {
         role: 'business',
         username: 'temporary',
         password: 'correct horse',
         businessName: 'Temporary',
-        area: 'Seef',
-        businessType: 'Retail',
         house: 'coral',
       },
     });
     const cookie = (signUp.headers.get('Set-Cookie') ?? '').split(';')[0]!;
 
-    await api('/demo/reset', { method: 'POST' });
+    await resetDemo();
 
     expect((await api('/me', { cookie })).status).toBe(401);
     const row = await env.DB.prepare('SELECT COUNT(*) AS n FROM businesses WHERE name = ?')
@@ -125,10 +134,10 @@ describe('resetting the demo', () => {
   });
 
   it('puts demo creators back as they were', async () => {
-    await api('/demo/reset', { method: 'POST' });
+    await resetDemo();
     await api('/me/socials', { as: 'usr_noor', method: 'PUT', body: { instagram: 'changed' } });
 
-    await api('/demo/reset', { method: 'POST' });
+    await resetDemo();
 
     const me = await api('/me', { as: 'usr_noor' });
     const { user } = await me.json<{ user: User }>();
@@ -150,7 +159,7 @@ describe('health', () => {
     const response = await api('/health');
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ ok: true, schema: '0003_one_account_per_business_no_offers.sql' });
+    expect(await response.json()).toEqual({ ok: true, schema: '0004_no_business_type_or_area.sql' });
   });
 });
 

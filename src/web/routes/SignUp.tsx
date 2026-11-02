@@ -1,7 +1,7 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { User } from '../../shared/api';
-import { BUSINESS_TYPES, HOUSE_NAMES, HOUSES, type BusinessType, type House } from '../../shared/houses';
+import { HOUSE_NAMES, HOUSES, type House } from '../../shared/houses';
 import { SignUpInput } from '../../shared/schemas';
 import type { Socials } from '../../shared/socials';
 import { FORMATS, MAX_TAGS, NICHES, VIBES, type VibeTag } from '../../shared/tags';
@@ -230,13 +230,11 @@ function BusinessForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [businessName, setBusinessName] = useState('');
-  const [area, setArea] = useState('');
-  const [businessType, setBusinessType] = useState<BusinessType>('Café');
   const [house, setHouse] = useState<House>('saffron');
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    void send({ role: 'business', username, password, businessName, area, businessType, house });
+    void send({ role: 'business', username, password, businessName, house });
   };
 
   return (
@@ -245,10 +243,7 @@ function BusinessForm() {
         <BrandMark house={house} size={76} />
         <div>
           <p className="brand-preview__name">{businessName || 'Your business'}</p>
-          <p className="note">
-            {businessType}
-            {area ? ` · ${area}` : ''}
-          </p>
+          <p className="note">Business account</p>
         </div>
       </div>
 
@@ -260,22 +255,6 @@ function BusinessForm() {
           autoComplete="organization"
         />
       </Field>
-      <Field label="Area" error={errors.area}>
-        <input
-          className="field__input"
-          value={area}
-          onChange={(event) => setArea(event.target.value)}
-          placeholder="Adliya"
-        />
-      </Field>
-
-      <fieldset className="pill-group">
-        <legend className="pill-group__label">What kind of business</legend>
-        {BUSINESS_TYPES.map((type) => (
-          <Pill key={type} label={type} on={businessType === type} onPick={() => setBusinessType(type)} />
-        ))}
-      </fieldset>
-
       <fieldset className="house-picker">
         <legend className="pill-group__label">Your brand mark</legend>
         {HOUSE_NAMES.map((name) => (

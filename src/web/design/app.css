@@ -590,8 +590,8 @@ button {
   background: var(--surface-sunk);
 }
 
-.post-card--full {
-  opacity: 0.7;
+.post-card--ended {
+  opacity: 0.75;
 }
 
 .post-card__brand {
@@ -659,21 +659,27 @@ button {
   letter-spacing: -0.01em;
 }
 
-.status-chip {
+.stamp {
   flex: none;
   display: inline-block;
-  padding: 2px 10px;
-  font-size: var(--text-xs);
-  font-weight: 700;
-  border-radius: 999px;
+  padding: 1px 6px;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  line-height: 1.5;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--stamp);
+  background: var(--surface);
+  border: 1.5px solid var(--stamp);
+  border-radius: 4px;
+  rotate: -7deg;
 }
 
-.status-chip--invited,
-.status-chip--accepted { color: #fff; background: var(--red); }
-.status-chip--pending { color: var(--ink); background: var(--surface-sunk); }
-.status-chip--submitted { color: var(--red); background: var(--red-soft); }
-.status-chip--done { color: var(--green); background: var(--green-soft); }
-.status-chip--declined { color: var(--ink-soft); background: var(--surface-sunk); }
+.stamp--red { --stamp: var(--red); }
+.stamp--green { --stamp: var(--green); }
+.stamp--blue { --stamp: var(--blue); }
+.stamp--ink { --stamp: var(--ink); }
+.stamp--grey { --stamp: var(--ink-soft); }
 
 /* ---------- application ---------- */
 
@@ -1513,7 +1519,6 @@ button {
 }
 
 .tab-bar__badge,
-.status-chip,
 .count-badge,
 .message-state__icon,
 .code-card {
@@ -2144,11 +2149,145 @@ html {
   letter-spacing: 0.04em;
 }
 
+/* ---------- the board: awnings, tilt and the wall ---------- */
+
+/* A business's awning: its colour striped with a pale tint, with a scalloped edge.
+   Each scallop is one stripe wide, so the edge lines up with the stripes. */
+.post-card,
+.brand-banner,
+.wall__card {
+  --house-pale: color-mix(in srgb, var(--house-bg) 22%, var(--surface));
+  --awning: repeating-linear-gradient(90deg, var(--house-bg) 0 12px, var(--house-pale) 12px 24px);
+  --scallops:
+    linear-gradient(#000 0 0) left top / 100% calc(100% - 6px) no-repeat,
+    radial-gradient(circle 6px at 50% 0, #000 96%, transparent) left bottom / 12px 6px repeat-x;
+}
+
+.post-card::before,
+.brand-banner::before,
+.wall__card::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  pointer-events: none;
+  background: var(--awning);
+  -webkit-mask: var(--scallops);
+  mask: var(--scallops);
+}
+
+.post-card {
+  padding-block-start: calc(var(--space-3) + 20px);
+}
+
+.post-card::before {
+  top: 0;
+  height: 20px;
+}
+
+/* The banner hangs under a full-width awning, like a shopfront. */
+.brand-banner {
+  position: relative;
+  margin-block-start: 30px;
+}
+
+.brand-banner::before {
+  top: -28px;
+  height: 24px;
+  border-radius: 8px 8px 0 0;
+}
+
+/* Live posts lean a little. Ended ones are taken down and sit straight. */
+.post-card--open,
+.post-card--full,
+.wall__card,
+.wall__slot,
+.code-card {
+  rotate: var(--tilt, -1deg);
+}
+
+.post-list {
+  gap: var(--space-4);
+}
+
+.post-card__meta .stamp,
+.action-bar__status .stamp {
+  margin-inline-end: 2px;
+}
+
+.code-card {
+  position: relative;
+}
+
+.code-card .stamp {
+  margin-block-start: var(--space-2);
+  font-size: var(--text-xs);
+}
+
+.wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--space-4) var(--space-3);
+  padding: var(--space-2) var(--space-1) var(--space-4);
+}
+
+.wall__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 116px;
+  padding: calc(var(--space-2) + 14px) var(--space-3) var(--space-3);
+  overflow: hidden;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.wall__card::before {
+  top: 0;
+  height: 14px;
+}
+
+.wall__title {
+  font-family: var(--font-title);
+  font-size: var(--text-sm);
+  line-height: 1.2;
+}
+
+.wall__business {
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+
+.wall__card .stamp {
+  align-self: flex-end;
+  margin-block-start: auto;
+}
+
+.wall__slot {
+  display: grid;
+  place-items: center;
+  min-height: 116px;
+  padding: var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+  text-align: center;
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius-md);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation: none !important;
     transition: none !important;
+  }
+
+  .post-card,
+  .wall__card,
+  .wall__slot,
+  .code-card {
+    rotate: none;
   }
 }

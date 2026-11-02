@@ -2,13 +2,13 @@ import { describe, expect, it, vi } from 'vitest';
 import type { CreatorCard } from '../src/shared/api';
 import type { AiClient } from '../src/worker/ai/aiClient';
 import { factsKey, factSummary, summarizeCreator } from '../src/worker/ai/summarizeCreator';
-import { api, errorCode } from './helpers';
+import { api, errorCode, resetDemo } from './helpers';
 
 const FACTS = { name: 'Noor', tags: ['Coffee', 'Reels', 'Calm'], signature: 'Slow.', servedCount: 2 };
 const answering = (output: unknown): AiClient => ({ generate: () => Promise.resolve(output) });
 
 async function search(query = ''): Promise<CreatorCard[]> {
-  await api('/demo/reset', { method: 'POST' });
+  await resetDemo();
   const response = await api(`/creators?q=${encodeURIComponent(query)}`, { as: 'usr_barada' });
   return (await response.json<{ creators: CreatorCard[] }>()).creators;
 }
@@ -38,7 +38,7 @@ describe('searching for creators', () => {
   });
 
   it('never exposes passwords or usernames', async () => {
-    await api('/demo/reset', { method: 'POST' });
+    await resetDemo();
 
     const response = await api('/creators', { as: 'usr_barada' });
     const body = await response.text();
@@ -48,7 +48,7 @@ describe('searching for creators', () => {
   });
 
   it('is for businesses only', async () => {
-    await api('/demo/reset', { method: 'POST' });
+    await resetDemo();
 
     const response = await api('/creators', { as: 'usr_noor' });
 
@@ -109,7 +109,7 @@ describe('a creator summary', () => {
 
   it('falls back to the facts over HTTP when the model is unavailable', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
-    await api('/demo/reset', { method: 'POST' });
+    await resetDemo();
 
     const response = await api('/creators/usr_noor/summary', { as: 'usr_barada', method: 'POST' });
 
@@ -121,7 +121,7 @@ describe('a creator summary', () => {
   });
 
   it('is for businesses only', async () => {
-    await api('/demo/reset', { method: 'POST' });
+    await resetDemo();
 
     const response = await api('/creators/usr_noor/summary', { as: 'usr_salman', method: 'POST' });
 

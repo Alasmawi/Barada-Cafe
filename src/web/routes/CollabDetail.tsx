@@ -10,7 +10,7 @@ import { NavBar } from '../components/Layout';
 import { MessageState } from '../components/MessageState';
 import { ScreenState } from '../components/ScreenState';
 import { Skeleton } from '../components/Skeleton';
-import { StatusChip } from '../components/StatusChip';
+import { StatusStamp } from '../components/Stamp';
 import { SpotsBar, spotsLabel } from '../features/collabs/CollabShared';
 import { PitchSheet } from '../features/requests/PitchSheet';
 
@@ -54,7 +54,7 @@ function RequestBar({ request, endsOn }: { request: CollabRequest; endsOn: strin
   return (
     <div className="action-bar action-bar--split">
       <div className="action-bar__status">
-        <StatusChip status={request.status} />
+        <StatusStamp status={request.status} />
         <p className="note">{nextStep(request.status, endsOn, bahrainToday())}</p>
       </div>
       {request.passCode && (
@@ -137,12 +137,7 @@ export function CollabDetail() {
                 <div className="split__side">
                   <section className={`brand-banner house--${detail.businessHouse}`}>
                     <BrandMark house={detail.businessHouse} size={64} />
-                    <div>
-                      <p className="brand-banner__name">{detail.businessName}</p>
-                      <p className="brand-banner__detail">
-                        {detail.businessType} · {detail.businessArea}
-                      </p>
-                    </div>
+                    <p className="brand-banner__name">{detail.businessName}</p>
                   </section>
                   <div className="detail-head">
                     <h1 className="detail-head__title">{detail.title}</h1>

@@ -10,6 +10,7 @@ import { NavBar } from '../components/Layout';
 import { MessageState } from '../components/MessageState';
 import { ScreenState } from '../components/ScreenState';
 import { Skeleton } from '../components/Skeleton';
+import { Stamp } from '../components/Stamp';
 import { Journey } from '../features/pass/Journey';
 import { SubmitSheet } from '../features/pass/SubmitSheet';
 
@@ -68,6 +69,7 @@ function Application({ request }: { request: RequestWithCollab }) {
             <section className="code-card">
               <p className="note">Show this code at {collab.businessName}</p>
               <p className="code-card__code">{request.passCode}</p>
+              <Stamp tone="red">Accepted</Stamp>
             </section>
           )}
         </div>

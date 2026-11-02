@@ -15,7 +15,7 @@ export const SPOT_HOLDING_STATUSES = [
   'done',
 ] as const satisfies readonly RequestStatus[];
 
-/** UI labels. Code keeps the plain status names (brand/README.md). */
+/** UI labels. Code keeps the plain status names. */
 export const STATUS_LABELS: Record<RequestStatus, string> = {
   invited: 'Invited',
   pending: 'Applied',

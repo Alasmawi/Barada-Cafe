@@ -2,7 +2,7 @@
 
 How Collab Board compares with everything it was asked to do, as of 2 Nov 2026.
 
-**38 requirements: 33 met, 3 partly met, 2 waiting on a design judgement.**
+**39 requirements: 34 met, 3 partly met, 2 waiting on a design judgement.**
 
 ## Original brief
 
@@ -18,7 +18,7 @@ How Collab Board compares with everything it was asked to do, as of 2 Nov 2026.
 | B8 | Creator submits the link to their post | Met | https links only; Instagram and TikTok recognised |
 | B9 | Business marks it done | Met | Mark complete on the Posted tab |
 | R1 | Runs on Cloudflare’s free tier | Met | Workers, D1 and Workers AI only; limits checked on 1 Nov 2026 |
-| R2 | Works on the live link, on reviewers’ own phones | Partial | Deployed on 2 Nov 2026. Accounts, offers and font changes wait on the next deploy. Not yet tried on a real phone |
+| R2 | Works on the live link, on reviewers’ own phones | Partial | Deployed on 2 Nov 2026 with one account per business. The board design and the removals wait on the next deploy. Not yet tried on a real phone |
 | R3 | Mobile first, feels good on an iPhone at 360px | Partial | 300 screen checks with no sideways scroll. Real iPhone still needed |
 | R4 | Login can be faked | Exceeded | Real accounts replaced the fake login |
 | R5 | Never more creators than spots, with a test | Met | One-statement guard; tests fail when the guard is deliberately broken |
@@ -32,7 +32,7 @@ How Collab Board compares with everything it was asked to do, as of 2 Nov 2026.
 
 | # | Requirement | Status | Evidence |
 |---|---|---|---|
-| U1 | For any business, not only cafés | Met | Six business types at sign-up; four in the demo data |
+| U1 | For any business, not only cafés | Met | A business is a name and a colour, so any kind can sign up; five in the demo data |
 | U2 | Sign-up for businesses and creators | Met | Separate paths; test/auth.test.ts |
 | U3 | A different home for each side | Met | Separate tabs and home screens |
 | U4 | Each brand and creator has an identity | Met | Square brand marks; round rings |
@@ -51,6 +51,7 @@ How Collab Board compares with everything it was asked to do, as of 2 Nov 2026.
 | U17 | One account per business | Met | Unique database index; test/auth.test.ts |
 | U18 | A font that doesn’t feel generic | Review | Ultra titles chosen by the owner, with Archivo text. For Design to confirm |
 | U19 | Use the empty space | Met | Fuller Overview and Profile; two columns on wide screens |
+| U20 | A pattern that gives the board character | Met | Awnings in each business’s colour, tilted cards, status stamps and a profile wall, chosen by the owner |
 
 ## Problems the audit found and fixed
 
@@ -69,6 +70,7 @@ How Collab Board compares with everything it was asked to do, as of 2 Nov 2026.
 | Creator sign-up started with Coffee selected | It now starts with Food |
 | Ended posts still showed new applicants | The badge now shows only on live posts |
 | Suggestion chips were cut off at the edge of the Apply sheet | The row now fades out, so it reads as scrollable |
+| Demo codes still started FJ-, from the old Finjan name | They now start CB-, like every new code |
 
 ## Each department’s view
 
@@ -84,6 +86,7 @@ Does it do what was asked?
 Is it clear, and does it feel like its own product?
 
 - Check that squares and circles tell the two sides apart
+- Check the board: awnings, tilt, stamps and the profile wall
 - Open Preview in the account sheet to see empty, slow and error states
 - Sign off R7, which is a judgement call
 
@@ -91,8 +94,8 @@ Is it clear, and does it feel like its own product?
 
 Could someone else pick this up?
 
-- Read PLAN.md, then DECISIONS.md, which overrides it
-- Run npm run check (249 tests) and npm run test:ui
+- Read ARCHITECTURE.md for the stack, layers and flows, then DECISIONS.md for the reasons
+- Run npm run check (250 tests) and npm run test:ui
 - Start with test/concurrency.test.ts and the spot guard
 
 ### QA
@@ -119,6 +122,57 @@ Is it fit to hold people’s details?
 - Creator names, tags and bios, and businesses’ draft sentences, go to Cloudflare’s AI service
 - There’s no privacy policy, terms, or account deletion yet
 
+## Missing
+
+Not in any requirement, but expected by people using it.
+
+| Gap | Why it matters |
+|---|---|
+| Tested on a real phone | Every check so far ran in simulated phones on one Mac. Reviewers will open it on their own phones. |
+| CI has run | Nothing is pushed, so GitHub Actions has never run the checks or the deploy. |
+| Businesses can see a creator’s wall | Before inviting or accepting, a business sees only the ring, tags and a summary, not the creator’s completed collabs. |
+| Editing a profile after sign-up | A business can’t change its name, area or colour. A creator can change socials, but not tags or their line. |
+| Closing a post early | A business can only move the end date. There’s no Close or Delete. |
+| Withdrawing an application | A creator who applied by mistake can’t take it back. |
+| Checking the visit code | Staff compare the code by eye. The app doesn’t confirm it. |
+| Account deletion, privacy policy and terms | Needed before real people’s details are stored. |
+| An accessibility review | Tilted cards and stamps are new, and need a contrast and screen reader pass. |
+| Answers to the three open questions | Releasing a no-show’s spot, re-applying after a decline, and showing full posts. The defaults are built. |
+
+## Reviewed and kept
+
+The owner reviewed these on 2 Nov 2026 and kept them.
+
+| Feature | What it does | Note |
+|---|---|---|
+| Preview states | The account sheet can fake slow, empty and failing screens, with a banner. | A reviewer’s tool; remove before real use |
+| Demo accounts and switching | One-tap logins as any demo business or creator. | For the demo |
+| Visit code | A code like CB-7K3Q shown at the business. | How a business knows the person at the counter was accepted |
+| Four-step tracker | Applied, Accepted, Posted, Completed on the Application screen. | Overlaps the stamp and the next-step line |
+| Creator handle | A separate @handle at sign-up. | Overlaps the socials usernames |
+| Creator style | Calm, Playful or Bold, which only sets the ring’s line weight. | Gives each ring its line weight |
+| AI creator summaries | A sparkle on each creator writes a short summary. | You asked for this. The plain fact line already covers the basics |
+| Spinning rings | Rings turn slowly on Profile and creator cards. | Decorative; stops with Reduce Motion |
+| Pull to refresh | Drag down to reload a list. | Lists also refresh on their own |
+| Offline banner | A bar when the phone loses connection. | Cheap and helpful |
+| Install to home screen | Icons and a manifest so it opens like an app. | Cheap |
+| Touch ripple | A ripple under the finger on buttons and rows. | Stops with Reduce Motion |
+| Editing the post link | A creator can fix the link until it’s marked complete. | Typos happen |
+
+## Removed by decision
+
+Chosen by the owner on 2 Nov 2026.
+
+| Feature | What changed |
+|---|---|
+| Reset demo for everyone | The button is gone. Resetting needs the secret DEMO_RESET_TOKEN, and without it the endpoint answers 404 |
+| Business type and area | Gone from sign-up, cards and banners. Migration 0004 drops both columns |
+| Old Finjan material | PLAN.md deleted, DECISIONS.md rewritten to what’s still true, scripts no longer name the old database |
+
+## How it’s built
+
+[ARCHITECTURE.md](ARCHITECTURE.md) has the stack, layers, data, flows and the spot rule.
+
 ## Still open
 
 ### Must do before review
@@ -130,7 +184,7 @@ Is it fit to hold people’s details?
 
 - Password hashing is deliberately light, to fit the free plan’s CPU limit.
 - There’s no password reset, email, or limit on login attempts.
-- Anyone can use Reset demo, which removes everyone who signed up.
+- Whoever holds the reset secret can remove everyone who signed up.
 - On a vague sentence, AI can guess spots or a date. The business reviews every field before publishing.
 
 ### Not built, by design

@@ -1,5 +1,5 @@
 import type { Collab } from '../../shared/api';
-import type { BusinessType, House } from '../../shared/houses';
+import type { House } from '../../shared/houses';
 import type { CollabInput } from '../../shared/schemas';
 import { collabState } from '../../shared/status';
 import { SPOT_HOLDING_SQL } from './sql';
@@ -8,8 +8,6 @@ type CollabRow = {
   id: string;
   business_id: string;
   business_name: string;
-  business_area: string;
-  business_type: BusinessType;
   business_house: House;
   title: string;
   offer: string;
@@ -28,8 +26,6 @@ const SELECT_COLLAB = `
   SELECT
     c.id, c.business_id, c.title, c.offer, c.deliverable, c.details, c.requirements, c.location, c.spots, c.ends_on, c.created_at,
     businesses.name AS business_name,
-    businesses.area AS business_area,
-    businesses.type AS business_type,
     businesses.house AS business_house,
     (SELECT COUNT(*) FROM requests r
      WHERE r.collab_id = c.id AND r.status IN (${SPOT_HOLDING_SQL})) AS spots_taken,
@@ -44,8 +40,6 @@ function toCollab(row: CollabRow, today: string): Collab {
     id: row.id,
     businessId: row.business_id,
     businessName: row.business_name,
-    businessArea: row.business_area,
-    businessType: row.business_type,
     businessHouse: row.business_house,
     title: row.title,
     offer: row.offer,

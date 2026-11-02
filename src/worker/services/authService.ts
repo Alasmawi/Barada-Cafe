@@ -41,8 +41,6 @@ export async function signUp(db: D1Database, input: SignUpInput): Promise<string
         {
           id: newId('biz'),
           name: input.businessName,
-          area: input.area,
-          type: input.businessType,
           house: input.house,
         },
       );

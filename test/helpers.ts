@@ -3,6 +3,7 @@ import type { Collab, CollabRequest, ErrorBody } from '../src/shared/api';
 import { addDays, bahrainToday } from '../src/shared/dates';
 import type { RequestStatus } from '../src/shared/status';
 import { hashToken, SESSION_COOKIE } from '../src/worker/auth/sessions';
+import { RESET_TOKEN } from './resetToken';
 
 /**
  * Every test builds its own business, creators and collab with fresh ids, so tests
@@ -48,6 +49,12 @@ export async function api(
   });
 }
 
+export const resetDemo = () =>
+  exports.default.fetch('https://collab.test/api/v1/demo/reset', {
+    method: 'POST',
+    headers: { 'X-Reset-Token': RESET_TOKEN },
+  });
+
 export const accept = (requestId: string, as: string) =>
   api(`/requests/${requestId}/accept`, { as, method: 'POST' });
 export const decline = (requestId: string, as: string) =>
@@ -72,8 +79,7 @@ export async function makeBusiness(): Promise<{ businessId: string; owner: strin
   const owner = nextId('usr');
   await env.DB.batch([
     env.DB.prepare(
-      `INSERT INTO businesses (id, name, area, type, house)
-       VALUES (?, 'Test Business', 'Adliya', 'Café', 'saffron')`,
+      `INSERT INTO businesses (id, name, house) VALUES (?, 'Test Business', 'saffron')`,
     ).bind(businessId),
     env.DB.prepare(
       `INSERT INTO users (id, username, password_hash, name, role, business_id)
