@@ -11,7 +11,7 @@
 
 <img src="assets/divider.svg" width="100%" height="18" alt="">
 
-Cream and red, native on a phone, with a board you can read at a glance. The owner chose each piece listed here; [DECISIONS.md](../DECISIONS.md) records what was tried and turned down.
+Cream and red, native on a phone, drawn as stickers: thick ink outlines, hard offset shadows, rounded corners and pill chips. The owner chose each piece listed here; [DECISIONS.md](../DECISIONS.md) records what was tried and turned down.
 
 ## 1. Identity
 
@@ -20,7 +20,7 @@ Cream and red, native on a phone, with a board you can read at a glance. The own
 flowchart LR
   B["Business"] --> SQ["Square brand mark<br/>in its house colour"]
   C["Creator"] --> RG["Round ring<br/>one circle per tag"]
-  SQ --> A["Awning on its posts<br/>in the same colour"]
+  SQ --> A["Its posts tinted<br/>in the same colour"]
   RG --> W["Wall of completed collabs<br/>on the profile"]
   classDef biz fill:#f2b632,stroke:#2a1b05,color:#2a1b05
   classDef cre fill:#e2efe2,stroke:#2f6b3f,color:#1f3317
@@ -42,9 +42,9 @@ flowchart LR
 
 | Piece | What it looks like | Where | In the code |
 |---|---|---|---|
-| Awning | A scalloped strip in the business's colour striped with a pale tint | Top of every business post; a wider one over each banner | `::before` on `.post-card`, `.brand-banner`, `.wall__card` |
+| Sticker | A rounded card in a soft tint of the business's colour, with a 2.5px ink outline and a hard ink shadow that drops away when pressed | Every post, pick and wall card; buttons, stats and lists share the outline | `--edge` and `--shadow-*` in the depth section of `app.css` |
 | Tilt | Live cards lean by a degree or so | Browse, the profile wall, the code card | `rotate: var(--tilt)`, set by `tiltStyle(id)` |
-| Stamps | A rubber stamp with the status in capitals | Cards, the action bar, the code card, the wall | `src/web/components/Stamp.tsx` |
+| Status chips | An ink-outlined pill tinted in the status colour | Cards, the action bar, the code card, the wall | `src/web/components/Stamp.tsx` |
 | Wall | Completed collabs pinned two across, plus a slot for the next | Creator's Profile | `.wall` in `app.css`, `Profile.tsx` |
 
 ```mermaid
@@ -54,7 +54,7 @@ flowchart TD
   C -- full --> T
   C -- ended --> S["Straight and faded"]
   RM{"Reduce Motion on?"} -- yes --> S2["Everything straight"]
-  T --> ST{"Stamp"}
+  T --> ST{"Status chip"}
   ST -- "your request exists" --> RS["Your status"]
   ST -- "one spot left" --> LS["Last spot"]
   ST -- "no spots" --> FU["Full"]
@@ -63,7 +63,7 @@ flowchart TD
 
 A card's lean comes from a hash of its id, so it's the same on every visit and the board never jumps.
 
-| Stamp | Colour |
+| Status chip | Tint |
 |---|---|
 | Invited, Accepted, Last spot | Red |
 | Applied | Green |
@@ -82,12 +82,14 @@ All in `src/web/design/tokens.css`.
 | `--cream` | `#faf5ea` | Page background |
 | `--surface` | `#fffdf8` | Cards and sheets |
 | `--surface-sunk` | `#f2eadb` | Pressed rows, tracks |
-| `--line` | `#e6dccb` | Hairlines |
+| `--line` | `#e6dccb` | Row dividers inside lists |
+| `--edge` | `2.5px solid var(--ink)` | The sticker outline |
+| `--shadow-sm` / `-md` / `-lg` | `3px` / `4px` / `6px` ink, no blur | Buttons / cards / sheets |
 | `--ink` | `#241a16` | Text |
-| `--ink-soft` | `#66594f` | Secondary text, grey stamps |
-| `--red` | `#c8102e` | Primary actions and red stamps |
-| `--green` | `#2f6b3f` | Applied stamp |
-| `--blue` | `#2f5f8a` | Posted stamp |
+| `--ink-soft` | `#66594f` | Secondary text, grey chips |
+| `--red` | `#c8102e` | Primary actions and red chips |
+| `--green` | `#2f6b3f` | Applied chip |
+| `--blue` | `#2f5f8a` | Posted chip |
 | `--font-title` | Ultra | Titles only |
 | `--font` | Archivo | All other text |
 | `--font-mono` | JetBrains Mono | Codes like `CB-7K3Q` |

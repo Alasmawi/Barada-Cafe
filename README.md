@@ -47,7 +47,7 @@ and a **creator** as a round ring drawn from their tags, so the two sides can't 
 | Creator | Picked for you | Up to 3 open collabs that fit their tags, ranked by code, with a reason the AI rewrites once a day | [`test/picks.test.ts`](test/picks.test.ts) |
 | Platform | Spot guarantee | Never more creators than spots, under any timing | [`test/concurrency.test.ts`](test/concurrency.test.ts) |
 | Platform | Server-side permissions | Every action checked by role and ownership | [`test/permissions.test.ts`](test/permissions.test.ts) |
-| Platform | Statuses as stamps | Applied, Invited, Accepted, Posted, Completed, Declined; Last spot, Full and Ended worked out on read | [`test/shared.test.ts`](test/shared.test.ts) (`collabState`), [`Stamp.tsx`](src/web/components/Stamp.tsx) |
+| Platform | Statuses as chips | Applied, Invited, Accepted, Posted, Completed, Declined; Last spot, Full and Ended worked out on read | [`test/shared.test.ts`](test/shared.test.ts) (`collabState`), [`Stamp.tsx`](src/web/components/Stamp.tsx) |
 | Platform | Phone to desktop | Checked at 320, 360, 390, 768 and 1280px; Reduce Motion respected | [`test-ui/smoke.mjs`](test-ui/smoke.mjs) |
 
 <p align="center"><img src="docs/assets/status-journey.svg" width="80%" alt="An application moves from Applied to Accepted to Posted to Completed"></p>
@@ -160,7 +160,7 @@ it.
 |---|---|---|
 | Does it work on small phones? | Every screen is checked at 320px and up with no sideways scroll | [`test-ui/smoke.mjs`](test-ui/smoke.mjs) |
 | Is motion optional? | Reduce Motion stops all animation and sets tilted cards straight | `src/web/design/app.css` |
-| Are statuses readable by screen readers? | Stamps are real text, not images | [`src/web/components/Stamp.tsx`](src/web/components/Stamp.tsx) |
+| Are statuses readable by screen readers? | Status chips are real text, not images | [`src/web/components/Stamp.tsx`](src/web/components/Stamp.tsx) |
 | Is there a design system? | Tokens in one file; rules in the design doc | [`tokens.css`](src/web/design/tokens.css), [docs/design.md](docs/design.md) |
 
 <img src="docs/assets/divider.svg" width="100%" height="18" alt="">
@@ -177,7 +177,7 @@ it.
 | Light password hashing, no login limit | Fine for a demo, weak for real accounts | Engineering |
 | Sessions expire only with the 30-day cookie | A stolen cookie works until logout | Engineering |
 | No account deletion, privacy policy or terms | Required before holding real data | Legal |
-| No formal accessibility review | Tilt and stamps are new | Design |
+| No formal accessibility review | Tilt and sticker cards are new | Design |
 | The visit code is checked by eye | The app doesn't confirm it | Product |
 
 ## Run it

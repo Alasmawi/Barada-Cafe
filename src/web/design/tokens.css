@@ -1,4 +1,4 @@
-/* Cream and red. Titles are Ultra, everything else is Archivo, and codes are JetBrains Mono. */
+/* Cream and red, drawn as stickers: ink outlines and hard shadows. Titles are Ultra, everything else is Archivo, and codes are JetBrains Mono. */
 :root {
   color-scheme: light;
 
@@ -33,9 +33,9 @@
   --space-5: 24px;
   --space-6: 32px;
 
-  --radius-sm: 10px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
   --tap-min: 44px;
 
   --safe-top: env(safe-area-inset-top);

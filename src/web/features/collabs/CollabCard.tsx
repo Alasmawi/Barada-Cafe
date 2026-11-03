@@ -6,7 +6,7 @@ import { BrandMark } from '../../components/BrandMark';
 import { CollabStamp, StatusStamp, tiltStyle } from '../../components/Stamp';
 import { spotsLabel } from './CollabShared';
 
-/** A collab as a creator sees it: pinned up under the business's awning. */
+/** A collab as a creator sees it: pinned up as a sticker in the business's colour. */
 export function CollabCard({ collab, myStatus }: { collab: Collab; myStatus?: RequestStatus }) {
   return (
     <li>

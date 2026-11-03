@@ -51,7 +51,7 @@ How Collab Board compares with everything it was asked to do, as of 2 Nov 2026.
 | U17 | One account per business | Met | Unique database index; test/auth.test.ts |
 | U18 | A font that doesn’t feel generic | Review | Ultra titles chosen by the owner, with Archivo text. For Design to confirm |
 | U19 | Use the empty space | Met | Fuller Overview and Profile; two columns on wide screens |
-| U20 | A pattern that gives the board character | Met | Awnings in each business’s colour, tilted cards, status stamps and a profile wall, chosen by the owner |
+| U20 | A pattern that gives the board character | Met | Neo-brutalist sticker cards tinted in each business’s colour, tilted cards, status chips and a profile wall, chosen by the owner |
 | U21 | AI recommendations for creators | Met | Picked for you: code picks collabs by tag, AI rewords the reason once a day; test/picks.test.ts and the real model checked locally. Waits on the next deploy |
 
 ## Problems the audit found and fixed
@@ -87,7 +87,7 @@ Does it do what was asked?
 Is it clear, and does it feel like its own product?
 
 - Check that squares and circles tell the two sides apart
-- Check the board: awnings, tilt, stamps and the profile wall
+- Check the board: sticker cards, tilt, status chips and the profile wall
 - Open Preview in the account sheet to see empty, slow and error states
 - Sign off R7, which is a judgement call
 
@@ -137,7 +137,7 @@ Not in any requirement, but expected by people using it.
 | Withdrawing an application | A creator who applied by mistake can’t take it back. |
 | Checking the visit code | Staff compare the code by eye. The app doesn’t confirm it. |
 | Account deletion, privacy policy and terms | Needed before real people’s details are stored. |
-| An accessibility review | Tilted cards and stamps are new, and need a contrast and screen reader pass. |
+| An accessibility review | Tilted sticker cards and status chips are new, and need a contrast and screen reader pass. |
 | Answers to the three open questions | Releasing a no-show’s spot, re-applying after a decline, and showing full posts. The defaults are built. |
 
 ## Reviewed and kept

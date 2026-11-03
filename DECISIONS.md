@@ -30,9 +30,11 @@ app with its requirements, and [docs/](docs/README.md) explains how it's built.
   The owner chose Ultra; the earlier font read as generic.
 - **Squares are businesses, circles are creators.** That rule runs through every screen, so the two
   sides can't be confused. Each side has its own sign-up, tabs and words.
-- **The board.** Business posts hang under an awning in the business's colour, live cards lean a
-  little, and statuses are stamps. Ended posts sit straight. A creator's completed collabs are pinned
-  to a wall on their profile. The owner picked this over a squares-and-rings pattern and striped tape.
+- **The board, as stickers.** Cards are neo-brutalist stickers: rounded, tinted in the business's
+  colour, with an ink outline and a hard shadow that drops away when pressed. Live cards lean a
+  little, and statuses are pill chips. Ended posts sit straight. A creator's completed collabs are
+  pinned to a wall on their profile. The owner chose stickers over a hard-edged board (which kept the
+  awnings) and a square raw poster; awnings and rubber stamps were dropped with it.
 - **A card's lean comes from its id,** so the board looks pinned up but never moves on reload. With
   Reduce Motion on, everything sits straight.
 - **Business identity is a colour and a mark.** Five curated colours, picked at sign-up, chosen so
