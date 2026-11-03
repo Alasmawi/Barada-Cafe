@@ -131,7 +131,7 @@ The defaults in brackets are what's built.
 
 1. Should a business be able to release a no-show's spot? (No)
 2. Can a declined creator apply again? (No, one request per creator per collab)
-3. Should creators see collabs that are already full? (Yes, stamped Full)
+3. Should creators see collabs that are already full? (Yes, marked Full)
 
 ## Next steps
 

@@ -16,7 +16,7 @@ marks it complete.
 | **Owner** | Abdulla Alasmawi |
 
 **Contents:** [What it does](#what-it-does) · [Features](#features) · [Try it](#try-it) ·
-[Architecture](#architecture) · [For auditors](#for-auditors) · [Known gaps](#known-gaps) ·
+[Decisions, cuts and AI tools](#decisions-cuts-and-ai-tools) · [Architecture](#architecture) · [For auditors](#for-auditors) · [Known gaps](#known-gaps) ·
 [Run it](#run-it) · [Documentation](#documentation)
 
 <img src="docs/assets/divider.svg" width="100%" height="18" alt="">
@@ -69,6 +69,47 @@ Open the live link and tap **Try a demo account**. Every demo account uses the p
 
 Other logins: businesses `noon`, `sidra`, `layali`, `move`; creators `salman`, `lulwa`, `ali`,
 `fatima`, `reem`.
+
+<img src="docs/assets/divider.svg" width="100%" height="18" alt="">
+
+## Decisions, cuts and AI tools
+
+### What I decided, and why
+
+| The brief said | I chose | Why |
+|---|---|---|
+| Login can be faked | Real accounts, plus a demo account switcher | Reviewers can try both sides in one tap, and permissions are checked on the server against a real session, not a name in a menu |
+| A café posts collabs | Any business: cafés, gyms, shops | The flow is the same for every business, so one rule covers them all |
+| Never more creators than spots | One guarded `UPDATE` that only succeeds while a spot is free | No lock or retry loop to get wrong. The tests race up to 20 accepts at once, and I broke the guard on purpose to prove they catch it ([DECISIONS.md](DECISIONS.md#testing-the-race)) |
+| Empty, loading and error states | Every screen has all three, plus a preview switch to show them on demand | Reviewers can see each state without breaking the network |
+| Its own product | Neo-brutalist sticker cards in each business's colour, Ultra titles, creators drawn as rings | Chosen from mockups, so a business always reads as a square and a creator as a circle |
+| AI fills the form | One sentence fills it; the business edits before publishing | If the model fails, times out or answers nonsense, the form opens empty and Skip is always there |
+| (not asked) | AI summaries of creators, and "Picked for you" for creators | AI helps both sides, but code makes every decision and the model only writes the wording |
+
+Every smaller choice is in [DECISIONS.md](DECISIONS.md).
+
+### What I cut
+
+| Cut | Why |
+|---|---|
+| Notifications, image uploads, payments | Each needs a third-party service and isn't needed to show the two journeys |
+| An Arabic interface | The layout is ready for right-to-left text; the translation isn't done |
+| Password reset and email | No email provider on the free plan; demo accounts don't need it |
+| Offers as a second post type | They behaved exactly like collabs and the two labels confused people |
+| Business type and area | Nothing used them, and they made sign-up longer |
+| Releasing a no-show's spot | An open product question; the default, "no", is built ([open questions](DECISIONS.md#open-questions)) |
+
+### How I used AI tools while building
+
+I built this with **Claude Code** (Anthropic) as a pair programmer in my editor and terminal. I set
+the direction: I chose between design mockups, decided what to cut and what to keep, and reviewed
+each feature on the running app. Claude Code wrote most of the code, tests and documentation from
+those decisions, ran the test suites and screen checks after each change, and deployed through the
+same scripts and CI anyone else would use. Nothing ships unless `npm run check` passes, and the
+spot race tests were checked by breaking the guard on purpose.
+
+Inside the app, AI is a separate thing: Workers AI drafts posts, summarises creators and words the
+reasons under "Picked for you". See [AI in the app](docs/architecture.md#9-ai).
 
 <img src="docs/assets/divider.svg" width="100%" height="18" alt="">
 
