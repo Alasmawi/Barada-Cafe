@@ -8,7 +8,7 @@
 | **Live** | https://collab-board.alasmawi.workers.dev |
 | **Version** | 1.0, 2 November 2026 · deployed version `392a626f` · schema `0004` |
 | **Owner** | Abdulla Alasmawi |
-| **Status** | Live demo. 35 of 40 requirements met; see [AUDIT.md](../AUDIT.md) |
+| **Status** | Live demo. 37 of 40 requirements met; see [AUDIT.md](../AUDIT.md) |
 
 <img src="assets/divider.svg" width="100%" height="18" alt="">
 
@@ -38,7 +38,7 @@ What the product does and for whom, without the technology.
 | Measure | Today |
 |---|---|
 | Running cost | 0, on Cloudflare's free plan |
-| Requirements met | 35 of 40 |
+| Requirements met | 37 of 40 |
 | Core guarantee | A collab never accepts more creators than it has spots |
 | Before review | Real-phone test, first CI run, Design sign-off |
 

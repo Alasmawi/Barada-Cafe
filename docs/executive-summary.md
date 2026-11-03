@@ -19,8 +19,8 @@ phones, the business accepts the ones it wants, the creator visits and posts, an
 it complete.
 
 > [!TIP]
-> **Live, at no running cost, and 35 of 40 requirements met.** The remaining five need a real-phone
-> test, a first CI run, and Design's sign-off.
+> **Live, at no running cost, and 37 of 40 requirements met.** CI runs green on GitHub. The remaining
+> three need a real-phone test and Design's sign-off.
 
 <img src="assets/divider.svg" width="100%" height="18" alt="">
 
@@ -95,7 +95,7 @@ filled in by hand.
 
 ## 7. Recommended next steps
 
-1. Run the real-phone test and the first CI run.
+1. Open the live link on a real phone, and set the Cloudflare secrets so CI deploys.
 2. Get Design's sign-off.
 3. Decide the three open product questions: releasing a no-show's spot, re-applying after a decline,
    and showing full posts.

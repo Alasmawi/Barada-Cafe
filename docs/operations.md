@@ -60,9 +60,11 @@ flowchart LR
 |---|---|
 | `npm run check` | Types, lint and 265 tests against real D1, including the spot race with the guard deliberately broken |
 | `npm run test:ui` | Every screen at 320, 360, 390, 768 and 1280px in every preview state, with no sideways scroll |
+| `npm run test:webkit` | iPhone SE, 15 and 15 Pro Max in WebKit, Safari's engine, with touch: no sideways scroll, no input zoom, big enough tap targets, bottom bars in view. Reads the live site by default; `BASE_URL=http://localhost:5173 MUTATE=1` also taps through an application |
 
 `test:ui` drives your installed Chrome and resets the demo first, so it needs the reset secret in
-`.dev.vars`. Don't point it at a site where real people have signed up.
+`.dev.vars`. Don't point it at a site where real people have signed up. `test:webkit` needs WebKit once:
+`npx playwright-core install webkit`.
 
 <img src="assets/divider.svg" width="100%" height="18" alt="">
 

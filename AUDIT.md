@@ -2,7 +2,7 @@
 
 How Collab Board compares with everything it was asked to do, as of 2 Nov 2026.
 
-**40 requirements: 35 met, 3 partly met, 2 waiting on a design judgement.**
+**40 requirements: 37 met, 1 partly met, 2 waiting on a design judgement.**
 
 ## Original brief
 
@@ -18,15 +18,15 @@ How Collab Board compares with everything it was asked to do, as of 2 Nov 2026.
 | B8 | Creator submits the link to their post | Met | https links only; Instagram and TikTok recognised |
 | B9 | Business marks it done | Met | Mark complete on the Posted tab |
 | R1 | Runs on Cloudflare’s free tier | Met | Workers, D1 and Workers AI only; limits checked on 1 Nov 2026 |
-| R2 | Works on the live link, on reviewers’ own phones | Partial | Deployed on 2 Nov 2026 with one account per business. The board design and the removals wait on the next deploy. Not yet tried on a real phone |
-| R3 | Mobile first, feels good on an iPhone at 360px | Partial | 300 screen checks with no sideways scroll. Real iPhone still needed |
+| R2 | Works on the live link, on reviewers’ own phones | Partial | Live since 2 Nov 2026. On 3 Nov the live site passed 33 checks in Safari’s engine (WebKit) on iPhone SE, 15 and 15 Pro Max. The sticker design isn’t deployed yet, and no real phone has opened it |
+| R3 | Mobile first, feels good on an iPhone at 360px | Met | 300 screen checks with no sideways scroll, plus 36 WebKit iPhone checks with touch: no iOS input zoom, tap targets of 40px or more, bottom bars in view, and a tap-through apply flow (npm run test:webkit) |
 | R4 | Login can be faked | Exceeded | Real accounts replaced the fake login |
 | R5 | Never more creators than spots, with a test | Met | One-statement guard; tests fail when the guard is deliberately broken |
 | R6 | Every screen has empty, loading and error states | Met | Shared state component; checked per screen in test-ui/smoke.mjs |
 | R7 | Looks like its own product | Review | A design judgement, for Design to sign off |
 | X1 | Bonus: one sentence fills the post form, edited before publishing | Met | Tested against the real model on the live site |
 | X2 | If AI fails, the business is never stuck | Met | 8-second timeout, Skip always visible; test/ai-draft.test.ts |
-| V1 | Reads like a pull request: structure, tests, handover | Partial | README and DECISIONS are in place. CI has never run, because nothing is pushed |
+| V1 | Reads like a pull request: structure, tests, handover | Met | README, DECISIONS and docs/ in place. CI ran green on GitHub on 3 Nov 2026: install, check and build |
 
 ## Added during the build
 
@@ -129,10 +129,10 @@ Not in any requirement, but expected by people using it.
 
 | Gap | Why it matters |
 |---|---|
-| Tested on a real phone | Every check so far ran in simulated phones on one Mac. Reviewers will open it on their own phones. |
-| CI has run | Nothing is pushed, so GitHub Actions has never run the checks or the deploy. |
+| Tested on a real phone | Every check so far ran in Chrome and WebKit on one Mac. Reviewers will open it on their own phones, where safe areas and installing to the home screen can only be checked by hand. |
+| Deploying from CI | CI runs the checks, but deploys are still run by hand until CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN are set in the repository. |
 | Businesses can see a creator’s wall | Before inviting or accepting, a business sees only the ring, tags and a summary, not the creator’s completed collabs. |
-| Editing a profile after sign-up | A business can’t change its name, area or colour. A creator can change socials, but not tags or their line. |
+| Editing a profile after sign-up | A business can’t change its name or colour. A creator can change socials, but not tags or their line. |
 | Closing a post early | A business can only move the end date. There’s no Close or Delete. |
 | Withdrawing an application | A creator who applied by mistake can’t take it back. |
 | Checking the visit code | Staff compare the code by eye. The app doesn’t confirm it. |

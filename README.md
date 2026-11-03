@@ -10,7 +10,7 @@ marks it complete.
 | | |
 |---|---|
 | **Live** | https://collab-board.alasmawi.workers.dev |
-| **Status** | Live demo · 35 of 40 requirements met ([AUDIT.md](AUDIT.md)) |
+| **Status** | Live demo · 37 of 40 requirements met ([AUDIT.md](AUDIT.md)) |
 | **Runs on** | Cloudflare Workers, D1 and Workers AI, free plan, no running cost |
 | **Checks** | 265 automated tests · 300 screen checks · 0 known vulnerabilities in runtime dependencies |
 | **Owner** | Abdulla Alasmawi |
@@ -107,7 +107,7 @@ it.
 
 | Question | Answer | Verify |
 |---|---|---|
-| Does it do what the brief asked? | 35 of 40 requirements are met; the rest need a real-phone test, a CI run and Design sign-off | [AUDIT.md](AUDIT.md) |
+| Does it do what the brief asked? | 37 of 40 requirements are met; the rest need a real-phone test and Design sign-off | [AUDIT.md](AUDIT.md) |
 | Can a collab be overbooked? | No. The spot count and the update are one SQL statement | [`requestsRepo.acceptIfSpotAvailable`](src/worker/repositories/requestsRepo.ts), [`test/concurrency.test.ts`](test/concurrency.test.ts) |
 | Can one business have several accounts? | No. A unique database index allows one | [`migrations/0003`](migrations/0003_one_account_per_business_no_offers.sql), [`test/auth.test.ts`](test/auth.test.ts) |
 | What if the AI is unavailable? | Drafts time out after 8 seconds and the form is filled by hand; summaries and pick reasons fall back to plain facts | [`test/ai-draft.test.ts`](test/ai-draft.test.ts), [`test/creators.test.ts`](test/creators.test.ts), [`test/picks.test.ts`](test/picks.test.ts) |
@@ -172,8 +172,8 @@ it.
 
 | Gap | Why it matters | Owner |
 |---|---|---|
-| Not tested on a physical phone | Reviewers will use their own phones | QA |
-| CI has never run | Nothing is pushed to GitHub yet | Engineering |
+| Not tested on a physical phone | Checked in Safari's engine at iPhone sizes, but safe areas and installing need a real phone | QA |
+| CI checks but doesn't deploy | Deploys stay manual until the Cloudflare secrets are set in GitHub | Engineering |
 | Light password hashing, no login limit | Fine for a demo, weak for real accounts | Engineering |
 | Sessions expire only with the 30-day cookie | A stolen cookie works until logout | Engineering |
 | No account deletion, privacy policy or terms | Required before holding real data | Legal |
@@ -197,6 +197,7 @@ npm run dev
 | `npm run dev` | Local D1 and the app on http://localhost:5173 |
 | `npm run check` | Types, lint and 265 tests |
 | `npm run test:ui` | 300 screen checks (needs `npm run dev` and the reset secret in `.dev.vars`) |
+| `npm run test:webkit` | iPhone SE, 15 and 15 Pro Max in Safari's engine against the live site, read only |
 | `npm run deploy` | Build, migrate the live D1, deploy |
 
 Resetting the demo needs the `DEMO_RESET_TOKEN` secret; see [docs/operations.md](docs/operations.md#5-demo-reset).
