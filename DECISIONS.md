@@ -122,8 +122,8 @@ Production doesn't depend on this timing, because the guard is a single statemen
 - **`CLOUDFLARE_ACCOUNT_ID` is a repository variable, not a secret.** GitHub can't read secrets in a
   job's `if`, and the id isn't sensitive. This lets CI skip the deploy cleanly until Cloudflare is set
   up.
-- **The database is still named `finjan`,** because Cloudflare can't rename one. Scripts refer to it
-  by its binding, `DB`, and the name appears nowhere else.
+- **Scripts name the database by its binding, `DB`,** not its Cloudflare name, so the database can
+  be replaced without touching them.
 
 ## Open questions
 

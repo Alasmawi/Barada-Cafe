@@ -71,7 +71,7 @@ How Collab Board compares with everything it was asked to do, as of 2 Nov 2026.
 | Creator sign-up started with Coffee selected | It now starts with Food |
 | Ended posts still showed new applicants | The badge now shows only on live posts |
 | Suggestion chips were cut off at the edge of the Apply sheet | The row now fades out, so it reads as scrollable |
-| Demo codes still started FJ-, from the old Finjan name | They now start CB-, like every new code |
+| Demo codes used an old prefix | They now start CB-, like every new code |
 
 ## Each department’s view
 
@@ -167,7 +167,7 @@ Chosen by the owner on 2 Nov 2026.
 |---|---|
 | Reset demo for everyone | The button is gone. Resetting needs the secret DEMO_RESET_TOKEN, and without it the endpoint answers 404 |
 | Business type and area | Gone from sign-up, cards and banners. Migration 0004 drops both columns |
-| Old Finjan material | PLAN.md deleted, DECISIONS.md rewritten to what’s still true, scripts no longer name the old database |
+| Early planning material | PLAN.md deleted, DECISIONS.md rewritten to what’s still true, scripts name the database by its binding |
 
 ## How it’s built
 

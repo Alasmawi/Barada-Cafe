@@ -11,9 +11,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      // Cloudflare can't rename a database. Scripts refer to it by its binding, DB.
-      "database_name": "finjan",
-      "database_id": "4d959b13-b7ef-42b2-803b-3d083807d1ff",
+      "database_name": "collab-board",
+      "database_id": "d68a944c-1d6f-4e5a-ae91-ce458c01f41e",
       "migrations_dir": "migrations"
     }
   ],
