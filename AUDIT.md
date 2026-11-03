@@ -130,7 +130,6 @@ Not in any requirement, but expected by people using it.
 | Gap | Why it matters |
 |---|---|
 | Tested on a real phone | Every check so far ran in Chrome and WebKit on one Mac. Reviewers will open it on their own phones, where safe areas and installing to the home screen can only be checked by hand. |
-| Deploying from CI | CI runs the checks, but deploys are still run by hand until CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN are set in the repository. |
 | Businesses can see a creator’s wall | Before inviting or accepting, a business sees only the ring, tags and a summary, not the creator’s completed collabs. |
 | Editing a profile after sign-up | A business can’t change its name or colour. A creator can change socials, but not tags or their line. |
 | Closing a post early | A business can only move the end date. There’s no Close or Delete. |
@@ -178,13 +177,14 @@ Chosen by the owner on 2 Nov 2026.
 
 ### Must do before review
 
-- Try it on a real iPhone and an Android phone. Nothing has been tested on a physical device.
-- Push to GitHub so CI runs for the first time. Until then, automated checks have only run on one Mac.
+- Try it on a real iPhone and an Android phone. WebKit checks passed at three iPhone sizes, but safe areas and installing to the home screen need a physical device.
+- Get Design’s sign-off on the sticker look and the Ultra titles (R7, U18).
 
 ### Accepted for a demo, not for real users
 
 - Password hashing is deliberately light, to fit the free plan’s CPU limit.
 - There’s no password reset, email, or limit on login attempts.
+- Sessions end only when the 30-day cookie does or the user logs out, so a stolen cookie keeps working until then.
 - Whoever holds the reset secret can remove everyone who signed up.
 - On a vague sentence, AI can guess spots or a date. The business reviews every field before publishing.
 

@@ -173,7 +173,6 @@ it.
 | Gap | Why it matters | Owner |
 |---|---|---|
 | Not tested on a physical phone | Checked in Safari's engine at iPhone sizes, but safe areas and installing need a real phone | QA |
-| CI checks but doesn't deploy | Deploys stay manual until the Cloudflare secrets are set in GitHub | Engineering |
 | Light password hashing, no login limit | Fine for a demo, weak for real accounts | Engineering |
 | Sessions expire only with the 30-day cookie | A stolen cookie works until logout | Engineering |
 | No account deletion, privacy policy or terms | Required before holding real data | Legal |

@@ -8,8 +8,8 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: npm
@@ -18,18 +18,27 @@ jobs:
       - run: npm run build
 
   deploy:
-    # Skipped until the repository variable CLOUDFLARE_ACCOUNT_ID exists (see README).
+    # Every push to main that passes the checks goes live. Migrations run before the new code.
     if: github.ref == 'refs/heads/main' && github.event_name == 'push' && vars.CLOUDFLARE_ACCOUNT_ID != ''
     needs: check
     runs-on: ubuntu-latest
+    # One deploy at a time, so two pushes can't migrate the database at once.
+    concurrency:
+      group: deploy
+      cancel-in-progress: false
+    environment:
+      name: live
+      url: https://collab-board.alasmawi.workers.dev
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: npm
       - run: npm ci
       - run: npm run deploy
+      - name: Health check
+        run: curl --fail --silent --retry 5 --retry-delay 3 https://collab-board.alasmawi.workers.dev/api/v1/health

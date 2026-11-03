@@ -117,7 +117,7 @@ npm run deploy
 flowchart TD
   P["Push or pull request"] --> C["check job<br/>npm ci · npm run check · npm run build"]
   C --> Q{"Push to main, and<br/>CLOUDFLARE_ACCOUNT_ID set?"}
-  Q -- yes --> D["deploy job<br/>npm run deploy"]
+  Q -- yes --> D["deploy job<br/>npm run deploy · health check"]
   Q -- no --> S(["Stop after checks"])
   classDef biz fill:#f2b632,stroke:#2a1b05,color:#2a1b05
   classDef cre fill:#e2efe2,stroke:#2f6b3f,color:#1f3317
@@ -131,8 +131,10 @@ flowchart TD
   class S ok
 ```
 
-To deploy from GitHub Actions, add the secret `CLOUDFLARE_API_TOKEN` and the repository variable
-`CLOUDFLARE_ACCOUNT_ID`. The reset secret lives on Cloudflare, so deploys keep it.
+Both are set, so every push to `main` that passes the checks goes live. The deploy job uses the
+secret `CLOUDFLARE_API_TOKEN` (Workers and D1 edit) and the repository variable
+`CLOUDFLARE_ACCOUNT_ID`, runs one at a time, migrates D1 before the new code, and ends with a health
+check. The reset secret lives on Cloudflare, so deploys keep it. `main` is the only branch.
 
 <img src="assets/divider.svg" width="100%" height="18" alt="">
 
