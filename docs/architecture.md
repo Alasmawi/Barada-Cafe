@@ -1,18 +1,6 @@
 # <img src="assets/icons/architecture.svg" width="40" height="40" align="absmiddle" alt=""> Architecture
 
-| | |
-|---|---|
-| **Product** | Collab Board |
-| **Purpose** | How Collab Board is built: components, stack, request protection, data, AI, delivery and known limits |
-| **Audience** | Engineering, Security, technical reviewers |
-| **Version** | 1.0, 2 November 2026 |
-| **Owner** | Abdulla Alasmawi |
-| **Related** | [Executive summary](executive-summary.md) · [Docs index](README.md) |
-
-How Collab Board is built, how each request is protected, where data goes, and how it ships. Each
-section answers the questions a technical reviewer is likely to ask.
-
-<img src="assets/divider.svg" width="100%" height="18" alt="">
+How Collab Board is built: components, stack, request protection, data, AI, delivery and known limits.
 
 ## 1. System overview
 
@@ -56,7 +44,7 @@ the Worker first; every other path is the built React app, which falls back to `
 | <img src="assets/logos/eslint.svg" width="24" alt=""> | Lint | ESLint 10 with typescript-eslint | |
 | <img src="assets/logos/githubactions.svg" width="24" alt=""> | CI | GitHub Actions | Checks every push; deploys `main` |
 
-Runtime dependencies: 9. `npm audit --omit=dev` reported 0 known vulnerabilities on 3 November 2026.
+Runtime dependencies: 9. `npm audit --omit=dev` reports 0 known vulnerabilities.
 
 <img src="assets/divider.svg" width="100%" height="18" alt="">
 
@@ -81,7 +69,6 @@ Runtime dependencies: 9. `npm audit --omit=dev` reported 0 known vulnerabilities
 
 ## 4. Code layers
 
-
 | Layer | Folder | Does | Never does |
 |---|---|---|---|
 | Routes | `src/worker/routes` | Reads the request, validates it with Zod, calls one service, returns JSON | Rules or SQL |
@@ -94,7 +81,6 @@ Runtime dependencies: 9. `npm audit --omit=dev` reported 0 known vulnerabilities
 <img src="assets/divider.svg" width="100%" height="18" alt="">
 
 ## 5. Request lifecycle
-
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'fontFamily': 'Archivo, Helvetica, Arial, sans-serif', 'primaryColor': '#fffdf8', 'primaryTextColor': '#241a16', 'primaryBorderColor': '#c8102e', 'secondaryColor': '#fbe3e4', 'tertiaryColor': '#faf5ea', 'lineColor': '#8a7b70', 'clusterBkg': '#faf5ea', 'clusterBorder': '#e6dccb', 'edgeLabelBackground': '#faf5ea', 'titleColor': '#241a16', 'actorBkg': '#fffdf8', 'actorBorder': '#c8102e', 'actorTextColor': '#241a16', 'signalColor': '#8a7b70', 'signalTextColor': '#8a7b70', 'labelBoxBkgColor': '#fbe9bf', 'noteBkgColor': '#fbe9bf', 'noteBorderColor': '#f2b632', 'pie1': '#2f6b3f', 'pie2': '#f2b632', 'pie3': '#c8102e', 'pieStrokeColor': '#fffdf8', 'pieOuterStrokeColor': '#e6dccb'}}}%%
@@ -126,7 +112,6 @@ sequenceDiagram
 ## 6. Data model
 
 <p align="center"><img src="assets/diagrams/data-flow.svg" width="100%" alt="What the app stores, and the only data sent to Workers AI"></p>
-
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'fontFamily': 'Archivo, Helvetica, Arial, sans-serif', 'primaryColor': '#fffdf8', 'primaryTextColor': '#241a16', 'primaryBorderColor': '#c8102e', 'secondaryColor': '#fbe3e4', 'tertiaryColor': '#faf5ea', 'lineColor': '#8a7b70', 'clusterBkg': '#faf5ea', 'clusterBorder': '#e6dccb', 'edgeLabelBackground': '#faf5ea', 'titleColor': '#241a16', 'actorBkg': '#fffdf8', 'actorBorder': '#c8102e', 'actorTextColor': '#241a16', 'signalColor': '#8a7b70', 'signalTextColor': '#8a7b70', 'labelBoxBkgColor': '#fbe9bf', 'noteBkgColor': '#fbe9bf', 'noteBorderColor': '#f2b632', 'pie1': '#2f6b3f', 'pie2': '#f2b632', 'pie3': '#c8102e', 'pieStrokeColor': '#fffdf8', 'pieOuterStrokeColor': '#e6dccb'}}}%%
@@ -210,7 +195,6 @@ stored. A check constraint makes every status from Accepted onward carry a code.
 
 ## 7. Spot guarantee
 
-
 A collab never accepts more creators than it has spots, even with a double tap or two phones at once.
 
 <p align="center"><img src="assets/spot-race.svg" width="100%" alt="Two phones accept at once; one gets the spot, the other is told it was just taken"></p>
@@ -240,7 +224,6 @@ UPDATE" and confirming that they fail.
 <img src="assets/divider.svg" width="100%" height="18" alt="">
 
 ## 8. Authentication and sessions
-
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'fontFamily': 'Archivo, Helvetica, Arial, sans-serif', 'primaryColor': '#fffdf8', 'primaryTextColor': '#241a16', 'primaryBorderColor': '#c8102e', 'secondaryColor': '#fbe3e4', 'tertiaryColor': '#faf5ea', 'lineColor': '#8a7b70', 'clusterBkg': '#faf5ea', 'clusterBorder': '#e6dccb', 'edgeLabelBackground': '#faf5ea', 'titleColor': '#241a16', 'actorBkg': '#fffdf8', 'actorBorder': '#c8102e', 'actorTextColor': '#241a16', 'signalColor': '#8a7b70', 'signalTextColor': '#8a7b70', 'labelBoxBkgColor': '#fbe9bf', 'noteBkgColor': '#fbe9bf', 'noteBorderColor': '#f2b632', 'pie1': '#2f6b3f', 'pie2': '#f2b632', 'pie3': '#c8102e', 'pieStrokeColor': '#fffdf8', 'pieOuterStrokeColor': '#e6dccb'}}}%%
@@ -294,7 +277,6 @@ a schema change is undone with a new migration. [Operations](operations.md) has 
 <img src="assets/divider.svg" width="100%" height="18" alt="">
 
 ## 11. Front-end structure
-
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'fontFamily': 'Archivo, Helvetica, Arial, sans-serif', 'primaryColor': '#fffdf8', 'primaryTextColor': '#241a16', 'primaryBorderColor': '#c8102e', 'secondaryColor': '#fbe3e4', 'tertiaryColor': '#faf5ea', 'lineColor': '#8a7b70', 'clusterBkg': '#faf5ea', 'clusterBorder': '#e6dccb', 'edgeLabelBackground': '#faf5ea', 'titleColor': '#241a16', 'actorBkg': '#fffdf8', 'actorBorder': '#c8102e', 'actorTextColor': '#241a16', 'signalColor': '#8a7b70', 'signalTextColor': '#8a7b70', 'labelBoxBkgColor': '#fbe9bf', 'noteBkgColor': '#fbe9bf', 'noteBorderColor': '#f2b632', 'pie1': '#2f6b3f', 'pie2': '#f2b632', 'pie3': '#c8102e', 'pieStrokeColor': '#fffdf8', 'pieOuterStrokeColor': '#e6dccb'}}}%%

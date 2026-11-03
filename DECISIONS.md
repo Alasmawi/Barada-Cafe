@@ -1,16 +1,15 @@
 # Decisions
 
-Choices that aren't obvious from the code, and why they were made. [AUDIT.md](AUDIT.md) compares the
-app with its requirements, and [docs/](docs/README.md) explains how it's built.
+Choices that aren't obvious from the code, and why they were made. The [docs](docs/architecture.md)
+explain how it's built.
 
 ## Product
 
 - **For any business.** Cafés, shops, gyms and so on post collabs; creators apply. A business is
-  just a name and a colour: its type and area were removed on 2 Nov 2026.
-- **One account per business,** named after it. A unique index enforces this, and migration 0003
-  handed anything a second account had done to the first.
-- **Collabs only.** Offers were removed because they behaved exactly like collabs and the two labels
-  confused people. The `offer` field on a collab is still what the creator gets.
+  just a name and a colour, because nothing in the flow depends on its type or area.
+- **One account per business,** named after it, enforced by a unique index.
+- **Collabs are the only post type.** A separate "offer" type would behave exactly like a collab, and
+  two labels for one thing confuse people. The `offer` field on a collab is what the creator gets.
 - **Plain statuses:** Applied, Invited, Accepted, Posted, Completed and Declined. In the code a
   `request` is an application or an invite, because "application" doesn't fit an invite.
 - **Invites hold no spot.** Accepting one goes through the same guard as a business accepting, so
@@ -27,14 +26,13 @@ app with its requirements, and [docs/](docs/README.md) explains how it's built.
 - **Cream and red, native on a phone.** Large titles, grouped lists, a tab bar with icons, sheets with
   a grabber, and installable to the home screen.
 - **Ultra for titles, Archivo for text, JetBrains Mono for codes,** bundled so they need no network.
-  The owner chose Ultra; the earlier font read as generic.
+  Ultra's heavy slab gives the board a voice that a default sans wouldn't.
 - **Squares are businesses, circles are creators.** That rule runs through every screen, so the two
   sides can't be confused. Each side has its own sign-up, tabs and words.
 - **The board, as stickers.** Cards are neo-brutalist stickers: rounded, tinted in the business's
   colour, with an ink outline and a hard shadow that drops away when pressed. Live cards lean a
   little, and statuses are pill chips. Ended posts sit straight. A creator's completed collabs are
-  pinned to a wall on their profile. The owner chose stickers over a hard-edged board (which kept the
-  awnings) and a square raw poster; awnings and rubber stamps were dropped with it.
+  pinned to a wall on their profile, so their history reads like a board of past work.
 - **A card's lean comes from its id,** so the board looks pinned up but never moves on reload. With
   Reduce Motion on, everything sits straight.
 - **Business identity is a colour and a mark.** Five curated colours, picked at sign-up, chosen so
@@ -116,12 +114,10 @@ Production doesn't depend on this timing, because the guard is a single statemen
 
 ## Tooling
 
-- **`@cloudflare/vitest-plugin`,** the renamed successor of `vitest-pool-workers`, which supports
-  Vitest 5.
+- **`@cloudflare/vitest-plugin`** runs the tests inside the real Workers runtime, with Vitest 5.
 - **TypeScript 5.9, not 7.** `typescript-eslint` doesn't support TypeScript 7 yet.
 - **`CLOUDFLARE_ACCOUNT_ID` is a repository variable, not a secret.** GitHub can't read secrets in a
-  job's `if`, and the id isn't sensitive. This lets CI skip the deploy cleanly until Cloudflare is set
-  up.
+  job's `if`, and the id isn't sensitive, so a fork without Cloudflare set up skips the deploy cleanly.
 - **Scripts name the database by its binding, `DB`,** not its Cloudflare name, so the database can
   be replaced without touching them.
 

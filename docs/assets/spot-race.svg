@@ -13,17 +13,14 @@
 </style>
 <rect width="880" height="220" rx="18" fill="#faf5ea"/>
 <g font-family="Archivo, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
-  <rect x="40" y="40" width="120" height="56" rx="12" fill="#fffdf8" stroke="#e6dccb"/><text x="100" y="74" text-anchor="middle" font-size="15" font-weight="600" fill="#241a16">Phone A</text>
-  <rect x="40" y="124" width="120" height="56" rx="12" fill="#fffdf8" stroke="#e6dccb"/><text x="100" y="158" text-anchor="middle" font-size="15" font-weight="600" fill="#241a16">Phone B</text>
+  <g transform="translate(40 40)"><rect x="3" y="3" width="120" height="56" rx="14" fill="#241a16"/><rect width="120" height="56" rx="14" fill="#fffdf8" stroke="#241a16" stroke-width="2.5"/></g><text x="100" y="74" text-anchor="middle" font-size="15" font-weight="600" fill="#241a16">Phone A</text>
+  <g transform="translate(40 124)"><rect x="3" y="3" width="120" height="56" rx="14" fill="#241a16"/><rect width="120" height="56" rx="14" fill="#fffdf8" stroke="#241a16" stroke-width="2.5"/></g><text x="100" y="158" text-anchor="middle" font-size="15" font-weight="600" fill="#241a16">Phone B</text>
   <circle class="a" cx="176" cy="68" r="7" fill="#c8102e"/>
   <circle class="b" cx="176" cy="152" r="7" fill="#c8102e"/>
   <rect x="470" y="60" width="150" height="100" rx="14" fill="#241a16"/>
   <text x="545" y="102" text-anchor="middle" font-size="15" font-weight="700" fill="#faf5ea">One SQL</text>
   <text x="545" y="124" text-anchor="middle" font-size="15" font-weight="700" fill="#faf5ea">statement</text>
-  <g transform="translate(745 70) rotate(-7)"><g class="win">
-    <rect x="-62" y="-16" width="124" height="32" rx="5" fill="#fffdf8" stroke="#c8102e" stroke-width="2.5"/>
-    <text x="0" y="6" text-anchor="middle" font-size="15" font-weight="800" letter-spacing="1.6" fill="#c8102e">ACCEPTED</text>
-  </g></g>
+  <g transform="translate(745 70)"><g class="win"><rect x="-42.6" y="-15.0" width="85.2" height="30" rx="15.0" fill="#f6d7d8" stroke="#241a16" stroke-width="2"/><text x="0" y="5.3999999999999995" text-anchor="middle" font-family="Archivo, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#241a16">Accepted</text></g></g>
   <g class="lose"><text x="745" y="158" text-anchor="middle" font-size="14" fill="#66594f">That last spot</text>
   <text x="745" y="176" text-anchor="middle" font-size="14" fill="#66594f">was just taken</text></g>
   <text x="440" y="206" text-anchor="middle" font-size="13" fill="#66594f">The count and the update happen in one step, so the second request finds no spot left.</text>

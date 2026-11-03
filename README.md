@@ -10,13 +10,12 @@ marks it complete.
 | | |
 |---|---|
 | **Live** | https://collab-board.alasmawi.workers.dev |
-| **Status** | Live demo · 37 of 40 requirements met ([AUDIT.md](AUDIT.md)) |
 | **Runs on** | Cloudflare Workers, D1 and Workers AI, free plan, no running cost |
 | **Checks** | 265 automated tests · 300 screen checks · 0 known vulnerabilities in runtime dependencies |
 | **Owner** | Abdulla Alasmawi |
 
 **Contents:** [What it does](#what-it-does) · [Features](#features) · [Try it](#try-it) ·
-[Decisions, cuts and AI tools](#decisions-cuts-and-ai-tools) · [Architecture](#architecture) · [For auditors](#for-auditors) · [Known gaps](#known-gaps) ·
+[Decisions, cuts and AI tools](#decisions-cuts-and-ai-tools) · [Architecture](#architecture) · [Reviewer questions](#reviewer-questions) · [Known gaps](#known-gaps) ·
 [Run it](#run-it) · [Documentation](#documentation)
 
 <img src="docs/assets/divider.svg" width="100%" height="18" alt="">
@@ -121,7 +120,7 @@ reasons under "Picked for you". See [AI in the app](docs/architecture.md#9-ai).
 |---|---|---|
 | <img src="docs/assets/logos/cloudflare.svg" width="24" alt=""> | Cloudflare Workers | Serves the app and the API from one URL |
 | <img src="docs/assets/logos/sqlite.svg" width="24" alt=""> | Cloudflare D1 (SQLite) | Accounts, collabs, applications and sessions |
-| <img src="docs/assets/logos/meta.svg" width="24" alt=""> | Workers AI, Llama 3.3 70B | Post drafts and creator summaries |
+| <img src="docs/assets/logos/meta.svg" width="24" alt=""> | Workers AI, Llama 3.3 70B | Post drafts, creator summaries and pick reasons |
 | <img src="docs/assets/logos/hono.svg" width="24" alt=""> | Hono 4 | API routing under `/api/v1` |
 | <img src="docs/assets/logos/zod.svg" width="24" alt=""> | Zod 4 | Validates every request; shared with the forms |
 | <img src="docs/assets/logos/react.svg" width="24" alt=""> | React 19 | Screens |
@@ -139,16 +138,15 @@ each part in detail.
 
 <img src="docs/assets/divider.svg" width="100%" height="18" alt="">
 
-## For auditors
+## Reviewer questions
 
-The questions a reviewer from each department is likely to ask, with the answer and where to verify
-it.
+The questions a reviewer is likely to ask, with the answer and where to verify it in the code.
 
 ### Product
 
 | Question | Answer | Verify |
 |---|---|---|
-| Does it do what the brief asked? | 37 of 40 requirements are met; the rest need a real-phone test and Design sign-off | [AUDIT.md](AUDIT.md) |
+| Does it cover both journeys? | Yes: a business posts, reviews and completes; a creator browses, applies, visits and submits a link | [Features](#features), [Try it](#try-it) |
 | Can a collab be overbooked? | No. The spot count and the update are one SQL statement | [`requestsRepo.acceptIfSpotAvailable`](src/worker/repositories/requestsRepo.ts), [`test/concurrency.test.ts`](test/concurrency.test.ts) |
 | Can one business have several accounts? | No. A unique database index allows one | [`migrations/0003`](migrations/0003_one_account_per_business_no_offers.sql), [`test/auth.test.ts`](test/auth.test.ts) |
 | What if the AI is unavailable? | Drafts time out after 8 seconds and the form is filled by hand; summaries and pick reasons fall back to plain facts | [`test/ai-draft.test.ts`](test/ai-draft.test.ts), [`test/creators.test.ts`](test/creators.test.ts), [`test/picks.test.ts`](test/picks.test.ts) |
@@ -168,7 +166,7 @@ it.
 | What security headers are sent? | CSP limited to the site's own origin, `X-Frame-Options: DENY`, `nosniff`, a strict referrer policy and a permissions policy | [`public/_headers`](public/_headers), `secureHeaders()` in [`src/worker/index.ts`](src/worker/index.ts) |
 | Can anyone wipe the data? | Only with the `DEMO_RESET_TOKEN` secret; without it the endpoint answers 404 | [`src/worker/routes/public.ts`](src/worker/routes/public.ts), [`test/demo.test.ts`](test/demo.test.ts) |
 | Can AI output inject content? | Only fields that pass their schema survive; anything with `<` or `>` is dropped, and summaries or pick reasons with markup or links are discarded. Code, not the model, decides which collabs a creator is shown | [`src/worker/ai`](src/worker/ai) |
-| Are dependencies safe? | 9 runtime dependencies; `npm audit --omit=dev` reports 0 known vulnerabilities (3 Nov 2026) | [`package.json`](package.json) |
+| Are dependencies safe? | 9 runtime dependencies; `npm audit --omit=dev` reports 0 known vulnerabilities | [`package.json`](package.json) |
 
 ### Privacy
 
@@ -187,9 +185,9 @@ it.
 
 | Question | Answer | Verify |
 |---|---|---|
-| How is it tested? | 265 tests run inside the real Workers runtime against real D1, with nothing mocked; 300 screen checks run by hand | [`test`](test), [`test-ui/smoke.mjs`](test-ui/smoke.mjs) |
+| How is it tested? | 265 tests run inside the real Workers runtime against real D1, with nothing mocked; CI runs them on every push. Screen checks cover every screen at five widths and three iPhones in WebKit | [`test`](test), [`test-ui/smoke.mjs`](test-ui/smoke.mjs) |
 | Do the concurrency tests prove anything? | Yes. They were run with the guard replaced by "SELECT, then UPDATE" and they failed | [DECISIONS.md](DECISIONS.md#testing-the-race) |
-| How is it deployed? | `npm run deploy` applies migrations to D1 before deploying the new code | [`package.json`](package.json), [docs/operations.md](docs/operations.md) |
+| How is it deployed? | Every push to `main` that passes CI runs `npm run deploy`: migrations first, then the new code, then a health check | [`package.json`](package.json), [docs/operations.md](docs/operations.md) |
 | How would we know a deploy broke the schema? | `GET /api/v1/health` returns 503 if a migration was skipped | [`src/worker/routes/public.ts`](src/worker/routes/public.ts) |
 | How do we roll back? | `npx wrangler rollback` restores the previous code; migrations only move forward | [docs/operations.md](docs/operations.md) |
 | What does it cost, and what are the limits? | Nothing on the free plan: 100k requests, 5M rows read and 10k AI neurons a day | [docs/operations.md](docs/operations.md#7-platform-limits) |
@@ -217,7 +215,7 @@ it.
 | Light password hashing, no login limit | Fine for a demo, weak for real accounts | Engineering |
 | Sessions expire only with the 30-day cookie | A stolen cookie works until logout | Engineering |
 | No account deletion, privacy policy or terms | Required before holding real data | Legal |
-| No formal accessibility review | Tilt and sticker cards are new | Design |
+| No formal accessibility review | Contrast and screen reader use haven't been checked against WCAG | Design |
 | The visit code is checked by eye | The app doesn't confirm it | Product |
 
 ## Run it
@@ -258,14 +256,10 @@ In the code, a `request` is an application or an invite.
 
 ## Documentation
 
-| <img src="docs/assets/icons/executive.svg" width="24" alt=""> | [Executive summary](docs/executive-summary.md) | Value, status, cost, risks and next steps |
-|---|---|---|
 | <img src="docs/assets/icons/product.svg" width="24" alt=""> | [Product](docs/product.md) | Users, journeys, statuses, rules and AI features |
+|---|---|---|
 | <img src="docs/assets/icons/architecture.svg" width="24" alt=""> | [Architecture](docs/architecture.md) | Components, security, data, the spot guarantee and delivery |
 | <img src="docs/assets/icons/api.svg" width="24" alt=""> | [API reference](docs/api.md) | Endpoints, access control and errors |
 | <img src="docs/assets/icons/design.svg" width="24" alt=""> | [Design](docs/design.md) | The board, tokens, rings and screens |
 | <img src="docs/assets/icons/operations.svg" width="24" alt=""> | [Operations](docs/operations.md) | Running, deploying, resetting and limits |
-| <img src="docs/assets/icons/index.svg" width="24" alt=""> | [DECISIONS.md](DECISIONS.md) · [AUDIT.md](AUDIT.md) | Why each choice was made · every requirement and its evidence |
-
-Diagrams are drawn by [`docs/tools/diagrams.py`](docs/tools/diagrams.py) and
-[`docs/tools/assets.py`](docs/tools/assets.py). Change the code, then redraw them.
+| <img src="docs/assets/icons/index.svg" width="24" alt=""> | [DECISIONS.md](DECISIONS.md) | Why each choice was made |

@@ -1,15 +1,6 @@
 # <img src="assets/icons/operations.svg" width="40" height="40" align="absmiddle" alt=""> Operations
 
-| | |
-|---|---|
-| **Product** | Collab Board |
-| **Purpose** | How to run, test, deploy and reset Collab Board, and the limits it runs within |
-| **Audience** | Engineering, operations |
-| **Version** | 1.0, 2 November 2026 |
-| **Owner** | Abdulla Alasmawi |
-| **Related** | [Executive summary](executive-summary.md) · [Docs index](README.md) |
-
-<img src="assets/divider.svg" width="100%" height="18" alt="">
+How to run, test, deploy and reset Collab Board, and the limits it runs within.
 
 How to run, test, deploy and reset Collab Board.
 
@@ -183,8 +174,8 @@ secret set on Cloudflare.
 |---|---|
 | `0001_init.sql` | Businesses, users, collabs, requests, sessions and demo_meta |
 | `0002_socials_and_post_details.sql` | Creator socials; optional details, who they're looking for and location on collabs |
-| `0003_one_account_per_business_no_offers.sql` | One account per business; offers removed |
-| `0004_no_business_type_or_area.sql` | Business type and area removed |
+| `0003_one_account_per_business_no_offers.sql` | A unique index for one account per business; collabs are the only post type |
+| `0004_no_business_type_or_area.sql` | A business is a name and a colour |
 | `0005_pick_reasons.sql` | Saved AI reasons for Picked for you |
 
 Add a new migration as the next numbered file, then update `SCHEMA_VERSION` in

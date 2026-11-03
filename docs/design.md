@@ -1,17 +1,8 @@
 # <img src="assets/icons/design.svg" width="40" height="40" align="absmiddle" alt=""> Design
 
-| | |
-|---|---|
-| **Product** | Collab Board |
-| **Purpose** | The visual system: the board, tokens, rings, screens, motion and layout |
-| **Audience** | Design, front-end engineering |
-| **Version** | 1.0, 2 November 2026 |
-| **Owner** | Abdulla Alasmawi |
-| **Related** | [Executive summary](executive-summary.md) · [Docs index](README.md) |
+The visual system: the board, tokens, rings, screens, motion and layout.
 
-<img src="assets/divider.svg" width="100%" height="18" alt="">
-
-Cream and red, native on a phone, drawn as stickers: thick ink outlines, hard offset shadows, rounded corners and pill chips. The owner chose each piece listed here; [DECISIONS.md](../DECISIONS.md) records what was tried and turned down.
+Cream and red, native on a phone, drawn as stickers: thick ink outlines, hard offset shadows, rounded corners and pill chips. [DECISIONS.md](../DECISIONS.md) explains the reasons behind each piece.
 
 ## 1. Identity
 

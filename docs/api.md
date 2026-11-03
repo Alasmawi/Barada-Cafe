@@ -1,15 +1,6 @@
 # <img src="assets/icons/api.svg" width="40" height="40" align="absmiddle" alt=""> API reference
 
-| | |
-|---|---|
-| **Product** | Collab Board |
-| **Purpose** | Every endpoint, who may call it, and the errors it returns |
-| **Audience** | Engineering, QA, integrators |
-| **Version** | 1.0, 2 November 2026 |
-| **Owner** | Abdulla Alasmawi |
-| **Related** | [Executive summary](executive-summary.md) · [Docs index](README.md) |
-
-<img src="assets/divider.svg" width="100%" height="18" alt="">
+Every endpoint, who may call it, and the errors it returns.
 
 Every endpoint is under `/api/v1` and speaks JSON. Requests are identified by the `cb_session` cookie that login sets. Types for every response are in `src/shared/api.ts`, and request schemas are in `src/shared/schemas.ts`.
 
