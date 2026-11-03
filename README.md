@@ -1,52 +1,188 @@
+<p align="center"><img src="docs/assets/banner.svg" width="100%" alt="Collab Board: businesses post collabs, creators apply"></p>
+
 # Collab Board
 
-A mobile-first board where businesses post collabs and creators apply.
+A mobile-first board where local businesses post collabs and content creators apply. A business
+offers something, such as a meal, a class or a product, in exchange for a post. Creators apply in
+one line, the business accepts the ones it wants, the creator visits and posts, and the business
+marks it complete.
 
-**Live link:** https://collab-board.alasmawi.workers.dev
+| | |
+|---|---|
+| **Live** | https://collab-board.alasmawi.workers.dev |
+| **Status** | Live demo · 35 of 40 requirements met ([AUDIT.md](AUDIT.md)) |
+| **Runs on** | Cloudflare Workers, D1 and Workers AI, free plan, no running cost |
+| **Checks** | 265 automated tests · 300 screen checks · 0 known vulnerabilities in runtime dependencies |
+| **Owner** | Abdulla Alasmawi |
 
-- **Businesses** (cafés, shops, gyms and so on) post collabs, review applicants, accept
-  them, and can search for creators and invite them.
-- **Creators** browse collabs, apply, and post once they're accepted.
+**Contents:** [What it does](#what-it-does) · [Features](#features) · [Try it](#try-it) ·
+[Architecture](#architecture) · [For auditors](#for-auditors) · [Known gaps](#known-gaps) ·
+[Run it](#run-it) · [Documentation](#documentation)
 
-Businesses are always square logos, and creators are always round rings. A business has one
-account, with the business name on it.
+<img src="docs/assets/divider.svg" width="100%" height="18" alt="">
 
-[DECISIONS.md](DECISIONS.md) records what changed along the way and the open questions.
-[AUDIT.md](AUDIT.md) compares the app with every requirement, with a view for each department, and lists
-what's missing and what could be removed. [ARCHITECTURE.md](ARCHITECTURE.md) covers the stack, the layers
-and how people move through the app.
+## What it does
 
-## Two-minute demo
+<p align="center"><img src="docs/assets/diagrams/overview.svg" width="100%" alt="Businesses post collabs and review applicants; creators browse, apply, visit and post; Collab Board guarantees no collab is overbooked"></p>
 
-Tap **Try a demo account** on the welcome screen and pick one. Every demo account uses the password
-`demo-password`. Once you're in, the account button at the top of a home or Profile screen switches
-accounts with one tap, opens the preview states and logs you out.
+Two kinds of account use one board. A **business** is always shown as a square in its own colour,
+and a **creator** as a round ring drawn from their tags, so the two sides can't be confused.
 
-**As a creator (`noor`)**
+## Features
 
-1. Browse the collabs.
-2. Open one you haven't applied to, tap **Apply** and send a line about why you fit.
-3. In **Applications**, open Layali's invite and tap **Accept invite**.
-4. Open an accepted application to see its code, then add your post link.
-5. Open **Profile** to see your ring and edit your socials. The ring has one circle per tag, and
-   dots mark your formats.
+<p align="center"><img src="docs/assets/diagrams/features.svg" width="100%" alt="Eight business features, eight platform guarantees and eight creator features"></p>
 
-**As a business (`barada`)**
+| Area | Feature | What it does | Evidence |
+|---|---|---|---|
+| Business | Business account | One account per business, with its name and colour | [`test/auth.test.ts`](test/auth.test.ts) |
+| Business | Post and edit collabs | Offer, what to post, spots (1 to 50), end date, optional details | [`test/collabs.test.ts`](test/collabs.test.ts) |
+| Business | AI post draft | One sentence fills the form; the business reviews before publishing | [`test/ai-draft.test.ts`](test/ai-draft.test.ts) |
+| Business | Creator search and AI summary | Search by name, handle or tag; a saved summary on request | [`test/creators.test.ts`](test/creators.test.ts) |
+| Business | Invites | Invite any creator to a post | [`test/invites.test.ts`](test/invites.test.ts) |
+| Business | Applicants | Accept, decline and mark complete | [`test/transitions.test.ts`](test/transitions.test.ts) |
+| Creator | Profile | A ring from their tags, one line about them, and socials | [`test/socials.test.ts`](test/socials.test.ts) |
+| Creator | The board and applying | Browse live collabs and apply in 140 characters | [`test/collabs.test.ts`](test/collabs.test.ts) |
+| Creator | Visit code and post link | A code like `CB-7K3Q` on acceptance; an https post link afterwards | [`test/transitions.test.ts`](test/transitions.test.ts) |
+| Creator | Profile wall | Completed collabs pinned under the ring | `src/web/routes/Profile.tsx` |
+| Creator | Picked for you | Up to 3 open collabs that fit their tags, ranked by code, with a reason the AI rewrites once a day | [`test/picks.test.ts`](test/picks.test.ts) |
+| Platform | Spot guarantee | Never more creators than spots, under any timing | [`test/concurrency.test.ts`](test/concurrency.test.ts) |
+| Platform | Server-side permissions | Every action checked by role and ownership | [`test/permissions.test.ts`](test/permissions.test.ts) |
+| Platform | Statuses as stamps | Applied, Invited, Accepted, Posted, Completed, Declined; Last spot, Full and Ended worked out on read | [`test/shared.test.ts`](test/shared.test.ts) (`collabState`), [`Stamp.tsx`](src/web/components/Stamp.tsx) |
+| Platform | Phone to desktop | Checked at 320, 360, 390, 768 and 1280px; Reduce Motion respected | [`test-ui/smoke.mjs`](test-ui/smoke.mjs) |
 
-1. **Overview** shows new applicants and what needs a decision.
-2. In **Creators**, search for *food*. Tap the sparkle icon for an AI summary, or **Invite** to offer
-   them a post.
-3. In **My posts**, open one and tap **Accept** on an applicant.
-4. Tap the plus button, then the sparkle icon, type a sentence and tap **Fill the form**. Edit it,
-   then publish.
+<p align="center"><img src="docs/assets/status-journey.svg" width="80%" alt="An application moves from Applied to Accepted to Posted to Completed"></p>
 
-**The rule that matters:** open *Karak tasting flight* as `barada` on two phones.
-It has one spot left and three creators waiting. Tap Accept on different applicants at the same
-moment: one gets the spot, the other sees that it was just taken. Invites follow the same rule.
+## Try it
+
+Open the live link and tap **Try a demo account**. Every demo account uses the password
+`demo-password`.
+
+| As | Username | Try this |
+|---|---|---|
+| Creator | `noor` | Apply to a collab, accept Layali's invite, open an accepted application to see its code, then visit Profile for the wall |
+| Business | `barada` | Check Overview, search Creators for *food* and tap the sparkle, accept an applicant, then post a collab from one sentence |
+
+> [!IMPORTANT]
+> **The rule that matters:** open *Karak tasting flight* as `barada` on two phones. It has one spot
+> left and three applicants. Tap Accept on different applicants at the same moment: one gets the
+> spot, the other is told it was just taken.
+
+Other logins: businesses `noon`, `sidra`, `layali`, `move`; creators `salman`, `lulwa`, `ali`,
+`fatima`, `reem`.
+
+<img src="docs/assets/divider.svg" width="100%" height="18" alt="">
+
+## Architecture
+
+<p align="center"><img src="docs/assets/diagrams/architecture.svg" width="100%" alt="Browsers reach Cloudflare's edge; API paths go to a Worker built on Hono and Zod; data lives in D1 and AI runs on Workers AI; GitHub Actions checks and deploys with wrangler"></p>
+
+| | Technology | Used for |
+|---|---|---|
+| <img src="docs/assets/logos/cloudflare.svg" width="24" alt=""> | Cloudflare Workers | Serves the app and the API from one URL |
+| <img src="docs/assets/logos/sqlite.svg" width="24" alt=""> | Cloudflare D1 (SQLite) | Accounts, collabs, applications and sessions |
+| <img src="docs/assets/logos/meta.svg" width="24" alt=""> | Workers AI, Llama 3.3 70B | Post drafts and creator summaries |
+| <img src="docs/assets/logos/hono.svg" width="24" alt=""> | Hono 4 | API routing under `/api/v1` |
+| <img src="docs/assets/logos/zod.svg" width="24" alt=""> | Zod 4 | Validates every request; shared with the forms |
+| <img src="docs/assets/logos/react.svg" width="24" alt=""> | React 19 | Screens |
+| <img src="docs/assets/logos/reactrouter.svg" width="24" alt=""> | React Router 7 | Navigation |
+| <img src="docs/assets/logos/reactquery.svg" width="24" alt=""> | TanStack Query 5 | Caching, loading and error states |
+| <img src="docs/assets/logos/vite.svg" width="24" alt=""> | Vite 8 | Build and local development |
+| <img src="docs/assets/logos/typescript.svg" width="24" alt=""> | TypeScript 5.9 | Types shared between the app and the API |
+| <img src="docs/assets/logos/vitest.svg" width="24" alt=""> | Vitest 5 | Tests inside the real Workers runtime against real D1 |
+| <img src="docs/assets/logos/eslint.svg" width="24" alt=""> | ESLint 10 | Lint |
+| <img src="docs/assets/logos/githubactions.svg" width="24" alt=""> | GitHub Actions | Checks every push; deploys `main` |
+
+The Worker has three layers: **routes** handle HTTP and validation, **services** hold the rules and
+permissions, and **repositories** hold all SQL. [docs/architecture.md](docs/architecture.md) covers
+each part in detail.
+
+<img src="docs/assets/divider.svg" width="100%" height="18" alt="">
+
+## For auditors
+
+The questions a reviewer from each department is likely to ask, with the answer and where to verify
+it.
+
+### Product
+
+| Question | Answer | Verify |
+|---|---|---|
+| Does it do what the brief asked? | 35 of 40 requirements are met; the rest need a real-phone test, a CI run and Design sign-off | [AUDIT.md](AUDIT.md) |
+| Can a collab be overbooked? | No. The spot count and the update are one SQL statement | [`requestsRepo.acceptIfSpotAvailable`](src/worker/repositories/requestsRepo.ts), [`test/concurrency.test.ts`](test/concurrency.test.ts) |
+| Can one business have several accounts? | No. A unique database index allows one | [`migrations/0003`](migrations/0003_one_account_per_business_no_offers.sql), [`test/auth.test.ts`](test/auth.test.ts) |
+| What if the AI is unavailable? | Drafts time out after 8 seconds and the form is filled by hand; summaries and pick reasons fall back to plain facts | [`test/ai-draft.test.ts`](test/ai-draft.test.ts), [`test/creators.test.ts`](test/creators.test.ts), [`test/picks.test.ts`](test/picks.test.ts) |
+| Which product questions are still open? | Releasing a no-show's spot, re-applying after a decline, showing full posts | [DECISIONS.md](DECISIONS.md#open-questions) |
+
+### Security
+
+<p align="center"><img src="docs/assets/diagrams/security.svg" width="100%" alt="Six server-side steps protect each request"></p>
+
+| Question | Answer | Verify |
+|---|---|---|
+| How are passwords stored? | PBKDF2-SHA256 with a random salt, 10,000 rounds (demo strength, to fit the CPU limit) | [`src/worker/auth/passwords.ts`](src/worker/auth/passwords.ts) |
+| How are sessions handled? | A random token in an `HttpOnly`, `SameSite=Lax` cookie, `Secure` over https; only its SHA-256 hash is stored | [`src/worker/auth/sessions.ts`](src/worker/auth/sessions.ts) |
+| Who can do what? | Every action checks role and ownership in the services, never in the browser | [`src/worker/services/permissions.ts`](src/worker/services/permissions.ts), [`test/permissions.test.ts`](test/permissions.test.ts) |
+| Is input validated? | Every route parses its input with a Zod schema; failures return 422 with per-field messages | [`src/shared/schemas.ts`](src/shared/schemas.ts) |
+| Is SQL injection possible? | All queries use bound parameters; search escapes `LIKE` wildcards | [`src/worker/repositories`](src/worker/repositories) |
+| What security headers are sent? | CSP limited to the site's own origin, `X-Frame-Options: DENY`, `nosniff`, a strict referrer policy and a permissions policy | [`public/_headers`](public/_headers), `secureHeaders()` in [`src/worker/index.ts`](src/worker/index.ts) |
+| Can anyone wipe the data? | Only with the `DEMO_RESET_TOKEN` secret; without it the endpoint answers 404 | [`src/worker/routes/public.ts`](src/worker/routes/public.ts), [`test/demo.test.ts`](test/demo.test.ts) |
+| Can AI output inject content? | Only fields that pass their schema survive; anything with `<` or `>` is dropped, and summaries or pick reasons with markup or links are discarded. Code, not the model, decides which collabs a creator is shown | [`src/worker/ai`](src/worker/ai) |
+| Are dependencies safe? | 9 runtime dependencies; `npm audit --omit=dev` reports 0 known vulnerabilities (3 Nov 2026) | [`package.json`](package.json) |
+
+### Privacy
+
+<p align="center"><img src="docs/assets/diagrams/data-flow.svg" width="100%" alt="What the app stores, and the only data sent to Workers AI"></p>
+
+| Question | Answer | Verify |
+|---|---|---|
+| What personal data is stored? | Usernames, names, creator handles, tags, a one-line bio, socials, applications and post links | [`migrations`](migrations) |
+| What leaves the app? | Only three AI features: a creator's name, tags, line and completed count (summaries); the sentence a business typed (drafts); a creator's tags and line with the open collabs picked for them (pick reasons, once a day) | [`src/worker/ai`](src/worker/ai) |
+| Where is it stored? | Cloudflare D1, inside the same Cloudflare account as the Worker | [`wrangler.jsonc`](wrangler.jsonc) |
+| Can a user delete their account? | Not yet. This is a known gap | [Known gaps](#known-gaps) |
+
+### Reliability and operations
+
+<p align="center"><img src="docs/assets/diagrams/delivery.svg" width="100%" alt="Push, check, build, migrate and deploy, then health check"></p>
+
+| Question | Answer | Verify |
+|---|---|---|
+| How is it tested? | 265 tests run inside the real Workers runtime against real D1, with nothing mocked; 300 screen checks run by hand | [`test`](test), [`test-ui/smoke.mjs`](test-ui/smoke.mjs) |
+| Do the concurrency tests prove anything? | Yes. They were run with the guard replaced by "SELECT, then UPDATE" and they failed | [DECISIONS.md](DECISIONS.md#testing-the-race) |
+| How is it deployed? | `npm run deploy` applies migrations to D1 before deploying the new code | [`package.json`](package.json), [docs/operations.md](docs/operations.md) |
+| How would we know a deploy broke the schema? | `GET /api/v1/health` returns 503 if a migration was skipped | [`src/worker/routes/public.ts`](src/worker/routes/public.ts) |
+| How do we roll back? | `npx wrangler rollback` restores the previous code; migrations only move forward | [docs/operations.md](docs/operations.md) |
+| What does it cost, and what are the limits? | Nothing on the free plan: 100k requests, 5M rows read and 10k AI neurons a day | [docs/operations.md](docs/operations.md#7-platform-limits) |
+| Where are errors logged? | Unexpected errors are logged by the Worker and returned as a generic message | [`src/worker/http/errors.ts`](src/worker/http/errors.ts) |
+
+### Design and accessibility
+
+| Question | Answer | Verify |
+|---|---|---|
+| Does it work on small phones? | Every screen is checked at 320px and up with no sideways scroll | [`test-ui/smoke.mjs`](test-ui/smoke.mjs) |
+| Is motion optional? | Reduce Motion stops all animation and sets tilted cards straight | `src/web/design/app.css` |
+| Are statuses readable by screen readers? | Stamps are real text, not images | [`src/web/components/Stamp.tsx`](src/web/components/Stamp.tsx) |
+| Is there a design system? | Tokens in one file; rules in the design doc | [`tokens.css`](src/web/design/tokens.css), [docs/design.md](docs/design.md) |
+
+<img src="docs/assets/divider.svg" width="100%" height="18" alt="">
+
+## Known gaps
+
+> [!WARNING]
+> Collab Board is a demo. These must change before real people's details are stored.
+
+| Gap | Why it matters | Owner |
+|---|---|---|
+| Not tested on a physical phone | Reviewers will use their own phones | QA |
+| CI has never run | Nothing is pushed to GitHub yet | Engineering |
+| Light password hashing, no login limit | Fine for a demo, weak for real accounts | Engineering |
+| Sessions expire only with the 30-day cookie | A stolen cookie works until logout | Engineering |
+| No account deletion, privacy policy or terms | Required before holding real data | Legal |
+| No formal accessibility review | Tilt and stamps are new | Design |
+| The visit code is checked by eye | The app doesn't confirm it | Product |
 
 ## Run it
 
-Needs Node 22 or newer.
+Needs Node 22 or newer. No Cloudflare account is needed locally.
 
 ```bash
 npm install
@@ -56,92 +192,39 @@ npm install
 npm run dev
 ```
 
-This applies migrations to a local D1 database and serves everything on http://localhost:5173. No
-Cloudflare account is needed. Without one, the AI features fall back to plain forms and plain facts.
+| Command | Does |
+|---|---|
+| `npm run dev` | Local D1 and the app on http://localhost:5173 |
+| `npm run check` | Types, lint and 265 tests |
+| `npm run test:ui` | 300 screen checks (needs `npm run dev` and the reset secret in `.dev.vars`) |
+| `npm run deploy` | Build, migrate the live D1, deploy |
 
-To open it on a phone on the same Wi-Fi, run this and use the Network address it prints. Anyone on
-that network can reach it while it runs.
+Resetting the demo needs the `DEMO_RESET_TOKEN` secret; see [docs/operations.md](docs/operations.md#5-demo-reset).
 
-```bash
-npm run dev:phone
-```
-
-## Check it
-
-```bash
-npm run check
-```
-
-That runs the type checker, ESLint and the tests. The tests run in the real Workers runtime against
-real D1 (SQLite), so nothing is mocked and no Cloudflare account is needed.
-
-With `npm run dev` running, this checks every screen at 320, 360, 390, 768 and 1280px in every
-preview state. It drives your installed Chrome, and it's run by hand, not in CI. It resets the demo
-data, so don't point it at a site where real people have signed up.
-
-## Reset the demo
-
-Resetting restores the sample data and removes everyone who signed up, so it isn't on any screen. It
-needs the secret `DEMO_RESET_TOKEN`: in `.dev.vars` locally (create it with any long random value), and
-set with `npx wrangler secret put DEMO_RESET_TOKEN` on Cloudflare. Without the secret the endpoint
-answers 404.
-
-```bash
-curl -X POST -H "X-Reset-Token: $DEMO_RESET_TOKEN" http://localhost:5173/api/v1/demo/reset
-```
-
-```bash
-npm run test:ui
-```
-
-## The rule that matters most
-
-A post never accepts more creators than it has spots, even with a double tap or two phones accepting
-at once. The guard is one SQL statement in
-[`requestsRepo.acceptIfSpotAvailable`](src/worker/repositories/requestsRepo.ts). It counts spots and
-updates the row in one step, so no other request can get between them. Accepting invites, applying
-and editing spots use the same idea. The tests in
-[`test/concurrency.test.ts`](test/concurrency.test.ts) and [`test/invites.test.ts`](test/invites.test.ts)
-were checked by swapping the guard for "SELECT, then UPDATE" and confirming that they fail.
-
-## Layout
+## Repository layout
 
 ```
 src/shared     types, schemas and rules used by both sides
-src/worker     routes (HTTP) → services (rules) → repositories (SQL)
-src/web        the React app
+src/worker     routes (HTTP) → services (rules) → repositories (SQL), plus ai and demo
+src/web        the React app: routes, features, components, design
 migrations     schema only; demo data lives in src/worker/demo/seed.ts
 test           runs over HTTP against the real Worker
-public         app icons, the install manifest and security headers
+test-ui        screen checks at five widths
+docs           product, architecture, API, design and operations, with diagrams
 ```
 
 In the code, a `request` is an application or an invite.
 
-## The free tier
+## Documentation
 
-Everything fits Cloudflare's free plan, checked on 1 Nov 2026:
+| <img src="docs/assets/icons/executive.svg" width="24" alt=""> | [Executive summary](docs/executive-summary.md) | Value, status, cost, risks and next steps |
+|---|---|---|
+| <img src="docs/assets/icons/product.svg" width="24" alt=""> | [Product](docs/product.md) | Users, journeys, statuses, rules and AI features |
+| <img src="docs/assets/icons/architecture.svg" width="24" alt=""> | [Architecture](docs/architecture.md) | Components, security, data, the spot guarantee and delivery |
+| <img src="docs/assets/icons/api.svg" width="24" alt=""> | [API reference](docs/api.md) | Endpoints, access control and errors |
+| <img src="docs/assets/icons/design.svg" width="24" alt=""> | [Design](docs/design.md) | The board, tokens, rings and screens |
+| <img src="docs/assets/icons/operations.svg" width="24" alt=""> | [Operations](docs/operations.md) | Running, deploying, resetting and limits |
+| <img src="docs/assets/icons/index.svg" width="24" alt=""> | [DECISIONS.md](DECISIONS.md) · [AUDIT.md](AUDIT.md) | Why each choice was made · every requirement and its evidence |
 
-| Limit | How the app stays inside it |
-|---|---|
-| 10 ms CPU per request | Rings and logos are drawn in the browser. Password hashing is light (see below) |
-| 100k requests, 5M rows read and 100k written a day | Search waits for a pause in typing and returns 30 results at most |
-| 10k AI neurons a day | About 33 neurons a summary. Each is saved, and a plain fact line needs no AI |
-
-When the AI allowance runs out the app keeps working: summaries stay as plain facts, and posts are
-filled in by hand.
-
-**Accounts are for a demo.** Passwords use 10,000 rounds of PBKDF2 to fit the CPU limit, far below
-what real accounts need. There's no email, recovery or login rate limit, and anyone holding the reset
-secret can wipe everyone who signed up. Change these first before real use.
-
-## Deploy
-
-One-time setup, from a machine logged in with `npx wrangler login`:
-
-1. Register a `workers.dev` subdomain in the Cloudflare dashboard.
-2. Run `npx wrangler d1 create collab-board` and put its name and id in `wrangler.jsonc`.
-3. Set the reset secret with `npx wrangler secret put DEMO_RESET_TOKEN`.
-4. Run `npm run deploy`.
-
-To deploy from GitHub Actions instead, add the secret `CLOUDFLARE_API_TOKEN` and the variable
-`CLOUDFLARE_ACCOUNT_ID`. CI then deploys every push to `main`, once that branch exists.
+Diagrams are drawn by [`docs/tools/diagrams.py`](docs/tools/diagrams.py) and
+[`docs/tools/assets.py`](docs/tools/assets.py). Change the code, then redraw them.

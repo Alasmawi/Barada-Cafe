@@ -81,6 +81,20 @@ export type InboxRequest = CollabRequest & {
 /** A request as the creator sees it, with the collab it belongs to. */
 export type RequestWithCollab = CollabRequest & { collab: Collab };
 
+/** A collab picked for a creator. Code chooses it; AI may only reword the reason. */
+export type Pick = {
+  collab: Collab;
+  matchedTags: string[];
+  reason: string;
+  isAiReason: boolean;
+};
+
+export type PicksResponse = {
+  picks: Pick[];
+  /** True while today's AI reasons haven't been asked for yet. */
+  aiPending: boolean;
+};
+
 /** What the AI could fill. Every field passed validation, and nothing here is ever published. */
 export type CollabDraft = {
   draft: Partial<CollabInput>;

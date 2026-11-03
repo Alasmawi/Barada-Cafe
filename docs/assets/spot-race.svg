@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="220" viewBox="0 0 880 220" role="img" aria-labelledby="t d">
+<title id="t">Two phones, one last spot</title>
+<desc id="d">Two phones accept at the same moment. One gets the last spot, the other is told it was just taken.</desc>
+<style>
+.a { animation: go 5s cubic-bezier(.45,0,.55,1) infinite both; }
+.b { animation: go 5s cubic-bezier(.45,0,.55,1) infinite both; animation-delay: .12s; }
+@keyframes go { 0% { transform: translateX(0); opacity: 1; } 35% { transform: translateX(290px); opacity: 1; } 40%, 100% { transform: translateX(290px); opacity: 0; } }
+.win { transform-box: fill-box; transform-origin: center; animation: win 5s ease-out infinite both; }
+.lose { animation: lose 5s ease-out infinite both; }
+@keyframes win { 0%, 38% { opacity: 0; transform: scale(1.6); } 46%, 100% { opacity: 1; transform: scale(1); } }
+@keyframes lose { 0%, 44% { opacity: 0; } 52%, 100% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+</style>
+<rect width="880" height="220" rx="18" fill="#faf5ea"/>
+<g font-family="Archivo, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <rect x="40" y="40" width="120" height="56" rx="12" fill="#fffdf8" stroke="#e6dccb"/><text x="100" y="74" text-anchor="middle" font-size="15" font-weight="600" fill="#241a16">Phone A</text>
+  <rect x="40" y="124" width="120" height="56" rx="12" fill="#fffdf8" stroke="#e6dccb"/><text x="100" y="158" text-anchor="middle" font-size="15" font-weight="600" fill="#241a16">Phone B</text>
+  <circle class="a" cx="176" cy="68" r="7" fill="#c8102e"/>
+  <circle class="b" cx="176" cy="152" r="7" fill="#c8102e"/>
+  <rect x="470" y="60" width="150" height="100" rx="14" fill="#241a16"/>
+  <text x="545" y="102" text-anchor="middle" font-size="15" font-weight="700" fill="#faf5ea">One SQL</text>
+  <text x="545" y="124" text-anchor="middle" font-size="15" font-weight="700" fill="#faf5ea">statement</text>
+  <g transform="translate(745 70) rotate(-7)"><g class="win">
+    <rect x="-62" y="-16" width="124" height="32" rx="5" fill="#fffdf8" stroke="#c8102e" stroke-width="2.5"/>
+    <text x="0" y="6" text-anchor="middle" font-size="15" font-weight="800" letter-spacing="1.6" fill="#c8102e">ACCEPTED</text>
+  </g></g>
+  <g class="lose"><text x="745" y="158" text-anchor="middle" font-size="14" fill="#66594f">That last spot</text>
+  <text x="745" y="176" text-anchor="middle" font-size="14" fill="#66594f">was just taken</text></g>
+  <text x="440" y="206" text-anchor="middle" font-size="13" fill="#66594f">The count and the update happen in one step, so the second request finds no spot left.</text>
+</g>
+</svg>

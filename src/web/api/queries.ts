@@ -5,6 +5,7 @@ import type {
   CollabRequest,
   CreatorCard,
   InboxRequest,
+  PicksResponse,
   RequestWithCollab,
   User,
 } from '../../shared/api';
@@ -42,6 +43,21 @@ export const useFeed = () =>
     queryKey: ['collabs'],
     queryFn: () => api.getList<FeedResponse>('/collabs', 'collabs'),
   });
+
+/** Under 'collabs', so applying or answering an invite refreshes the picks too. */
+export const usePicks = () =>
+  useQuery({
+    queryKey: ['collabs', 'picks'],
+    queryFn: () => api.getList<PicksResponse>('/me/picks', 'picks'),
+  });
+
+export function useExplainPicks() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.post<PicksResponse>('/me/picks/explain'),
+    onSuccess: (data) => queryClient.setQueryData(['collabs', 'picks'], data),
+  });
+}
 
 export const useCollab = (id: string) =>
   useQuery({

@@ -23,7 +23,7 @@ describe('demo data', () => {
 
   it('seeds itself on first boot when the database is empty', async () => {
     await env.DB.batch(
-      ['requests', 'collabs', 'users', 'businesses'].map((table) =>
+      ['pick_reasons', 'requests', 'collabs', 'users', 'businesses'].map((table) =>
         env.DB.prepare(`DELETE FROM ${table}`),
       ),
     );
@@ -159,7 +159,7 @@ describe('health', () => {
     const response = await api('/health');
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ ok: true, schema: '0004_no_business_type_or_area.sql' });
+    expect(await response.json()).toEqual({ ok: true, schema: '0005_pick_reasons.sql' });
   });
 });
 

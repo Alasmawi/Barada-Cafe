@@ -3,7 +3,9 @@ import { SubmissionInput } from '../../shared/schemas';
 import { SocialsInput } from '../../shared/socials';
 import type { AppEnv } from '../env';
 import { parseBody } from '../http/validate';
+import { workersAiClient } from '../ai/aiClient';
 import * as creatorService from '../services/creatorService';
+import * as pickService from '../services/pickService';
 import * as requestService from '../services/requestService';
 
 export const requestRoutes = new Hono<AppEnv>()
@@ -13,6 +15,10 @@ export const requestRoutes = new Hono<AppEnv>()
     const user = await creatorService.updateSocials(c.env.DB, c.get('actor'), socials);
     return c.json({ user });
   })
+  .get('/me/picks', async (c) => c.json(await pickService.list(c.env.DB, c.get('actor'))))
+  .post('/me/picks/explain', async (c) =>
+    c.json(await pickService.explain(c.env.DB, workersAiClient(c.env.AI), c.get('actor'))),
+  )
   .get('/me/requests', async (c) => {
     return c.json({ requests: await requestService.listMine(c.env.DB, c.get('actor')) });
   })

@@ -2,7 +2,7 @@
 
 How Collab Board compares with everything it was asked to do, as of 2 Nov 2026.
 
-**39 requirements: 34 met, 3 partly met, 2 waiting on a design judgement.**
+**40 requirements: 35 met, 3 partly met, 2 waiting on a design judgement.**
 
 ## Original brief
 
@@ -52,6 +52,7 @@ How Collab Board compares with everything it was asked to do, as of 2 Nov 2026.
 | U18 | A font that doesn’t feel generic | Review | Ultra titles chosen by the owner, with Archivo text. For Design to confirm |
 | U19 | Use the empty space | Met | Fuller Overview and Profile; two columns on wide screens |
 | U20 | A pattern that gives the board character | Met | Awnings in each business’s colour, tilted cards, status stamps and a profile wall, chosen by the owner |
+| U21 | AI recommendations for creators | Met | Picked for you: code picks collabs by tag, AI rewords the reason once a day; test/picks.test.ts and the real model checked locally. Waits on the next deploy |
 
 ## Problems the audit found and fixed
 
@@ -94,8 +95,8 @@ Is it clear, and does it feel like its own product?
 
 Could someone else pick this up?
 
-- Read ARCHITECTURE.md for the stack, layers and flows, then DECISIONS.md for the reasons
-- Run npm run check (250 tests) and npm run test:ui
+- Read docs/ for the product, architecture, API and operations, then DECISIONS.md for the reasons
+- Run npm run check (265 tests) and npm run test:ui
 - Start with test/concurrency.test.ts and the spot guard
 
 ### QA
@@ -171,7 +172,7 @@ Chosen by the owner on 2 Nov 2026.
 
 ## How it’s built
 
-[ARCHITECTURE.md](ARCHITECTURE.md) has the stack, layers, data, flows and the spot rule.
+[docs/](docs/README.md) has the product, architecture, API, design and operations, with diagrams.
 
 ## Still open
 

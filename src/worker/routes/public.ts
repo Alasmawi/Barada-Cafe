@@ -5,7 +5,7 @@ import { DomainError, notFound } from '../http/errors';
 import * as usersRepo from '../repositories/usersRepo';
 
 /** The newest file in /migrations. Health fails if the deploy skipped a migration. */
-const SCHEMA_VERSION = '0004_no_business_type_or_area.sql';
+const SCHEMA_VERSION = '0005_pick_reasons.sql';
 
 async function tokenMatches(given: string | undefined, expected: string | undefined): Promise<boolean> {
   if (!given || !expected) return false;

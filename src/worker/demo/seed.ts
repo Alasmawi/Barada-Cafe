@@ -401,6 +401,7 @@ export async function seed(db: D1Database, now: Date = new Date()): Promise<void
   await db.batch([
     // Demo accounts keep their rows, so a reset never logs out someone else who's reviewing.
     db.prepare(`DELETE FROM sessions WHERE user_id NOT IN (${DEMO_USER_IDS})`),
+    db.prepare('DELETE FROM pick_reasons'),
     db.prepare('DELETE FROM requests'),
     db.prepare('DELETE FROM collabs'),
     db.prepare(`DELETE FROM users WHERE id NOT IN (${DEMO_USER_IDS})`),

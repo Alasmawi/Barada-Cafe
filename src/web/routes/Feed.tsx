@@ -3,6 +3,7 @@ import { LargeTitle } from '../components/Layout';
 import { MessageState } from '../components/MessageState';
 import { ScreenState } from '../components/ScreenState';
 import { CardSkeleton, CollabCard } from '../features/collabs/CollabCard';
+import { PickedForYou } from '../features/collabs/PickedForYou';
 
 export function Feed() {
   const feed = useFeed();
@@ -33,11 +34,15 @@ export function Feed() {
         }
       >
         {({ collabs }) => (
-          <ul className="post-list">
-            {collabs.map((collab) => (
-              <CollabCard key={collab.id} collab={collab} myStatus={statusOf(collab.id)} />
-            ))}
-          </ul>
+          <>
+            <PickedForYou />
+            <h2 className="group-label">All collabs</h2>
+            <ul className="post-list">
+              {collabs.map((collab) => (
+                <CollabCard key={collab.id} collab={collab} myStatus={statusOf(collab.id)} />
+              ))}
+            </ul>
+          </>
         )}
       </ScreenState>
     </>

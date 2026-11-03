@@ -1,7 +1,7 @@
 # Decisions
 
 Choices that aren't obvious from the code, and why they were made. [AUDIT.md](AUDIT.md) compares the
-app with its requirements, and [ARCHITECTURE.md](ARCHITECTURE.md) explains how it's built.
+app with its requirements, and [docs/](docs/README.md) explains how it's built.
 
 ## Product
 
@@ -83,6 +83,11 @@ app with its requirements, and [ARCHITECTURE.md](ARCHITECTURE.md) explains how i
   businesses only. Fields containing `<` or `>` are dropped.
 - **Summaries start as plain facts** from the database, so search costs no AI allowance. Only the
   facts reach the model, and answers with markup or links are dropped.
+- **Picked for you: code chooses, AI explains.** Picks are open collabs matching the creator's tags,
+  ranked by how many match, then the last spot, then the soonest end. The model only rewords the reason,
+  once a day per creator. Answers under 20 characters, with links or markup are dropped, and failures
+  are saved so the model isn't asked again that day. Collab text is written by businesses, so it reaches
+  the model as data.
 - **Vague sentences can still get a guessed spot count.** The business reviews every field before
   publishing.
 

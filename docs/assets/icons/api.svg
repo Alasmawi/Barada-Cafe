@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-label="api">
+<rect width="48" height="48" rx="12" fill="#faf5ea" stroke="#e6dccb"/>
+<g fill="none" stroke="#c8102e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 13c-4 0-4 3-4 6s-1 5-4 5c3 0 4 2 4 5s0 6 4 6"/><path d="M29 13c4 0 4 3 4 6s1 5 4 5c-3 0-4 2-4 5s0 6-4 6"/><circle cx="24" cy="24" r="1.6" fill="#241a16" stroke="#241a16"/></g>
+</svg>
